@@ -1,0 +1,13 @@
+{
+  "zeitstempel": "2026-09-30T17:22:14.935358",
+  "gesamt_linien": 35,
+  "verkehrsmittel": {
+    "S-Bahn": 9,
+    "U-Bahn": 9,
+    "Straßenbahn": 10,
+    "Bus": 5,
+    "Fähre": 2
+  },
+  "datenquelle": "Manuell erstellt (basierend auf öffentlich verfügbaren Informationen)",
+  "hinweis": "Overpass API nicht verfügbar, daher manuell erstellt"
+}

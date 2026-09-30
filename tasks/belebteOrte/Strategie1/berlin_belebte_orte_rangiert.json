@@ -1,0 +1,202 @@
+[
+  {
+    "rang": 1,
+    "poi_anzahl": 8,
+    "lat": 52.5378762,
+    "lon": 13.4085662,
+    "naechste_haltestelle": "Schwedter Str. (Berlin)",
+    "haltestellen_distanz_m": 88,
+    "oepnv_frequenz_vormittags": 42.0,
+    "gesamt_score": 50.0
+  },
+  {
+    "rang": 2,
+    "poi_anzahl": 7,
+    "lat": 52.569876199999875,
+    "lon": 13.4065662,
+    "naechste_haltestelle": "Pankow Kirche (Berlin)",
+    "haltestellen_distanz_m": 192,
+    "oepnv_frequenz_vormittags": 34.0,
+    "gesamt_score": 41.0
+  },
+  {
+    "rang": 3,
+    "poi_anzahl": 6,
+    "lat": 52.57087619999989,
+    "lon": 13.4075662,
+    "naechste_haltestelle": "Pankow Kirche (Berlin)",
+    "haltestellen_distanz_m": 100,
+    "oepnv_frequenz_vormittags": 34.0,
+    "gesamt_score": 40.0
+  },
+  {
+    "rang": 4,
+    "poi_anzahl": 7,
+    "lat": 52.57187619999988,
+    "lon": 13.4085662,
+    "naechste_haltestelle": "Pankow Kirche (Berlin)",
+    "haltestellen_distanz_m": 167,
+    "oepnv_frequenz_vormittags": 24.0,
+    "gesamt_score": 31.0
+  },
+  {
+    "rang": 5,
+    "poi_anzahl": 9,
+    "lat": 52.63487619999973,
+    "lon": 13.4955662,
+    "naechste_haltestelle": "Alt-Buch/Wiltbergstr. (Berlin)",
+    "haltestellen_distanz_m": 150,
+    "oepnv_frequenz_vormittags": 16.0,
+    "gesamt_score": 25.0
+  },
+  {
+    "rang": 6,
+    "poi_anzahl": 6,
+    "lat": 52.568876199999885,
+    "lon": 13.4015662,
+    "naechste_haltestelle": "Wilhelm-Kuhr-Str. (Berlin)",
+    "haltestellen_distanz_m": 180,
+    "oepnv_frequenz_vormittags": 15.0,
+    "gesamt_score": 21.0
+  },
+  {
+    "rang": 7,
+    "poi_anzahl": 9,
+    "lat": 52.58687619999985,
+    "lon": 13.3675662,
+    "naechste_haltestelle": "Edelweißstr. (Berlin)",
+    "haltestellen_distanz_m": 116,
+    "oepnv_frequenz_vormittags": 12.0,
+    "gesamt_score": 21.0
+  },
+  {
+    "rang": 8,
+    "poi_anzahl": 12,
+    "lat": 52.5438762,
+    "lon": 13.4425662,
+    "naechste_haltestelle": "Thomas-Mann-Str. (Berlin)",
+    "haltestellen_distanz_m": 77,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 12.0
+  },
+  {
+    "rang": 9,
+    "poi_anzahl": 11,
+    "lat": 52.5488762,
+    "lon": 13.4535662,
+    "naechste_haltestelle": "Antonplatz (Berlin)",
+    "haltestellen_distanz_m": 45,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 11.0
+  },
+  {
+    "rang": 10,
+    "poi_anzahl": 10,
+    "lat": 52.5408762,
+    "lon": 13.4385662,
+    "naechste_haltestelle": "S Greifswalder Str. (Berlin)",
+    "haltestellen_distanz_m": 8,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 10.0
+  },
+  {
+    "rang": 11,
+    "poi_anzahl": 9,
+    "lat": 52.57087619999989,
+    "lon": 13.4105662,
+    "naechste_haltestelle": "Pankow Kirche (Berlin)",
+    "haltestellen_distanz_m": 30,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 9.0
+  },
+  {
+    "rang": 12,
+    "poi_anzahl": 8,
+    "lat": 52.5488762,
+    "lon": 13.4135662,
+    "naechste_haltestelle": "S+U Schönhauser Allee (Berlin)",
+    "haltestellen_distanz_m": 24,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 8.0
+  },
+  {
+    "rang": 13,
+    "poi_anzahl": 8,
+    "lat": 52.5498762,
+    "lon": 13.4565662,
+    "naechste_haltestelle": "Berlin, Albertinenstr.",
+    "haltestellen_distanz_m": 62,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 8.0
+  },
+  {
+    "rang": 14,
+    "poi_anzahl": 7,
+    "lat": 52.57087619999989,
+    "lon": 13.4095662,
+    "naechste_haltestelle": "Pankow Kirche (Berlin)",
+    "haltestellen_distanz_m": 57,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 7.0
+  },
+  {
+    "rang": 15,
+    "poi_anzahl": 7,
+    "lat": 52.5588762,
+    "lon": 13.4135662,
+    "naechste_haltestelle": "U Vinetastr. (Berlin)",
+    "haltestellen_distanz_m": 20,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 7.0
+  },
+  {
+    "rang": 16,
+    "poi_anzahl": 7,
+    "lat": 52.5498762,
+    "lon": 13.4145662,
+    "naechste_haltestelle": "S+U Schönhauser Allee (Berlin)",
+    "haltestellen_distanz_m": 45,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 7.0
+  },
+  {
+    "rang": 17,
+    "poi_anzahl": 7,
+    "lat": 52.5488762,
+    "lon": 13.4505662,
+    "naechste_haltestelle": "Antonplatz (Berlin)",
+    "haltestellen_distanz_m": 40,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 7.0
+  },
+  {
+    "rang": 18,
+    "poi_anzahl": 7,
+    "lat": 52.5498762,
+    "lon": 13.4165662,
+    "naechste_haltestelle": "S+U Schönhauser Allee (Berlin)",
+    "haltestellen_distanz_m": 16,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 7.0
+  },
+  {
+    "rang": 19,
+    "poi_anzahl": 6,
+    "lat": 52.5468762,
+    "lon": 13.4125662,
+    "naechste_haltestelle": "S+U Schönhauser Allee (Berlin)",
+    "haltestellen_distanz_m": 121,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 6.0
+  },
+  {
+    "rang": 20,
+    "poi_anzahl": 6,
+    "lat": 52.5478762,
+    "lon": 13.4135662,
+    "naechste_haltestelle": "S+U Schönhauser Allee (Berlin)",
+    "haltestellen_distanz_m": 18,
+    "oepnv_frequenz_vormittags": 0.0,
+    "gesamt_score": 6.0
+  }
+]

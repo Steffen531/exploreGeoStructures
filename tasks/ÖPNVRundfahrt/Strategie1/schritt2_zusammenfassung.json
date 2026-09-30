@@ -1,0 +1,24 @@
+{
+  "zeitstempel": "2026-09-30T17:24:06.833288",
+  "start": "Frankfurt Hbf",
+  "endpunkt": "Frankfurt Höchst",
+  "gesamt_dauer": 90,
+  "verkehrsmittel": [
+    "S-Bahn",
+    "Straßenbahn",
+    "Fähre"
+  ],
+  "stationen": [
+    "Frankfurt Ostbahnhof",
+    "Frankfurt Hbf",
+    "Frankfurt Höchst",
+    "Frankfurt Lokalbahnhof",
+    "Frankfurt Konstablerwache",
+    "Frankfurt Ost",
+    "Frankfurt Südbahnhof",
+    "Frankfurt Süd"
+  ],
+  "hinweg": "Hinweg (West-Ost-Achse)",
+  "rueckweg": "Rückweg (Nord-Sud-Achse)",
+  "erweiterung": "Fähre über den Main"
+}

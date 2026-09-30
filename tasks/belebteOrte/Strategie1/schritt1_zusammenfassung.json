@@ -1,0 +1,14 @@
+{
+  "zeitstempel": "2026-09-30T15:43:46.275687",
+  "bezirk": "Pankow, Berlin, Deutschland",
+  "gesamt_pois": 94382,
+  "nach_typ": {
+    "building": 66260,
+    "amenity": 21764,
+    "shop": 2482,
+    "leisure": 2186,
+    "tourism": 1032,
+    "office": 658
+  },
+  "mit_oeffnungszeiten": 3935
+}

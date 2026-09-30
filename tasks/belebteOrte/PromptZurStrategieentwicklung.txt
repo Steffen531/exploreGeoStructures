@@ -1,0 +1,2 @@
+Ich suche ungewöhnliche geographische Strukturen in Städten. Ein Beispiel wäre: An welchen öffentlichen Orten halten sich in Berlin dienstag vormittags viele Menschen auf?
+Lass uns zunächst nach Lösungsansätzen suchen, ohne sie auszuführen.

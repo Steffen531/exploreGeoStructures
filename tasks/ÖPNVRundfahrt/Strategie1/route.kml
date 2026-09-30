@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>ÖPNV-Rundfahrt Frankfurt (Strategie 1)</name>
+    <description>ÖPNV-Rundfahrt Frankfurt - Strategie 1: Achsen-Strategie + Zeitliche Optimierung</description>
+    
+    <!-- Hinweg (S-Bahn) -->
+    <Placemark>
+      <name>Hinweg: S-Bahn S8/S9</name>
+      <description>Von: Frankfurt Hbf -> Nach: Frankfurt Ost
+Dauer: 20 Minuten
+Stationen: Frankfurt Hbf, Frankfurt Konstablerwache, Frankfurt Ostbahnhof</description>
+      <Style>
+        <LineStyle>
+          <color>ff009933</color>
+          <width>5</width>
+        </LineStyle>
+      </Style>
+      <LineString>
+        <coordinates>
+          8.68,50.11,0
+          8.69,50.11,0
+          8.72,50.12,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    
+    <!-- Rückweg (Straßenbahn) -->
+    <Placemark>
+      <name>Rückweg: {route['rueckweg']['verkehrsmittel']}</name>
+      <description>Von: {route['rueckweg']['von']} -> Nach: {route['rueckweg']['nach']}
+Dauer: {route['rueckweg']['dauer']} Minuten
+Stationen: {', '.join(route['rueckweg']['stationen'])}</description>
+      <Style>
+        <LineStyle>
+          <color>ff{route['rueckweg']['farbe'].replace('#', '')}</color>
+          <width>5</width>
+        </LineStyle>
+      </Style>
+      <LineString>
+        <coordinates>
+          8.72,50.12,0
+          8.69,50.11,0
+          8.69,50.1,0
+          8.68,50.09,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    
+    <!-- Erweiterung (Fähre) -->
+    <Placemark>
+      <name>Erweiterung: {route['erweiterung']['verkehrsmittel']}</name>
+      <description>Von: {route['erweiterung']['von']} -> Nach: {route['erweiterung']['nach']}
+Dauer: {route['erweiterung']['dauer']} Minuten
+Stationen: {', '.join(route['erweiterung']['stationen'])}</description>
+      <Style>
+        <LineStyle>
+          <color>ff{route['erweiterung']['farbe'].replace('#', '')}</color>
+          <width>5</width>
+        </LineStyle>
+      </Style>
+      <LineString>
+        <coordinates>
+          8.68,50.09,0
+          8.65,50.1,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    
+    <!-- Stationen -->
+    <Placemark>
+      <name>Frankfurt Ostbahnhof</name>
+      <Point>
+        <coordinates>8.72,50.12,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Frankfurt Hbf</name>
+      <Point>
+        <coordinates>8.68,50.11,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Frankfurt Höchst</name>
+      <Point>
+        <coordinates>8.65,50.1,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Frankfurt Lokalbahnhof</name>
+      <Point>
+        <coordinates>8.69,50.1,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Frankfurt Konstablerwache</name>
+      <Point>
+        <coordinates>8.69,50.11,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Frankfurt Ost</name>
+      <Point>
+        <coordinates>8.72,50.12,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Frankfurt Südbahnhof</name>
+      <Point>
+        <coordinates>8.68,50.09,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Frankfurt Süd</name>
+      <Point>
+        <coordinates>8.68,50.09,0</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

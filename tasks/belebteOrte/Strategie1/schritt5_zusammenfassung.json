@@ -1,0 +1,106 @@
+{
+  "zeitstempel": "2026-09-30T15:50:27.092191",
+  "gesamt_orte": 20,
+  "top_10_orte": [
+    {
+      "rang": 1,
+      "poi_anzahl": 8,
+      "lat": 52.5378762,
+      "lon": 13.4085662,
+      "naechste_haltestelle": "Schwedter Str. (Berlin)",
+      "haltestellen_distanz_m": 88,
+      "oepnv_frequenz_vormittags": 42.0,
+      "gesamt_score": 50.0
+    },
+    {
+      "rang": 2,
+      "poi_anzahl": 7,
+      "lat": 52.569876199999875,
+      "lon": 13.4065662,
+      "naechste_haltestelle": "Pankow Kirche (Berlin)",
+      "haltestellen_distanz_m": 192,
+      "oepnv_frequenz_vormittags": 34.0,
+      "gesamt_score": 41.0
+    },
+    {
+      "rang": 3,
+      "poi_anzahl": 6,
+      "lat": 52.57087619999989,
+      "lon": 13.4075662,
+      "naechste_haltestelle": "Pankow Kirche (Berlin)",
+      "haltestellen_distanz_m": 100,
+      "oepnv_frequenz_vormittags": 34.0,
+      "gesamt_score": 40.0
+    },
+    {
+      "rang": 4,
+      "poi_anzahl": 7,
+      "lat": 52.57187619999988,
+      "lon": 13.4085662,
+      "naechste_haltestelle": "Pankow Kirche (Berlin)",
+      "haltestellen_distanz_m": 167,
+      "oepnv_frequenz_vormittags": 24.0,
+      "gesamt_score": 31.0
+    },
+    {
+      "rang": 5,
+      "poi_anzahl": 9,
+      "lat": 52.63487619999973,
+      "lon": 13.4955662,
+      "naechste_haltestelle": "Alt-Buch/Wiltbergstr. (Berlin)",
+      "haltestellen_distanz_m": 150,
+      "oepnv_frequenz_vormittags": 16.0,
+      "gesamt_score": 25.0
+    },
+    {
+      "rang": 6,
+      "poi_anzahl": 6,
+      "lat": 52.568876199999885,
+      "lon": 13.4015662,
+      "naechste_haltestelle": "Wilhelm-Kuhr-Str. (Berlin)",
+      "haltestellen_distanz_m": 180,
+      "oepnv_frequenz_vormittags": 15.0,
+      "gesamt_score": 21.0
+    },
+    {
+      "rang": 7,
+      "poi_anzahl": 9,
+      "lat": 52.58687619999985,
+      "lon": 13.3675662,
+      "naechste_haltestelle": "Edelweißstr. (Berlin)",
+      "haltestellen_distanz_m": 116,
+      "oepnv_frequenz_vormittags": 12.0,
+      "gesamt_score": 21.0
+    },
+    {
+      "rang": 8,
+      "poi_anzahl": 12,
+      "lat": 52.5438762,
+      "lon": 13.4425662,
+      "naechste_haltestelle": "Thomas-Mann-Str. (Berlin)",
+      "haltestellen_distanz_m": 77,
+      "oepnv_frequenz_vormittags": 0.0,
+      "gesamt_score": 12.0
+    },
+    {
+      "rang": 9,
+      "poi_anzahl": 11,
+      "lat": 52.5488762,
+      "lon": 13.4535662,
+      "naechste_haltestelle": "Antonplatz (Berlin)",
+      "haltestellen_distanz_m": 45,
+      "oepnv_frequenz_vormittags": 0.0,
+      "gesamt_score": 11.0
+    },
+    {
+      "rang": 10,
+      "poi_anzahl": 10,
+      "lat": 52.5408762,
+      "lon": 13.4385662,
+      "naechste_haltestelle": "S Greifswalder Str. (Berlin)",
+      "haltestellen_distanz_m": 8,
+      "oepnv_frequenz_vormittags": 0.0,
+      "gesamt_score": 10.0
+    }
+  ]
+}

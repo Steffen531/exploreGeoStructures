@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÖPNV-Rundfahrt Frankfurt - Strategie 1</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        .info {
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        .legend-item {
+            margin: 5px 0;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 3px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1>ÖPNV-Rundfahrt Frankfurt - Strategie 1</h1>
+        <p><strong>Datum:</strong> 2026-12-01</p>
+        <p><strong>Zeit:</strong> 18:00-20:00</p>
+        <p><strong>Start:</strong> Frankfurt Hbf</p>
+        <p><strong>Endpunkt:</strong> Frankfurt Höchst</p>
+        <p><strong>Gesamtdauer:</strong> 90 Minuten (1 Stunden 30 Minuten)</p>
+        <p><strong>Verkehrsmittel:</strong> S-Bahn, Straßenbahn, Fähre</p>
+    </div>
+    <div id="map"></div>
+    <div class="info">
+        <h2>Route</h2>
+        <h3>Hinweg: Hinweg (West-Ost-Achse)</h3>
+        <p><strong>Verkehrsmittel:</strong> S-Bahn S8/S9</p>
+        <p><strong>Von:</strong> Frankfurt Hbf -> <strong>Nach:</strong> Frankfurt Ost</p>
+        <p><strong>Dauer:</strong> 20 Minuten</p>
+        <p><strong>Stationen:</strong> Frankfurt Hbf, Frankfurt Konstablerwache, Frankfurt Ostbahnhof</p>
+        
+        <h3>Umstieg: Frankfurt Ost</h3>
+        <p><strong>Wartezeit:</strong> 5 Minuten</p>
+        <p><strong>Beschreibung:</strong> Umstieg von S-Bahn auf Straßenbahn</p>
+        
+        <h3>Rückweg: Rückweg (Nord-Sud-Achse)</h3>
+        <p><strong>Verkehrsmittel:</strong> Straßenbahn 11/12</p>
+        <p><strong>Von:</strong> Frankfurt Ost -> <strong>Nach:</strong> Frankfurt Süd</p>
+        <p><strong>Dauer:</strong> 35 Minuten</p>
+        <p><strong>Stationen:</strong> Frankfurt Ost, Frankfurt Konstablerwache, Frankfurt Lokalbahnhof, Frankfurt Südbahnhof</p>
+        
+        <h3>Erweiterung: Fähre über den Main</h3>
+        <p><strong>Verkehrsmittel:</strong> Fähre</p>
+        <p><strong>Von:</strong> Frankfurt Süd -> <strong>Nach:</strong> Frankfurt Höchst</p>
+        <p><strong>Dauer:</strong> 30 Minuten</p>
+        <p><strong>Stationen:</strong> Frankfurt Süd, Frankfurt Höchst</p>
+    </div>
+    <script>
+        // Karte initialisieren
+        var map = L.map('map').setView([50.11, 8.68], 13);
+        
+        // OpenStreetMap Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Hinweg (S-Bahn)
+        var hinwegCoords = [[8.68, 50.11], [8.69, 50.11], [8.72, 50.12]];
+        L.polyline(hinwegCoords, {
+            color: '#009933',
+            weight: 5,
+            opacity: 0.8
+        }).addTo(map).bindPopup('<b>Hinweg</b><br>S-Bahn S8/S9<br>Frankfurt Hbf -> Frankfurt Ost<br>Dauer: 20 Min');
+        
+        // Rückweg (Straßenbahn)
+        var rueckwegCoords = [[8.72, 50.12], [8.69, 50.11], [8.69, 50.1], [8.68, 50.09]];
+        L.polyline(rueckwegCoords, {
+            color: '#FF6600',
+            weight: 5,
+            opacity: 0.8
+        }).addTo(map).bindPopup('<b>Rückweg</b><br>Straßenbahn 11/12<br>Frankfurt Ost -> Frankfurt Süd<br>Dauer: 35 Min');
+        
+        // Erweiterung (Fähre)
+        var faehreCoords = [[8.68, 50.09], [8.65, 50.1]];
+        L.polyline(faehreCoords, {
+            color: '#0099FF',
+            weight: 5,
+            opacity: 0.8
+        }).addTo(map).bindPopup('<b>Erweiterung</b><br>Fähre<br>Frankfurt Süd -> Frankfurt Höchst<br>Dauer: 30 Min');
+        
+        // Stationen markieren
+        var stationen = ["Frankfurt Ostbahnhof", "Frankfurt Hbf", "Frankfurt H\u00f6chst", "Frankfurt Lokalbahnhof", "Frankfurt Konstablerwache", "Frankfurt Ost", "Frankfurt S\u00fcdbahnhof", "Frankfurt S\u00fcd"];
+        var stationCoords = {
+            "Frankfurt Hbf": [50.11, 8.68],
+            "Frankfurt Süd": [50.09, 8.68],
+            "Frankfurt Ost": [50.12, 8.72],
+            "Frankfurt West": [50.11, 8.64],
+            "Frankfurt Nord": [50.13, 8.68],
+            "Frankfurt Konstablerwache": [50.11, 8.69],
+            "Frankfurt Ostbahnhof": [50.12, 8.72],
+            "Frankfurt Lokalbahnhof": [50.10, 8.69],
+            "Frankfurt Südbahnhof": [50.09, 8.68],
+            "Frankfurt Höchst": [50.10, 8.65]
+        };
+        
+        stationen.forEach(function(station) {
+            if (stationCoords[station]) {
+                L.marker(stationCoords[station]).addTo(map)
+                    .bindPopup('<b>' + station + '</b>');
+            }
+        });
+        
+        // Legende
+        var legend = L.control({position: 'bottomright'});
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML = '<h4>Legende</h4>' +
+                '<div class="legend-item"><span class="legend-color" style="background: #009933"></span> Hinweg (S-Bahn)</div>' +
+                '<div class="legend-item"><span class="legend-color" style="background: #FF6600"></span> Rückweg (Straßenbahn)</div>' +
+                '<div class="legend-item"><span class="legend-color" style="background: #0099FF"></span> Erweiterung (Fähre)</div>';
+            return div;
+        };
+        legend.addTo(map);
+
+    </script>
+</body>
+</html>

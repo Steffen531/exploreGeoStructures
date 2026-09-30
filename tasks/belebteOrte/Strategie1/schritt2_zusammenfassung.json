@@ -1,0 +1,14 @@
+{
+  "zeitstempel": "2026-09-30T15:44:06.999014",
+  "gesamt_pois": 94382,
+  "mit_oeffnungszeiten": 3935,
+  "dienstag_vormittag_geoeffnet": 1640,
+  "nach_typ_dienstag": {
+    "shop": 797,
+    "amenity": 713,
+    "office": 63,
+    "leisure": 58,
+    "tourism": 7,
+    "building": 2
+  }
+}

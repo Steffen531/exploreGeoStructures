@@ -1,0 +1,127 @@
+{
+  "zeitstempel": "2026-09-30T15:50:08.619652",
+  "gesamt_haltestellen": 42140,
+  "haltestellen_mit_frequenz": 20769,
+  "top_20_haltestellen": [
+    {
+      "stop_name": "Hertzallee (Berlin)",
+      "vormittags_frequenz": 194.0,
+      "stop_lat": 52.509228,
+      "stop_lon": 13.332082
+    },
+    {
+      "stop_name": "Hertzallee (Berlin)",
+      "vormittags_frequenz": 168.0,
+      "stop_lat": 52.508833,
+      "stop_lon": 13.333586
+    },
+    {
+      "stop_name": "S+U Zoologischer Garten Bhf (Berlin)",
+      "vormittags_frequenz": 167.0,
+      "stop_lat": 52.506741,
+      "stop_lon": 13.333567
+    },
+    {
+      "stop_name": "U Kurt-Schumacher-Platz (Berlin)",
+      "vormittags_frequenz": 126.0,
+      "stop_lat": 52.563346,
+      "stop_lon": 13.326896
+    },
+    {
+      "stop_name": "U Kurt-Schumacher-Platz (Berlin)",
+      "vormittags_frequenz": 126.0,
+      "stop_lat": 52.563324,
+      "stop_lon": 13.327342
+    },
+    {
+      "stop_name": "S+U Wittenau (Berlin)",
+      "vormittags_frequenz": 126.0,
+      "stop_lat": 52.595793,
+      "stop_lon": 13.33614
+    },
+    {
+      "stop_name": "Berlin, Moritzstr.",
+      "vormittags_frequenz": 125.0,
+      "stop_lat": 52.538297,
+      "stop_lon": 13.200741
+    },
+    {
+      "stop_name": "S+U Wittenau (Berlin)",
+      "vormittags_frequenz": 125.0,
+      "stop_lat": 52.595542,
+      "stop_lon": 13.335021
+    },
+    {
+      "stop_name": "Berlin, Moritzstr.",
+      "vormittags_frequenz": 124.0,
+      "stop_lat": 52.539015,
+      "stop_lon": 13.200849
+    },
+    {
+      "stop_name": "Wilhelmsruher Damm/Treuenbrietzener Str. (Berlin)",
+      "vormittags_frequenz": 117.0,
+      "stop_lat": 52.596973,
+      "stop_lon": 13.359507
+    },
+    {
+      "stop_name": "S Savignyplatz (Berlin)",
+      "vormittags_frequenz": 116.0,
+      "stop_lat": 52.505117,
+      "stop_lon": 13.319066
+    },
+    {
+      "stop_name": "S+U Rathaus Spandau (Berlin)",
+      "vormittags_frequenz": 112.0,
+      "stop_lat": 52.535942,
+      "stop_lon": 13.199838
+    },
+    {
+      "stop_name": "U Kurt-Schumacher-Platz (Berlin)",
+      "vormittags_frequenz": 108.0,
+      "stop_lat": 52.563163,
+      "stop_lon": 13.32547
+    },
+    {
+      "stop_name": "S+U Warschauer Str. (Berlin)",
+      "vormittags_frequenz": 108.0,
+      "stop_lat": 52.504862,
+      "stop_lon": 13.448802
+    },
+    {
+      "stop_name": "S Hackescher Markt (Berlin)",
+      "vormittags_frequenz": 100.0,
+      "stop_lat": 52.522545,
+      "stop_lon": 13.403145
+    },
+    {
+      "stop_name": "S Schöneweide/Sterndamm (Berlin)",
+      "vormittags_frequenz": 99.0,
+      "stop_lat": 52.454245,
+      "stop_lon": 13.509443
+    },
+    {
+      "stop_name": "S Lankwitz (Berlin)",
+      "vormittags_frequenz": 98.0,
+      "stop_lat": 52.438752,
+      "stop_lon": 13.343763
+    },
+    {
+      "stop_name": "S Potsdam Hauptbahnhof",
+      "vormittags_frequenz": 97.0,
+      "stop_lat": 52.390756,
+      "stop_lon": 13.066689
+    },
+    {
+      "stop_name": "S Lankwitz (Berlin)",
+      "vormittags_frequenz": 96.0,
+      "stop_lat": 52.438378,
+      "stop_lon": 13.344253
+    },
+    {
+      "stop_name": "S Hohenschönhausen Bhf (Berlin)",
+      "vormittags_frequenz": 95.0,
+      "stop_lat": 52.566442,
+      "stop_lon": 13.513503
+    }
+  ]
+}

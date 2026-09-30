@@ -1,0 +1,145 @@
+# Strategie 2: Achsen-Strategie + Zeitliche Optimierung
+
+## Aufgabe
+
+Eine etwa 2-stündige ÖPNV-Fahrt in Frankfurt am 1.12.2026 abends zwischen 18 und 20 Uhr mit folgenden Bedingungen:
+
+- **Dauer:** Etwa 2 Stunden
+- **Keine Rückkehr an bereits besuchte Orte**
+- **Start und Endpunkt zentral, aber möglichst weit voneinander entfernt**
+- **Unterschiedliche Verkehrsmittel nutzen** (S-Bahn, Straßenbahn, Regionalzüge, Fähren, ...)
+- **Kurze Umsteigezeiten und -wege**
+
+---
+
+## Grundidee
+
+Die Kombination aus **Achsen-Strategie** und **Zeitlicher Optimierung** nutzt zwei verschiedene Achsen für Hin- und Rückweg, um sicherzustellen, dass Start und Endpunkt weit voneinander entfernt sind. Gleichzeitig werden die Umsteigezeiten durch die Fahrpläne optimiert, um die 2 Stunden effizient zu nutzen.
+
+---
+
+## Umsetzung
+
+### Schritt 1: Achsen wählen
+
+- **Hinweg:** Eine Achse wählen (z.B. West-Ost)
+- **Rückweg:** Eine andere Achse wählen (z.B. Nord-Sud)
+- **Ziel:** Start und Endpunkt weit voneinander entfernt
+
+### Schritt 2: Verkehrsmittel entlang der Achsen wählen
+
+- **Hinweg:** S-Bahn entlang der West-Ost-Achse
+- **Rückweg:** Straßenbahn entlang der Nord-Sud-Achse
+- **Ziel:** Unterschiedliche Verkehrsmittel nutzen
+
+### Schritt 3: Umsteigezeiten optimieren
+
+- **Daten abrufen:** Abfahrzeiten für alle relevanten Verkehrsmittel
+- **Algorithmus:** Die Route so planen, dass die Umsteigezeiten minimal sind
+- **Ziel:** Effiziente Nutzung der 2 Stunden
+
+---
+
+## Beispiel für Frankfurt
+
+### Hinweg (West-Ost-Achse)
+
+- **Start:** Hauptbahnhof (zentral)
+- **Verkehrsmittel:** S-Bahn S1/S2/S8/S9
+- **Richtung:** Nach Osten (z.B. nach Frankfurt Ost)
+- **Dauer:** Etwa 30 Minuten
+
+### Rückweg (Nord-Sud-Achse)
+
+- **Start:** Frankfurt Ost
+- **Verkehrsmittel:** Straßenbahn 11/12
+- **Richtung:** Nach Süden (z.B. nach Frankfurt Süd)
+- **Dauer:** Etwa 30 Minuten
+
+### Umstieg
+
+- **Ort:** Frankfurt Ost
+- **Wartezeit:** Etwa 5-10 Minuten (optimiert durch Fahrplan)
+- **Gesamtdauer:** Etwa 1 Stunde
+
+### Erweiterung
+
+- **Zusätzlich:** Regionalzug nach Westen (z.B. nach Frankfurt West)
+- **Zusätzlich:** Fähre über den Main (z.B. nach Höchst)
+- **Gesamtdauer:** Etwa 2 Stunden
+
+---
+
+## Vorteile der Kombination
+
+1. **Keine Rückkehr an bereits besuchte Orte:** Durch die Verwendung von zwei verschiedenen Achsen
+2. **Start und Endpunkt weit entfernt:** Durch die Verwendung von zwei verschiedenen Achsen
+3. **Unterschiedliche Verkehrsmittel:** Durch die Verwendung von S-Bahn, Straßenbahn, Regionalzug und Fähre
+4. **Kurze Umsteigezeiten:** Durch die Optimierung der Fahrpläne
+
+---
+
+## Nachteile der Kombination
+
+1. **Komplexität:** Die Planung ist aufwendiger als bei einem einzelnen Ansatz
+2. **Datenbedarf:** Es werden Fahrpläne für mehrere Verkehrsmittel benötigt
+3. **Zeitdruck:** Die 2 Stunden können knapp werden, wenn die Umsteigezeiten nicht optimal sind
+
+---
+
+## Datenquellen für Abfahrzeiten
+
+### 1. RMV API (Rhein-Main-Verkehrsverbund)
+
+- **Was:** Offizielle API für den Rhein-Main-Verkehrsverbund
+- **Vorteil:** Echtzeitdaten, offiziell, zuverlässig
+- **Nachteil:** Möglicherweise benötigt man einen API-Key
+- **URL:** `https://www.rmv.de` oder `https://www.rmv.de/auskunft`
+
+### 2. Deutsche Bahn API (Hafas)
+
+- **Was:** Die DB hat eine Hafas-API für Fahrplanauskünfte
+- **Vorteil:** Umfangreiche Daten, auch für Regionalzüge
+- **Nachteil:** Nicht alle Verkehrsmittel sind enthalten (z.B. Straßenbahnen)
+- **URL:** `https://www.bahn.de` oder `https://www.bahn.de/angebot`
+
+### 3. GTFS-Daten (General Transit Feed Specification)
+
+- **Was:** Standardisierte Datensätze für ÖPNV-Fahrpläne
+- **Vorteil:** Offenes Format, viele Tools verfügbar
+- **Nachteil:** Nicht alle Verkehrsverbünde stellen GTFS-Daten zur Verfügung
+- **Quelle:** `https://www.gtfs.org` oder `https://transitfeeds.com`
+
+### 4. OpenStreetMap (OSM)
+
+- **Was:** Freie Weltkarte mit ÖPNV-Daten
+- **Vorteil:** Offen, community-getrieben
+- **Nachteil:** Nicht immer aktuell, keine Echtzeitdaten
+- **URL:** `https://www.openstreetmap.org`
+
+### 5. Web-Scraping
+
+- **Was:** Automatisiertes Abrufen von Daten von Websites
+- **Vorteil:** Kann jede Website scrapen
+- **Nachteil:** Kann gegen Nutzungsbedingungen verstoßen, instabil
+- **Tools:** `BeautifulSoup`, `Scrapy`, `Selenium`
+
+---
+
+## Empfehlung
+
+Die Kombination von **Ansatz 2 und Ansatz 4** erfüllt die Bedingungen am besten:
+
+- Keine Rückkehr an bereits besuchte Orte
+- Unterschiedliche Verkehrsmittel
+- Start und Endpunkt weit entfernt
+- Kurze Umsteigezeiten
+
+---
+
+## Nächste Schritte
+
+1. **Daten abrufen:** Abfahrzeiten für alle relevanten Verkehrsmittel in Frankfurt
+2. **Daten verarbeiten:** In einer Datenbank oder einem DataFrame speichern
+3. **Route optimieren:** Algorithmus zur Routenoptimierung anwenden
+4. **Ergebnis ausgeben:** Route mit Abfahrzeiten, Umsteigezeiten, Gesamtdauer und Verkehrsmitteln

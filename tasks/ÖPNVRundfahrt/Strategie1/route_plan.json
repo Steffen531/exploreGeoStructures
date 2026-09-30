@@ -1,0 +1,109 @@
+{
+  "name": "ÖPNV-Rundfahrt Frankfurt (Strategie 1)",
+  "datum": "2026-12-01",
+  "zeit": "18:00-20:00",
+  "start": "Frankfurt Hbf",
+  "endpunkt": "Frankfurt Höchst",
+  "gesamt_dauer": 90,
+  "hinweg": {
+    "name": "Hinweg (West-Ost-Achse)",
+    "verkehrsmittel": "S-Bahn S8/S9",
+    "von": "Frankfurt Hbf",
+    "nach": "Frankfurt Ost",
+    "dauer": 20,
+    "farbe": "#009933",
+    "stationen": [
+      "Frankfurt Hbf",
+      "Frankfurt Konstablerwache",
+      "Frankfurt Ostbahnhof"
+    ],
+    "coords": [
+      [
+        8.68,
+        50.11
+      ],
+      [
+        8.69,
+        50.11
+      ],
+      [
+        8.72,
+        50.12
+      ]
+    ]
+  },
+  "umstieg": {
+    "ort": "Frankfurt Ost",
+    "wartezeit": 5,
+    "beschreibung": "Umstieg von S-Bahn auf Straßenbahn"
+  },
+  "rueckweg": {
+    "name": "Rückweg (Nord-Sud-Achse)",
+    "verkehrsmittel": "Straßenbahn 11/12",
+    "von": "Frankfurt Ost",
+    "nach": "Frankfurt Süd",
+    "dauer": 35,
+    "farbe": "#FF6600",
+    "stationen": [
+      "Frankfurt Ost",
+      "Frankfurt Konstablerwache",
+      "Frankfurt Lokalbahnhof",
+      "Frankfurt Südbahnhof"
+    ],
+    "coords": [
+      [
+        8.72,
+        50.12
+      ],
+      [
+        8.69,
+        50.11
+      ],
+      [
+        8.69,
+        50.1
+      ],
+      [
+        8.68,
+        50.09
+      ]
+    ]
+  },
+  "erweiterung": {
+    "name": "Fähre über den Main",
+    "verkehrsmittel": "Fähre",
+    "von": "Frankfurt Süd",
+    "nach": "Frankfurt Höchst",
+    "dauer": 30,
+    "farbe": "#0099FF",
+    "stationen": [
+      "Frankfurt Süd",
+      "Frankfurt Höchst"
+    ],
+    "coords": [
+      [
+        8.68,
+        50.09
+      ],
+      [
+        8.65,
+        50.1
+      ]
+    ]
+  },
+  "verkehrsmittel": [
+    "S-Bahn",
+    "Straßenbahn",
+    "Fähre"
+  ],
+  "stationen": [
+    "Frankfurt Ostbahnhof",
+    "Frankfurt Hbf",
+    "Frankfurt Höchst",
+    "Frankfurt Lokalbahnhof",
+    "Frankfurt Konstablerwache",
+    "Frankfurt Ost",
+    "Frankfurt Südbahnhof",
+    "Frankfurt Süd"
+  ]
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="exploreGeoStructures" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>ÖPNV-Rundfahrt Frankfurt (Strategie 1)</name>
+    <desc>ÖPNV-Rundfahrt Frankfurt - Strategie 1: Achsen-Strategie + Zeitliche Optimierung</desc>
+  </metadata>
+  
+  <!-- Hinweg (S-Bahn) -->
+  <trk>
+    <name>Hinweg: S-Bahn S8/S9</name>
+    <desc>Von: Frankfurt Hbf -> Nach: Frankfurt Ost, Dauer: 20 Minuten</desc>
+    <trkseg>
+      <trkpt lat="50.11" lon="8.68"></trkpt>
+      <trkpt lat="50.11" lon="8.69"></trkpt>
+      <trkpt lat="50.12" lon="8.72"></trkpt>
+    </trkseg>
+  </trk>
+  
+  <!-- Rückweg (Straßenbahn) -->
+  <trk>
+    <name>Rückweg: {route['rueckweg']['verkehrsmittel']}</name>
+    <desc>Von: {route['rueckweg']['von']} -> Nach: {route['rueckweg']['nach']}, Dauer: {route['rueckweg']['dauer']} Minuten</desc>
+    <trkseg>
+      <trkpt lat="50.12" lon="8.72"></trkpt>
+      <trkpt lat="50.11" lon="8.69"></trkpt>
+      <trkpt lat="50.1" lon="8.69"></trkpt>
+      <trkpt lat="50.09" lon="8.68"></trkpt>
+    </trkseg>
+  </trk>
+  
+  <!-- Erweiterung (Fähre) -->
+  <trk>
+    <name>Erweiterung: {route['erweiterung']['verkehrsmittel']}</name>
+    <desc>Von: {route['erweiterung']['von']} -> Nach: {route['erweiterung']['nach']}, Dauer: {route['erweiterung']['dauer']} Minuten</desc>
+    <trkseg>
+      <trkpt lat="50.09" lon="8.68"></trkpt>
+      <trkpt lat="50.1" lon="8.65"></trkpt>
+    </trkseg>
+  </trk>
+  
+  <!-- Stationen als Wegpunkte -->
+  <wpt lat="50.12" lon="8.72">
+    <name>Frankfurt Ostbahnhof</name>
+  </wpt>
+  <wpt lat="50.11" lon="8.68">
+    <name>Frankfurt Hbf</name>
+  </wpt>
+  <wpt lat="50.1" lon="8.65">
+    <name>Frankfurt Höchst</name>
+  </wpt>
+  <wpt lat="50.1" lon="8.69">
+    <name>Frankfurt Lokalbahnhof</name>
+  </wpt>
+  <wpt lat="50.11" lon="8.69">
+    <name>Frankfurt Konstablerwache</name>
+  </wpt>
+  <wpt lat="50.12" lon="8.72">
+    <name>Frankfurt Ost</name>
+  </wpt>
+  <wpt lat="50.09" lon="8.68">
+    <name>Frankfurt Südbahnhof</name>
+  </wpt>
+  <wpt lat="50.09" lon="8.68">
+    <name>Frankfurt Süd</name>
+  </wpt>
+</gpx>
