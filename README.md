@@ -11,7 +11,7 @@ Ein KI Assistent, der nach besonderen geographischen Strukturen und Bewegungsmus
 # Beispiele
 
 ## Ein einsamer Fußweg in Hamburg
-![Ein einsamer Fußweg in Hamburg](tasks\Fussweg\Strategie2\Fussweg2.jpg)
+![Ein einsamer Fußweg in Hamburg](tasks/Fussweg/Strategie2/Fussweg2.jpg)
 
 ## Die belebtesten Orte im Bezirk Pankow dienstag vormittags
 ![Die belebtesten Orte im Bezirk Pankow dienstag vormittags](tasks\belebteOrte\Strategie1\Ergebnis.jpg)
