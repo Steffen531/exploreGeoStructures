@@ -1,0 +1,11 @@
+{
+  "zeitstempel": "2026-09-30T18:20:53.723692",
+  "kml_datei": "tasks/ÖPNVRundfahrt/Strategie1/route_mit_strecken.kml",
+  "gpx_datei": "tasks/ÖPNVRundfahrt/Strategie1/route_mit_strecken.gpx",
+  "visualisierung": "https://umap.openstreetmap.de",
+  "hinweis": "Laden Sie die KML- oder GPX-Datei auf umap.openstreetmap.de hoch, um die Route zu visualisieren.",
+  "strecken": {
+    "hinweg": "S7",
+    "rueckweg": "11"
+  }
+}
