@@ -1,0 +1,52 @@
+{
+  "zeitstempel": "2026-09-30T13:23:26.541501",
+  "task": "Fußweg in Hamburg suchen",
+  "kriterien": {
+    "dauer": "~10 Minuten",
+    "zugaenglichkeit": "Nur zu Fuß",
+    "parallelwege": "Keine",
+    "abzweigungen": "Keine"
+  },
+  "datenquelle": "OpenStreetMap (Overpass API)",
+  "bereich": "Stadtpark Hamburg",
+  "schritte": {
+    "schritt1_daten_abrufen": {
+      "zeitstempel": "2026-09-30T13:09:08.269242",
+      "gesamt_weise": 1900,
+      "highway_typen": {
+        "footway": 1649,
+        "path": 251
+      },
+      "datenquelle": "Overpass API",
+      "bereich": "Stadtpark Hamburg (53.575-53.595N, 10.00-10.04E)"
+    },
+    "schritt2_laenge_filtern": {
+      "zeitstempel": "2026-09-30T13:13:10.547200",
+      "filter": "600-900m",
+      "gesamt_weise": 1900,
+      "gefilterte_weise": 8,
+      "laenge_m": {
+        "min": 0.47440838594187745,
+        "max": 774.5991105398099,
+        "mean": 52.412521460571625
+      }
+    },
+    "schritt3_geradheit_pruefen": {
+      "gesamt_weise": 8,
+      "gerade_weise": 3
+    },
+    "schritt4_parallelwege": {
+      "kandidaten_ohne_parallele": 1
+    },
+    "schritt5_abzweigungen": {
+      "kandidaten_ohne_abzweigungen": 2
+    }
+  },
+  "gewinner": {
+    "id": 41376998,
+    "laenge_m": 759.3619643153515,
+    "geradheit": 0.9667,
+    "abzweigungen": [],
+    "anzahl_abzweigungen": 0
+  }
+}

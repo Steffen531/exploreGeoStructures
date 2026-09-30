@@ -1,0 +1,10 @@
+{
+  "zeitstempel": "2026-09-30T13:09:08.269242",
+  "gesamt_weise": 1900,
+  "highway_typen": {
+    "footway": 1649,
+    "path": 251
+  },
+  "datenquelle": "Overpass API",
+  "bereich": "Stadtpark Hamburg (53.575-53.595N, 10.00-10.04E)"
+}

@@ -1,0 +1,59 @@
+Gute Idee. Lass uns erst die Lösungsansätze systematisch durchdenken, bevor wir etwas ausführen.
+
+## Das Problem strukturiert betrachtet
+
+Die vier Kriterien beschreiben zusammen einen sehr spezifischen Typ von städtischem Weg: einen **linearen, fussgängerexklusiven Korridor ohne Abzweigungen und ohne parallelen Verkehr**. Das ist geografisch ungewöhnlich, weil Städte normalerweise von einem Straßennetz durchzogen sind — Wege haben Kreuzungen, und neben Fußwegen verlaufen oft Straßen.
+
+## Ansatz 1: OpenStreetMap-Datenanalyse (Overpass API)
+
+**Idee:** OSM enthält alle Wege mit Tags (`highway=footway`, `highway=pedestrian`, `highway=steps`) sowie das gesamte Straßennetz, Radwege und Tram-Strecken. Man kann:
+- Alle Fußwege in Hamburg abfragen
+- Nach Länge filtern (~700–800m)
+- Prüfen, ob andere Wege (Straßen, Radwege, Tram) innerhalb von z.B. 50m parallel verlaufen
+- Prüfen, ob intermediate Nodes mit anderen Wegen geteilt werden (= Abzweigungen)
+
+**Stärken:** Präzise, reproduzierbar, alle Kriterien checkbar
+**Schwächen:** OSM-Daten unvollständig/fehlerhaft möglich; räumliche Analyse (Parallelität) ist rechenintensiv; "kein Abbiegen" ist topologisch schwierig zu definieren (wann ist eine Kreuzung eine Abbiegemöglichkeit vs. nur eine Querung?)
+
+## Ansatz 2: Geografische Struktur-Typen identifizieren
+
+**Idee:** Statt alle Wege zu durchsuchen, gezielt nach Stadtstrukturen suchen, die solche Wege *natürlich* erzeugen. Ein Weg ohne parallelen Verkehr und ohne Abzweigungen entsteht dort, wo das Gelände keinen Platz für anderes lässt:
+
+| Strukturtyp | Warum er passt | Hamburg-Beispiele |
+|---|---|---|
+| **Strand-/Uferwege** | Zwischen Wasser und Hang/Prallhang ist kein Platz für Straßen | Elbwanderweg Övelgönne–Wittenbergen, Falkensteiner Ufer |
+| **Treppenwege** | Zu steil für andere Verkehrsmittel | Blankenese Treppenviertel |
+| **Parkkorridore** | Grüne Schneisen durch die Stadt ohne Straßen | Wallanlagen, Alsterwanderweg |
+| **Deich-/Dammwege** | Auf dem Deich verläuft nur ein Weg | Hafenränder, Deichwege an Elbe/Alster |
+| **Historische Pfade** | Altstadtgassen, Wallgänge | Gängeviertel, historische Pfade |
+
+**Stärken:** Schnell, gezielt, nutzt Vorwissen über Stadtstruktur
+**Schwächen:** Findet nur bekannte Strukturen; verifiziert nicht automatisch alle Kriterien
+
+## Ansatz 3: Topologische Stadtanalyse
+
+**Idee:** Die Stadt als Graph betrachten. Fußwege, die keine Abzweigungen haben, sind Pfade im Graphen, deren intermediate Nodes alle den Grad 2 haben (also genau zwei Wege treffen sich — man kann nur geradeaus). Das ist ein reines Graph-Problem:
+- Baue den Fußwegen-Graphen von Hamburg
+- Finde alle Pfade (Sequenzen von Kanten), bei denen alle inneren Knoten Grad 2 haben
+- Filtere nach Länge und Fußgänger-Exklusivität
+- Prüfe auf parallelen Verkehr
+
+**Stärken:** Elegant; "kein Abbiegen" wird mathematisch exakt (Graphengrad = 2)
+**Schwächen:** Sehr rechenintensiv für eine ganze Stadt; benötigt kompletten Graph
+
+## Ansatz 4: Kombinierter Ansatz (empfohlen)
+
+1. **Struktur-Typen** als Kandidaten identifizieren (Ansatz 2) — z.B. "Elbwanderweg zwischen Övelgönne und Blankenese", "Alsterwanderweg-Abschnitt", "Wallanlagen-Pfad"
+2. **Gezielt verifizieren** mit OSM-Daten (Ansatz 1/3) — nur für die Kandidaten, nicht für ganz Hamburg
+3. **Karte/Streetview prüfen** — visuelle Bestätigung
+
+## Meine Einschätzung der Kandidaten für Hamburg
+
+Die vielversprechendsten Kandidaten für einen Weg, der *alle* Kriterien erfüllt:
+
+- **Strandweg am Elbstrand Övelgönne → Blankenese** — verläuft auf dem Strand zwischen Wasser und Hang, kein Platz für Straßen. Ca. 1–2 km, aber ein Abschnitt davon könnte ~10 Min sein.
+- **Falkensteiner Ufer** — Uferweg in Wittenbergen, nur für Fußgänger, zwischen Wasser und Wald/Hang
+- **Bestimmte Treppenwege im Treppenviertel Blankenese** — aber diese sind meist eher kurz (einige hundert Meter)
+- **Alsterwanderweg-Abschnitte** — müsste geprüft werden, ob parallele Straßen existieren
+
+Möchtest du, dass ich einen dieser Ansätze ausführe — z.B. zuerst die Struktur-Kandidaten mit OSM-Daten verifiziere? Oder willst du erst weitere Kriterien oder Städte diskutieren?

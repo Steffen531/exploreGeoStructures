@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fußweg-Suche Hamburg - Ergebnis</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { height: 80vh; width: 100%; }
+        .info {
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .info h1 { margin-top: 0; }
+        .info table { border-collapse: collapse; width: 100%; }
+        .info td, .info th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .info th { background: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1>Gefundener Fußweg in Hamburg</h1>
+        <table>
+            <tr><th>Eigenschaft</th><th>Wert</th></tr>
+            <tr><td>OSM ID</td><td>41376998</td></tr>
+            <tr><td>Länge</td><td>759.4m (~10 Minuten)</td></tr>
+            <tr><td>Geradheit</td><td>0.9667 (1.0 = perfekt gerade)</td></tr>
+            <tr><td>Parallele Wege</td><td>Keine</td></tr>
+            <tr><td>Abzweigungen</td><td>Keine</td></tr>
+            <tr><td>Ort</td><td>Stadtpark Hamburg</td></tr>
+        </table>
+    </div>
+    <div id="map"></div>
+    <script>
+        var map = L.map('map').setView([53.576168546341464, 10.000840965853659], 16);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+        
+        var coords = [[9.998626, 53.5792007], [9.9986567, 53.579195], [9.9987211, 53.5791852], [9.9987765, 53.5791682], [9.9988788, 53.5791283], [9.9990051, 53.5790548], [9.9990791, 53.5789961], [9.9991787, 53.5789216], [9.9992832, 53.5788473], [9.9994553, 53.5787102], [9.9995304, 53.5786577], [9.9996191, 53.5785405], [9.9997686, 53.5783297], [10.0001022, 53.5778823], [10.0002021, 53.5777422], [10.0007027, 53.5769136], [10.0007792, 53.5767738], [10.0008541, 53.5766359], [10.0008127, 53.5765942], [10.0009591, 53.576361], [10.0011228, 53.5761253], [10.0012054, 53.5760142], [10.0015878, 53.5753823], [10.0018015, 53.5749147], [10.0018637, 53.5747619], [10.0019095, 53.5746308], [10.001911, 53.5745484], [10.0018819, 53.5744275], [10.0018614, 53.5743281], [10.0018622, 53.574171], [10.0019081, 53.5739315], [10.0020136, 53.573736], [10.0020377, 53.5736475], [10.0020872, 53.5735866], [10.0021688, 53.5735312], [10.0022281, 53.573508], [10.0022941, 53.5734848], [10.0023493, 53.573475], [10.0024058, 53.5734781], [10.0024538, 53.5733687], [10.0025352, 53.5730205]];
+        var latlngs = coords.map(function(c) { return [c[1], c[0]]; });
+        
+        L.polyline(latlngs, {
+            color: 'red',
+            weight: 5,
+            opacity: 0.8
+        }).addTo(map);
+        
+        L.marker(latlngs[0]).addTo(map)
+            .bindPopup('Start');
+        L.marker(latlngs[latlngs.length-1]).addTo(map)
+            .bindPopup('Ende');
+        
+        map.fitBounds(L.latLngBounds(latlngs));
+    </script>
+</body>
+</html>

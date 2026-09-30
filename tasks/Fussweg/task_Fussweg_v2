@@ -1,0 +1,10 @@
+Ich suche einen Fußweg in Hamburg mit folgenden Eigenschaften:
+* er dauert etwa 10 Minuten
+* man kann ihn nur zu Fuß gehen
+* es gibt keine parallel verlaufenden anderen Verkehrswege wie Straßen, Radwege oder Strassenbahntrassen
+* man kann auf dem Weg nicht abbiegen
+* man kann den Weg aus der Umgebung nicht einsehen
+
+# Folgetask zu gefundenem Weg
+Was sind die nächstgelegenen Haltestellen des ÖPNV zum Start- und Endpunkt des Weges. 
+Es werden schienengebundene Verkehrsmittel bevorzugt.
