@@ -5,244 +5,74 @@ description: Findet ungewöhnliche, isolierte Fußwege in beliebigen Städten, S
 
 # Skill: Isolierte Fußwege finden
 
-## Beschreibung
-Findet ungewöhnliche, isolierte Fußwege in beliebigen Städten, Stadtteilen oder Orten weltweit. Ein "isolierter Fußweg" ist ein Weg, der:
-- Eine bestimmte Gehzeit hat (Standard: ~10 Minuten, konfigurierbar)
-- Nur zu Fuß begehbar ist
-- Keine parallel verlaufenden anderen Verkehrswege hat (Straßen, Radwege, Straßenbahntrassen)
-- Keine Abzweigungen hat (man kann nicht abbiegen)
+Findet ungewöhnliche, isolierte Fußwege in einer vom Nutzer genannten Region.
+Ein isolierter Fußweg: bestimmte Gehzeit (Standard ~10 Minuten), nur zu Fuß
+begehbar, keine parallel verlaufenden Verkehrswege, keine Abzweigungen,
+möglichst geradlinig und ohne einen Punkt zweimal zu besuchen.
 
-## Strategie: Kombinierter Ansatz (4 Phasen)
+## Eingaben
 
-Der kombinierter Ansatz nutzt geografisches Vorwissen, um Kandidaten zu identifizieren, und verifiziert diese gezielt mit OSM-Daten. So wird die Suche effizient und die Ergebnisse präzise.
+- **Region** (Pflicht): Stadt, Stadtteil, Ort oder Bounding Box (S, W, N, E)
+- Optional: Gehzeitfenster (`--min-length`/`--max-length`), Geradheitsschwelle
+  (`--straightness`), Puffer (`--buffer`), `--output`
 
-### Phase 1: Regionale Strukturtypen identifizieren
-Geeignete Strukturtypen hängen von der **geografischen Region** ab. Wähle passende Typen:
+**Dateien dieses Skills** (Pfade relativ zum Skill-Verzeichnis):
 
-| Region | Strukturtyp | Warum er passt |
-|--------|-------------|----------------|
-| **Küsten** | Strand-/Uferwege | Zwischen Wasser und Hang kein Platz für Straßen |
-| **Küsten** | Deich-/Dammwege | Nur ein Weg auf dem Deich |
-| **Bergregionen** | Treppenwege | Zu steil für andere Verkehrsmittel |
-| **Bergregionen** | Bergpfade / Wanderwege | Abgelegene Lage, keine Straßen |
-| **Flussufer** | Flussuferwege | Zwischen Wasser und Hang/Prallhang |
-| **Flussufer** | Brücken-Zugänge | Nur ein Weg zur Brücke |
-| **Parks / Grünflächen** | Parkkorridore | Grüne Schneisen ohne Straßen |
-| **Parks / Grünflächen** | Botanische Gärten | Wege ohne parallelen Verkehr |
-| **Historische Altstädte** | Historische Pfade | Gängeviertel, Wallgänge |
-| **Historische Altstädte** | Gassen / Alleen | Ohne Straßenverkehr |
-| **Inseln** | Küstenpfade | Uferweg ohne Straßen |
-| **Wüsten / Trockenregionen** | Oasen-Pfade | Zwischen Palmen/Quellen |
-| **Wüsten / Trockenregionen** | Wadis | Trockene Flussbetten ohne Straßen |
-| **Lakenseen** | Uferpromenaden | Weg entlang des Ufers |
-| **Lakenseen** | Inselverbindungen | Fußgängerbrücken |
-| **Industriegebiete** | Hafenränder | Wege entlang von Kaianlagen |
-| **Industriegebiete** | Eisenbahn-Parallelwege | Abgelegene Gleisbereiche |
-| **Vororte** | Durchgangswege | Zwischen Nachbarschaften |
-| **Vororte** | Schulwege | Direkte Verbindungen ohne Straßen |
+| Datei | Inhalt |
+|---|---|
+| `reference/learnings.md` | Erfahrungsspeicher – vor Schritt 1 lesen, nach Schritt 8 ergänzen |
+| `reference/strukturtypen.md` | Regionale Strukturtypen als Suchvorwissen |
+| `reference/datenquellen.md` | Overpass/Nominatim: Server, Filter, Abfrageregeln |
+| `reference/kriterien.md` | Prüfkriterien, Schwellen, Entschärfungsreihenfolge |
+| `reference/fussweg_suche.py` | Skriptvorlage |
 
-**Hinweis:** Die Tabelle ist nicht vollständig. Passe die Strukturtypen an die spezifische Region an.
+## Prozess
 
-### Phase 2: Kandidaten gezielt mit OSM-Daten verifizieren
-Nutze die **Overpass API** für OpenStreetMap-Daten:
-- **Server** (Fallback-Reihenfolge):
-  - `https://overpass-api.de/api/interpreter`
-  - `https://overpass.kumi.systems/api/interpreter`
-  - `https://maps.mail.ru/osm/tools/overpass/api/interpreter`
-- **Filter**: `highway=footway`, `highway=path`, `highway=pedestrian`, `highway=steps`
-- **Region**: Bounding Box um den Kandidaten (nicht die ganze Stadt!)
+1. **Learnings lesen.** `reference/learnings.md` komplett lesen und Hinweise
+   für die Ziel-Region übernehmen (bewährte Strukturtypen, Serverbesonderheiten,
+   Schwellen) – sie gelten als Kontext für die Schritte 2–7.
+2. **Region analysieren.** `reference/strukturtypen.md` laden und passende
+   Strukturtypen für die Region wählen (z. B. Küste → Deichwege, Vorort →
+   Durchgangswege) – das ist das Suchvorwissen für Schritt 4.
+3. **Region eingrenzen.** BBox um den Kandidaten bzw. den Stadtteil legen
+   (nie die ganze Stadt abfragen); Ortsnamen gemäß `reference/datenquellen.md`
+   (§Nominatim) auflösen.
+4. **OSM-Daten abrufen.** `reference/datenquellen.md` laden und deren
+   Abschnitte anwenden: Overpass mit Fallback-Servern und den Filtern
+   `highway=footway|path|pedestrian|steps`, eigener User-Agent, keine
+   rekursiven Großabfragen. Als Vorlage: `reference/fussweg_suche.py`.
+5. **Kriterien prüfen.** `reference/kriterien.md` laden und **alle**
+   Kriterien anwenden: Länge (Haversine), Geradheit (harter Filter ≥ 0.95),
+   kein Punkt zweimal (`LineString.is_simple` + eindeutige Stützpunkte),
+   Parallelwege (metrischer Puffer, ≤ 35 %), Abzweigungen (0 innere).
+   Nicht bestandene Kandidaten verwerfen und mit Grund protokollieren.
+6. **Rangieren und exportieren.** Verbliebene Kandidaten nach Isolation und
+   Geradheit ranken (geradeste/wegeisolierteste zuerst) und wie in „Output"
+   beschrieben nach `--output` schreiben.
+7. **Bei Problemen** (0 Treffer, Overpass-Fehler): `reference/kriterien.md`
+   (§Ohne Treffer) konsultieren und dort gereiht entschärfen – Kriterien
+   nicht stillschweigend aufweichen.
+8. **Feedback holen und Learnings schreiben (Wrap-up).** Nach dem Export dem
+   Nutzer mit dem `question`-Tool zwei Fragen stellen:
+   - Bewertung: **1–5** (Optionen „1 – sehr schlecht" bis „5 – sehr gut")
+   - „Was war nicht gut? Was soll beim nächsten Lauf anders machen?" (Freitext,
+     optional)
+   Dann `reference/learnings.md` aktualisieren: **1–3 Sätze** unter
+   „Was nicht lief" (bei konkreten Hinweisen) bzw. „Was gut lief" (bei
+   Rating 5 ohne Einwände), immer mit Region und Datum. Bewertung 2–4 ohne
+   Freitext → den Grund als offene Frage eintragen. Einträge nie löschen,
+   nur bei ~20 Einträgen aufräumen (Regeln in `reference/learnings.md`).
 
-### Phase 3: Kriterien prüfen
-- **Länge**: Berechne die Länge jedes Weges mit der Haversine-Formel
-  - Standard: 600-900m (~10 Minuten bei 60-80m/min)
-  - Anpassbar über Parameter
-- **Geradheit**: Berechne das Verhältnis aus direkter Distanz (Start→Ende) zur tatsächlichen Weglänge
-  - Standard-Schwelle: ≥ 0.95 (sehr gerade)
-  - 1.0 = perfekt gerade
-- **Parallelwege**: Erstelle einen Puffer um den Kandidaten (Standard: 50m)
-  - Prüfe, ob andere Verkehrswege im Puffer liegen
-  - Ausschluss von Wegen mit parallelen Straßen/Radwegen/Tram
-- **Abzweigungen**: Topologische Analyse: Prüfe, ob Start- oder Endpunkte des Kandidaten mit anderen Wegen verbunden sind
-  - Kandidaten ohne Verbindungen zu anderen Wegen sind isoliert
+## Output
 
-### Phase 4: Ergebnis exportieren
-- **GeoJSON**: Alle Kandidaten mit Eigenschaften
-- **KML**: Für Google Earth
-- **GPX**: Für GPS-Geräte
+Im Ausgabeverzeichnis (`--output`):
 
-## Umsetzung
+- `ergebnis.geojson` – alle bestandenen Kandidaten mit Eigenschaften
+  (Länge, Gehzeit, Geradheit, Parallel-Anteil, Abzweigungen)
+- `ergebnis.kml` – Linien je Kandidat, Style-Block, für Google Earth
+- `ergebnis.gpx` – Tracks für GPS-Geräte
+- `zusammenfassung.json` – Statistik, verworfene Kandidaten mit Grund
 
-### Python-Skriptstruktur
-
-```python
-#!/usr/bin/env python3
-"""
-Isolierte Fußwege finden – Kombinierter Ansatz
-1. Regionale Strukturtypen identifizieren
-2. Kandidaten gezielt mit OSM-Daten verifizieren
-3. Kriterien prüfen (Länge, Geradheit, Parallelwege, Abzweigungen)
-4. Ergebnis exportieren
-"""
-
-import requests
-import json
-import math
-import argparse
-from datetime import datetime
-
-# Konfiguration
-OVERPASS_SERVERS = [
-    "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter",
-    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-]
-
-# Regionale Strukturtypen (Beispiel)
-REGIONAL_STRUCTURE_TYPES = {
-    "küste": ["strand", "ufer", "deich", "damm"],
-    "berg": ["treppe", "pfad", "wanderweg"],
-    "fluss": ["ufer", "brücke", "deich"],
-    "park": ["korridor", "garten", "allee"],
-    "altstadt": ["gang", "gasse", "wall"],
-    "insel": ["küstenpfad", "ufer"],
-    "wüste": ["oase", "wadi"],
-    "see": ["ufer", "promenade", "brücke"],
-    "industrie": ["hafen", "gleis"],
-    "vorort": ["durchgang", "schulweg"],
-}
-
-def identify_regional_candidates(region_type, place):
-    """Kandidaten basierend auf regionalen Strukturtypen identifizieren."""
-    # ... Implementierung: Nutze regionale Strukturtypen, um Kandidaten zu finden
-    pass
-
-def fetch_osm_data(bbox=None, place=None):
-    """OSM-Daten von Overpass API abrufen."""
-    if bbox:
-        bbox_str = f"({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]})"
-    elif place:
-        # Nominatim für Geocoding
-        bbox_str = f'area["name"="{place}"]->.searchArea;'
-    
-    query = f"""
-    [out:json][timeout:60];
-    (
-      way["highway"="footway"]{bbox_str};
-      way["highway"="path"]{bbox_str};
-      way["highway"="pedestrian"]{bbox_str};
-      way["highway"="steps"]{bbox_str};
-    );
-    out body;
-    >;
-    out skel qt;
-    """
-    # ... Anfrage senden und GeoJSON erstellen
-
-def haversine_distance(coord1, coord2):
-    """Distanz zwischen zwei Koordinaten in Metern."""
-    R = 6371000
-    lon1, lat1 = coord1
-    lon2, lat2 = coord2
-    phi1, phi2 = math.radians(lat1), math.radians(lat2)
-    dphi = math.radians(lat2 - lat1)
-    dlambda = math.radians(lon2 - lon1)
-    a = math.sin(dphi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda/2)**2
-    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-
-def calculate_length(coords):
-    """Weglänge in Metern berechnen."""
-    return sum(haversine_distance(coords[i], coords[i+1]) for i in range(len(coords)-1))
-
-def calculate_straightness(coords):
-    """Geradheit berechnen (1.0 = perfekt gerade)."""
-    if len(coords) < 2:
-        return 0.0
-    direct = haversine_distance(coords[0], coords[-1])
-    actual = calculate_length(coords)
-    return direct / actual if actual > 0 else 0.0
-
-def find_parallel_ways(candidate, all_ways, buffer_m=50):
-    """Parallele Wege im Puffer finden."""
-    # ... Implementierung
-
-def find_connections(candidate, all_ways):
-    """Abzweigungen finden (gemeinsame Endpunkte)."""
-    # ... Implementierung
-
-def main():
-    parser = argparse.ArgumentParser(description="Isolierte Fußwege finden – Kombinierter Ansatz")
-    parser.add_argument("--place", type=str, help="Ort oder Stadt (z.B. 'Hamburg, Deutschland')")
-    parser.add_argument("--bbox", type=float, nargs=4, metavar=("S", "W", "N", "E"), help="Bounding Box")
-    parser.add_argument("--region-type", type=str, choices=["küste", "berg", "fluss", "park", "altstadt", "insel", "wüste", "see", "industrie", "vorort"], help="Geografischer Regionstyp")
-    parser.add_argument("--min-length", type=int, default=600, help="Minimale Länge in Metern")
-    parser.add_argument("--max-length", type=int, default=900, help="Maximale Länge in Metern")
-    parser.add_argument("--straightness", type=float, default=0.95, help="Minimale Geradheit (0-1)")
-    parser.add_argument("--buffer", type=int, default=50, help="Puffer für Parallelwege in Metern")
-    parser.add_argument("--output", type=str, default="ergebnis", help="Ausgabeverzeichnis")
-    
-    args = parser.parse_args()
-    # ... Hauplogik
-
-if __name__ == "__main__":
-    main()
-```
-
-### Verwendungsbeispiele
-
-```bash
-# Fußwege in Hamburg finden (kombinierter Ansatz)
-python fussweg_suche.py --place "Hamburg, Deutschland" --region-type küste --output results/hamburg
-
-# Fußwege in einem bestimmten Stadtteil
-python fussweg_suche.py --place "Blankenese, Hamburg" --region-type küste --output results/blankenese
-
-# Fußwege in einer Bounding Box
-python fussweg_suche.py --bbox 53.575 10.00 53.595 10.04 --output results/stadtpark
-
-# Andere Parameter
-python fussweg_suche.py --place "München, Deutschland" --region-type park \
-    --min-length 500 --max-length 1200 \
-    --straightness 0.90 --buffer 30 \
-    --output results/muenchen
-```
-
-## Parameter
-
-| Parameter | Standard | Beschreibung |
-|----------|----------|-------------|
-| `--place` | – | Ort oder Stadt (z.B. "Hamburg, Deutschland") |
-| `--bbox` | – | Bounding Box (Süd, West, Nord, Ost) |
-| `--region-type` | – | Geografischer Regionstyp (küste, berg, fluss, park, altstadt, insel, wüste, see, industrie, vorort) |
-| `--min-length` | 600 | Minimale Weglänge in Metern |
-| `--max-length` | 900 | Maximale Weglänge in Metern |
-| `--straightness` | 0.95 | Minimale Geradheit (0-1) |
-| `--buffer` | 50 | Puffer für Parallelwege in Metern |
-| `--output` | ergebnis | Ausgabeverzeichnis |
-
-## Ausgabe
-
-- `ergebnis.geojson` – Alle Kandidaten als GeoJSON
-- `ergebnis.kml` – Für Google Earth
-- `ergebnis.gpx` – Für GPS-Geräte
-- `zusammenfassung.json` – Statistiken und Metadaten
-
-## Tipps
-
-1. **Für große Städte**: Nutze eine Bounding Box statt `--place`, um die Abfrage zu begrenzen
-2. **Für bessere Ergebnisse**: Erhöhe `--straightness` auf 0.98 für sehr gerade Wege
-3. **Für mehr Kandidaten**: Erhöhe `--buffer` auf 100m oder mehr
-4. **Für andere Gehzeiten**: Passe `--min-length` und `--max-length` an (z.B. 300-500m für 5 Minuten)
-5. **Regionale Anpassung**: Wähle den passenden `--region-type` für die geografische Region, um bessere Kandidaten zu erhalten
-6. **Kombinierter Ansatz**: Nutze geografisches Vorwissen, um Kandidaten zu identifizieren, und verifiziere diese gezielt mit OSM-Daten
-
-## Nächste Schritte
-
-1. [ ] Python-Skript mit argparse erstellen
-2. [ ] Regionale Strukturtypen identifizieren (Phase 1)
-3. [ ] Overpass API Anfrage für Kandidaten implementieren (Phase 2)
-4. [ ] Längenberechnung mit Haversine (Phase 3)
-5. [ ] Geradheitsberechnung (Phase 3)
-6. [ ] Parallelweg-Prüfung mit Puffer (Phase 3)
-7. [ ] Abzweigungs-Prüfung (Topologie) (Phase 3)
-8. [ ] GeoJSON/KML/GPX Export (Phase 4)
-9. [ ] Parameter über Kommandozeile
+Danach dem Nutzer die Kartenanleitung geben: [umap.openstreetmap.de](https://umap.openstreetmap.de)
+→ ☰ → „Daten importieren" → GeoJSON wählen (oder Drag & Drop) → „als neue
+Ebene" → Karte teilen.
