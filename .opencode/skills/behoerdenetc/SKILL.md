@@ -5,233 +5,97 @@ description: Findet Behörden, Polizeidienststellen und Botschaften in beliebige
 
 # Skill: Behörden, Polizei & Botschaften finden
 
-## Beschreibung
-Findet Behörden, Polizeidienststellen und Botschaften in beliebigen Städten oder Stadtteilen weltweit. Der Nutzer gibt die geographische Region vor. Der Skill passt die Strategie automatisch an die verfügbaren Datenquellen an.
+Findet Behörden, Polizeidienststellen, Botschaften und Konsulate in einer vom
+Nutzer genannten Region. Datenquellen (OSM, Register/Open Data, Wikidata) werden
+kombiniert, auf die Stadtgrenze gefiltert, bereinigt und als Karte exportiert.
+Das Verzeichnis `tasks/` ignorieren.
 
-Ignoriere das Verzeichnis tasks.
+## Eingaben
 
-## Landes-Referenzen (vor der Abfrage lesen!)
+- **Region** (Pflicht): Stadt, Stadtteil oder Bounding Box
+- Optional: `--qid` (Wikidata-QID des Ortes), `--register-city`,
+  `--output` (Ausgabeverzeichnis, Standard `ergebnis`)
 
-Bevor Phase 1 gestartet wird, prüfen, ob für das Ziel-Land eine Referenzdatei
-unter `reference/` liegt – diese enthält die erprobten Datenquellen, Endpunkte,
-QIDs, Filter und Merge-Schwellen und ersetzt das Probieren in Phase 1/2.
+**Dateien dieses Skills** (Pfade relativ zum Skill-Verzeichnis):
 
-| Land | Datei |
-|------|-------|
-| Niederlande (NL), z. B. Leiden, Utrecht, Amsterdam, Den Haag | `reference/niederlande.md` |
+| Datei | Inhalt |
+|---|---|
+| `reference/learnings.md` | Erfahrungsspeicher – vor Schritt 1 lesen, nach Schritt 9 ergänzen |
+| `reference/datenquellen.md` | Endpunkte, OSM-Filter, Abfrageregeln |
+| `reference/merge-regeln.md` | Deduplizierung, Name, Kategorie, Koordinaten |
+| `reference/fehlerbehandlung.md` | Edge Cases und Sonderfälle |
+| `reference/niederlande.md` | Landes-Referenz NL (Vorrang vor den anderen) |
+| `reference/behoerden_suche.py` | Skriptvorlage |
 
-## Strategie: Kombinierte Quellen (Strategie 4)
+## Prozess
 
-Der kombinierter Ansatz nutzt mehrere Datenquellen, um die bestmögliche Abdeckung zu erreichen. Die Strategie wird dynamisch an die Region angepasst.
+1. **Learnings lesen.** `reference/learnings.md` komplett lesen und alle
+   Hinweise für die Ziel-Region übernehmen (bekannte Fallstricke, bewährte
+   Quellen, offene Fragen) – sie gelten als Kontext für die Schritte 2–8.
+2. **Landes-Referenz prüfen.** Für das Ziel-Land existiert eine Referenzdatei
+   (NL → `reference/niederlande.md`), dann deren Quellen, QIDs, Filter und
+   Rauschfilter laden – sie hat Vorrang gegenüber den Angaben in Schritt 4 und
+   6, soweit abweichend (Merge-Schwellen für NL: `reference/merge-regeln.md`,
+   dort verifiziert). Keine Referenz → normal weiter.
+3. **Stadtgrenze bestimmen (Pflicht).** Nominatim-Regeln aus
+   `reference/datenquellen.md` (§Nominatim) anwenden und die Grenze mit
+   `polygon_geojson=1` holen. Die Bounding Box allein reicht nie – sie enthält
+   Nachbarorte.
+4. **Daten abrufen.** `reference/datenquellen.md` laden und deren Abschnitte
+   anwenden: OSM/Overpass mit den Standardfiltern, vorhandenes Register bzw.
+   Open Data ergänzend, Wikidata/SPARQL als Ergänzung. Fallback, Caching und
+   QID-Verifikation wie dort beschrieben.
+5. **Auf die Region filtern.** Jeden Treffer mit Koordinaten aus Schritt 4 mit
+   shapely `contains()` gegen das Polygon aus Schritt 3 prüfen; ausgeschlossene
+   Treffer loggen. Koordinatenlose Treffer behalten und später zählen.
+6. **Zusammenführen.** `reference/merge-regeln.md` laden und alle Regeln
+   anwenden: Deduplizierung mit den Schwellen der Landes-Referenz, kanonischer
+   Name, Kategorie-Zuweisung, Koordinaten-Priorität.
+7. **Exportieren** wie in „Output" beschrieben nach `--output` schreiben.
+8. **Bei Problemen** (leere Treffer, fremde Treffer, unbekannte Region):
+   `reference/fehlerbehandlung.md` laden und den passenden Eintrag ausführen.
+9. **Feedback holen und Learnings schreiben (Wrap-up).** Nach dem Export dem
+   Nutzer mit dem `question`-Tool zwei Fragen stellen:
+   - Bewertung: **1–5** (Optionen „1 – sehr schlecht" bis „5 – sehr gut")
+   - „Was war nicht gut? Was soll beim nächsten Lauf anders machen?" (Freitext,
+     optional)
+   Dann `reference/learnings.md` aktualisieren: **1–3 Sätze** unter
+   „Was nicht lief" (bei konkreten Hinweisen) bzw. „Was gut lief" (bei
+   Rating 5 ohne Einwände), immer mit Region und Datum. Bewertung 2–4 ohne
+   Freitext → den Grund als offene Frage eintragen. Einträge nie löschen,
+   nur bei ~20 Einträgen aufräumen (Regeln in `reference/learnings.md`).
 
-### Phase 1: Region analysieren und Datenquellen prüfen
+## Output
 
-| Datenquelle | Verfügbarkeit | Relevante Tags/Felder |
-|-------------|---------------|----------------------|
-| **OpenStreetMap (Overpass API)** | Weltweit verfügbar | `amenity=police`, `amenity=embassy`, `office=government`, `building=government` |
-| **Offizielle Open Data** | Stadt/Land-spezifisch | Variiert nach Stadt (z.B. data.wien.gv.at, data.gov.uk, etc.) |
-| **Wikidata / Wikipedia** | Weltweit verfügbar | Strukturierte Daten, gut für Botschaften & internationale Einrichtungen |
+Im Ausgabeverzeichnis (`--output`):
 
-**Anpassungslogik:**
-- **Stadt mit Open Data Portal** → Nutze OSM + Open Data + Wikidata (volle Strategie 4)
-- **Stadt ohne Open Data Portal** → Nutze OSM + Wikidata (Strategie 4 ohne Open Data)
-- **Land mit nationalem Open Data** → Nutze OSM + nationales Open Data + Wikidata
-- **Entwickeltes Land / keine Daten** → Nutze OSM + Wikidata, ggf. manuelle Recherche
+- `ergebnis.geojson` – alle Funde, inkl. `geometry: null` für koordinatenlose
+- `ergebnis.kml` – Ordner je Kategorie, Style-Block `#pin`, für Google Earth
+- `ergebnis.gpx` – für GPS-Geräte
+- `zusammenfassung.json` – Statistiken, Deduplizierung, ausgeschlossene Punkte
 
-### Phase 2: Daten abrufen
+Danach dem Nutzer die Kartenanleitung geben: [umap.openstreetmap.de](https://umap.openstreetmap.de)
+→ ☰ → „Daten importieren" → GeoJSON wählen (oder Drag & Drop) → „als neue
+Ebene" → Karte teilen.
 
-#### 2a: OpenStreetMap (Overpass API)
-- **Server** (Fallback-Reihenfolge):
-  - `https://overpass-api.de/api/interpreter`
-  - `https://overpass.kumi.systems/api/interpreter`
-  - `https://maps.mail.ru/osm/tools/overpass/api/interpreter`
-- **Filter**: `amenity=police`, `amenity=embassy`, `office=government`, `building=government`
-- **Region**: Bounding Box oder Stadtname
+## Skript
 
-#### 2b: Offizielle Open Data (falls verfügbar)
-- **Stadt-spezifische Portale**: Prüfe, ob die Stadt ein Open Data Portal hat
-- **Beispiele**:
-  - Wien: `data.wien.gv.at`
-  - London: `data.gov.uk`
-  - Berlin: `daten.berlin.de`
-  - New York: `opendata.cityofnewyork.us`
-- **API/Format**: CSV, GeoJSON, WFS, oder API-Abfrage
-
-#### 2c: Wikidata (SPARQL)
-- **Endpoint**: `https://query.wikidata.org/sparql`
-- **Abfrage**: Suche nach Behörden, Polizei, Botschaften in der Region
-- **Vorteile**: Gut für internationale Einrichtungen und Botschaften
-
-### Phase 3: Daten zusammenführen und bereinigen
-
-1. **Duplikatbereinigung**: Entferne doppelte Einträge (gleiche Adresse/Name)
-2. **Geocodierung**: Fehlende Koordinaten ergänzen (Nominatim oder similar)
-3. **Kategorisierung**: Einteilung in:
-   - Behörden & Regierungsgebäude
-   - Polizeidienststellen
-   - Botschaften & Konsulate
-   - Internationale Einrichtungen
-4. **Qualitätsprüfung**: Vollständigkeit der Adressen und Kontaktdaten
-
-### Phase 4: Ergebnis exportieren
-
-- **GeoJSON**: Alle Funde mit Eigenschaften
-- **KML**: Für Google Earth
-- **GPX**: Für GPS-Geräte
-- **JSON**: Strukturierte Daten mit Metadaten
-
-## Umsetzung
-
-### Python-Skriptstruktur
-
-```python
-#!/usr/bin/env python3
-"""
-Behörden, Polizei & Botschaften finden – Kombinierte Quellen
-1. Region analysieren und Datenquellen prüfen
-2. Daten abrufen (OSM + Open Data + Wikidata)
-3. Daten zusammenführen und bereinigen
-4. Ergebnis exportieren
-"""
-
-import requests
-import json
-import argparse
-from datetime import datetime
-
-# Konfiguration
-OVERPASS_SERVERS = [
-    "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter",
-    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-]
-
-WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql"
-
-# Open Data Portale (Beispiele, erweitern nach Bedarf)
-OPEN_DATA_PORTALS = {
-    "wien": "https://www.data.gv.at/katalog/dataset?tags=beh%C3%B6rden",
-    "berlin": "https://daten.berlin.de/",
-    "london": "https://data.gov.uk/",
-    "new york": "https://opendata.cityofnewyork.us/",
-    # Weitere Städte hier hinzufügen
-}
-
-def check_open_data_availability(city):
-    """Prüfe, ob Open Data für die Stadt verfügbar ist."""
-    city_lower = city.lower()
-    for key, portal in OPEN_DATA_PORTALS.items():
-        if key in city_lower:
-            return portal
-    return None
-
-def fetch_osm_data(bbox=None, place=None):
-    """OSM-Daten von Overpass API abrufen."""
-    if bbox:
-        bbox_str = f"({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]})"
-    elif place:
-        bbox_str = f'area["name"="{place}"]->.searchArea;'
-    
-    query = f"""
-    [out:json][timeout:60];
-    (
-      node["amenity"="police"]{bbox_str};
-      node["amenity"="embassy"]{bbox_str};
-      node["office"="government"]{bbox_str};
-      node["building"="government"]{bbox_str};
-      way["amenity"="police"]{bbox_str};
-      way["amenity"="embassy"]{bbox_str};
-      way["office"="government"]{bbox_str};
-      way["building"="government"]{bbox_str};
-    );
-    out center;
-    """
-    # ... Anfrage senden und GeoJSON erstellen
-
-def fetch_wikidata(place):
-    """Wikidata via SPARQL abfragen."""
-    query = f"""
-    SELECT ?item ?itemLabel ?coord ?address WHERE {{
-      ?item wdt:P31/wdt:P279* wd:Q2555642 .  # Behörden
-      ?item wdt:P17 ?country .
-      ?item wdt:P625 ?coord .
-      SERVICE wikibase:label {{ bd:serviceParam wikibase:language "de,en". }}
-    }}
-    LIMIT 100
-    """
-    # ... Anfrage senden
-
-def merge_and_deduplicate(osm_data, open_data, wikidata):
-    """Daten zusammenführen und Duplikate entfernen."""
-    # ... Implementierung
-
-def main():
-    parser = argparse.ArgumentParser(description="Behörden, Polizei & Botschaften finden")
-    parser.add_argument("--place", type=str, required=True, help="Stadt oder Stadtteil (z.B. 'Wien, Österreich')")
-    parser.add_argument("--bbox", type=float, nargs=4, metavar=("S", "W", "N", "E"), help="Bounding Box")
-    parser.add_argument("--output", type=str, default="ergebnis", help="Ausgabeverzeichnis")
-    
-    args = parser.parse_args()
-    
-    # Phase 1: Region analysieren
-    open_data_portal = check_open_data_availability(args.place)
-    
-    # Phase 2: Daten abrufen
-    osm_data = fetch_osm_data(args.bbox, args.place)
-    wikidata = fetch_wikidata(args.place)
-    
-    # Phase 3: Zusammenführen
-    merged = merge_and_deduplicate(osm_data, open_data_portal, wikidata)
-    
-    # Phase 4: Exportieren
-    # ...
-
-if __name__ == "__main__":
-    main()
-```
-
-### Verwendungsbeispiele
+`reference/behoerden_suche.py` ist die Vorlage für Schritt 4, 6 und 7:
 
 ```bash
-# Behörden in Wien finden
-python behoerden_suche.py --place "Wien, Österreich" --output results/wien
+# Stadt
+.venv/bin/python reference/behoerden_suche.py \
+  --place "Wien, Österreich" --output results/wien
 
-# Behörden in einem Stadtteil
-python behoerden_suche.py --place "Berlin-Mitte" --output results/berlin-mitte
-
-# Behörden in einer Bounding Box
-python behoerden_suche.py --bbox 48.10 16.20 48.30 16.50 --output results/wien-west
+# Stadtteil / Ausschnitt per Bounding Box (S W N E)
+.venv/bin/python reference/behoerden_suche.py \
+  --bbox 48.10 16.20 48.30 16.50 --output results/wien-west
 ```
 
-## Parameter
-
 | Parameter | Standard | Beschreibung |
-|----------|----------|-------------|
-| `--place` | – | Stadt oder Stadtteil (z.B. "Wien, Österreich") |
-| `--bbox` | – | Bounding Box (Süd, West, Nord, Ost) |
-| `--output` | ergebnis | Ausgabeverzeichnis |
-
-## Ausgabe
-
-- `ergebnis.geojson` – Alle Funde als GeoJSON
-- `ergebnis.kml` – Für Google Earth
-- `ergebnis.gpx` – Für GPS-Geräte
-- `zusammenfassung.json` – Statistiken und Metadaten
-
-## Anpassungsstrategien
-
-| Situation | Vorgehen |
-|-----------|----------|
-| **Kein Open Data Portal** | OSM + Wikidata als Hauptquellen |
-| **Schlechte OSM-Abdeckung** | Wikidata priorisiert, ggf. manuelle Recherche |
-| **Entwickeltes Land** | OSM + Wikidata, ggf. Wikipedia-Scraping |
-| **Nur Stadtteil bekannt** | Bounding Box um Stadtteil, OSM + Wikidata |
-| **Spezifische Einrichtung gesucht** | Fokussierte Abfrage auf eine Kategorie |
-
-## Tipps
-
-1. **Für große Städte**: Nutze eine Bounding Box statt `--place`, um die Abfrage zu begrenzen
-2. **Für bessere Ergebnisse**: Kombiniere immer OSM mit Wikidata
-3. **Für Städte mit Open Data**: Prüfe zuerst das offizielle Portal
-4. **Für Entwicklungsländer**: Wikidata ist oft die beste Quelle
-5. **Duplikatbereinigung**: Immer durchführen, da OSM und Wikidata oft dieselben Einträge haben
+|---|---|---|
+| `--place` | – | Stadt oder Stadtteil (z. B. „Wien, Österreich") |
+| `--bbox` | – | Bounding Box (S, W, N, E) – ergänzt, ersetzt nicht die Grenze |
+| `--qid` | – | Wikidata-QID des Ortes (nie raten, siehe `reference/datenquellen.md`) |
+| `--register-city` | – | Stadtname für Register-/Open-Data-Filter |
+| `--output` | `ergebnis` | Ausgabeverzeichnis |

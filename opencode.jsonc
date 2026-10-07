@@ -18,12 +18,14 @@
 
   // Berechtigungsregeln
   "permissions": [
-    // Datei-Operationen → immer fragen
-    { "action": "read", "resource": "*", "effect": "ask" },
-    { "action": "write", "resource": "*", "effect": "ask" },
-    { "action": "edit", "resource": "*", "effect": "ask" },
-    { "action": "glob", "resource": "*", "effect": "ask" },
-    { "action": "grep", "resource": "*", "effect": "ask" },
+    // Datei-Operationen → im Projektverzeichnis erlauben
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "edit", "resource": "*", "effect": "allow" },
+    { "action": "glob", "resource": "*", "effect": "allow" },
+    { "action": "grep", "resource": "*", "effect": "allow" },
+
+    // Pfade außerhalb des Projektverzeichnisses → weiterhin fragen
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
 
     // Ausführung & Automatisierung → immer fragen
     { "action": "shell", "resource": "*", "effect": "ask" },
