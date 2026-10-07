@@ -18,7 +18,7 @@ Dieses Projekt verwendet ein Python Virtual Environment unter `.venv`.
 - Das venv ist im Projektverzeichnis `.venv/` enthalten
 
 ## Visualisierung auf Karten
-Erzeuge hierfür kml und gpx files, die dder Nutzer anschließend auf
+Erzeuge hierfür kml und gpx files, die der Nutzer anschließend auf
 umap.openstreetmap.de visualisiert. Erkläre wie es geht.
 
 ## Projekt-Struktur

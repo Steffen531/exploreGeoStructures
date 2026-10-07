@@ -8,6 +8,8 @@ description: Findet Behörden, Polizeidienststellen und Botschaften in beliebige
 ## Beschreibung
 Findet Behörden, Polizeidienststellen und Botschaften in beliebigen Städten oder Stadtteilen weltweit. Der Nutzer gibt die geographische Region vor. Der Skill passt die Strategie automatisch an die verfügbaren Datenquellen an.
 
+Ignoriere das Verzeichnis tasks.
+
 ## Strategie: Kombinierte Quellen (Strategie 4)
 
 Der kombinierter Ansatz nutzt mehrere Datenquellen, um die bestmögliche Abdeckung zu erreichen. Die Strategie wird dynamisch an die Region angepasst.
