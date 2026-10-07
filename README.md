@@ -20,8 +20,9 @@ und mit "@" einen einzelnen Skill benutzen
 ## Die belebtesten Orte im Bezirk Pankow dienstag vormittags
 ![Die belebtesten Orte im Bezirk Pankow dienstag vormittags](docs/Ergebnis.jpg)
 
-## Behörden, Botschaften & Co. in Wien
-![Behörden, Botschaften & Co. in Wien](tasks/BehoerdenEtc/Strategie1/Ergebnis2.jpg)
+## Behörden, Botschaften & Co. in Leiden (Niederlande)
+![Behörden, Botschaften & Co. in Leiden](docs/LeidenErg.jpg)
+![Behörden, Botschaften & Co. in Leiden](docs/Leiden.jpg)
 
 
 # Nächste Schritte
