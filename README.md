@@ -15,10 +15,10 @@ und mit "@" einen einzelnen Skill benutzen
 # Beispiele
 
 ## Ein einsamer Fußweg in Hamburg
-![Ein einsamer Fußweg in Hamburg](tasks/Fussweg/Strategie2/Fussweg2.jpg)
+![Ein einsamer Fußweg in Hamburg](docs/Fussweg2.jpg)
 
 ## Die belebtesten Orte im Bezirk Pankow dienstag vormittags
-![Die belebtesten Orte im Bezirk Pankow dienstag vormittags](tasks/belebteOrte/Strategie1/Ergebnis.jpg)
+![Die belebtesten Orte im Bezirk Pankow dienstag vormittags](docs/Strategie1/Ergebnis.jpg)
 
 ## Behörden, Botschaften & Co. in Wien
 ![Behörden, Botschaften & Co. in Wien](tasks/BehoerdenEtc/Strategie1/Ergebnis2.jpg)
