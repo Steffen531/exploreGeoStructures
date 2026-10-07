@@ -1,0 +1,5 @@
+Ich suche besondere städtische Strukturen wie große Malls, Bahnhöfe und Passagen mit folgenden Eigenschaften:
+* mehrere Ausgänge
+* Ausgänge auf unterschiedlichen Ebenen
+* Anbindung an öffentliche Verkehrsmittel
+Lass uns zunächst überlegen, welche Lösungsansätze es gibt.

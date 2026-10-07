@@ -10,6 +10,9 @@
   // Projekt-spezifische Anweisungen
   "instructions": ["AGENTS.md"],
 
+  // Skills: Zusätzliche Skill-Verzeichnisse
+  "skills": [".opencode/skills"],
+
   // Formatierung nach Datei-Änderungen aktivieren
   "formatter": true,
 
