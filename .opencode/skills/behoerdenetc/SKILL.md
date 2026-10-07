@@ -10,6 +10,16 @@ Findet Behörden, Polizeidienststellen und Botschaften in beliebigen Städten od
 
 Ignoriere das Verzeichnis tasks.
 
+## Landes-Referenzen (vor der Abfrage lesen!)
+
+Bevor Phase 1 gestartet wird, prüfen, ob für das Ziel-Land eine Referenzdatei
+unter `reference/` liegt – diese enthält die erprobten Datenquellen, Endpunkte,
+QIDs, Filter und Merge-Schwellen und ersetzt das Probieren in Phase 1/2.
+
+| Land | Datei |
+|------|-------|
+| Niederlande (NL), z. B. Leiden, Utrecht, Amsterdam, Den Haag | `reference/niederlande.md` |
+
 ## Strategie: Kombinierte Quellen (Strategie 4)
 
 Der kombinierter Ansatz nutzt mehrere Datenquellen, um die bestmögliche Abdeckung zu erreichen. Die Strategie wird dynamisch an die Region angepasst.
