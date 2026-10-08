@@ -78,8 +78,15 @@ Das Verzeichnis `tasks/` ignorieren.
 Im Ausgabeverzeichnis (`--output`):
 
 - `ergebnis.geojson` – alle Funde, inkl. `geometry: null` für koordinatenlose
-- `ergebnis.kml` – Ordner je Kategorie, Style-Block `#pin`, für Google Earth
-- `ergebnis.gpx` – für GPS-Geräte
+  (vollständige Datenbasis)
+- `ergebnis.kml` – **20 Cluster + Top 10 Einzelorte** (nicht alle hochbewerteten
+  Orte – zu unübersichtlich): Ordner „Hotspot-Cluster" mit **Kreis-Polygonen**
+  (250-m-Radius, 32 Segmente, transparente Füllung + dicke Kontur – nur so sind
+  Cluster in Renderern sichtbar, einzelne Pins reichen nicht) plus Ordner je
+  Kategorie mit den Top-Orten, Style-Block `#pin`, für Google Earth
+- `ergebnis.gpx` – **Cluster + Top 10 Einzelorte**: Cluster als
+  **geschlossene Tracks** `<trk>` (Kreislinie, GPX 1.1 kennt keine Flächen),
+  die Top-Orte als `<wpt>`, für GPS-Geräte
 - `zusammenfassung.json` – Statistiken, Deduplizierung, ausgeschlossene Punkte,
   Belebtheitsbewertung
 

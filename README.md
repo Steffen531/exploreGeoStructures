@@ -11,6 +11,7 @@ Ein KI Assistent, der nach besonderen geographischen Strukturen und Bewegungsmus
 und mit "@" einen einzelnen Skill benutzen
 * `.opencode/skill/fussweg` - sucht einen möglichst geraden Fußweg ohne parallele Verkehrswege und ohne Abzweigungen von gewisser Länge bzw. Passierdauer
 * `.opencode/skills/behoerdenetc` - sucht nach Behörden, Botschaften, Polizeidienststellen etc. in einer Stadt oder einem Stadtteil
+* `.opencode/skills/belebteOrte` - sucht nach Orten in einer Stadt oder einem Stadtteil, die in einem Zeitfenster besonders belebt sind
 
 # Design der Skills
 
