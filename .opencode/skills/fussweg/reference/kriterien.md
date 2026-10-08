@@ -56,6 +56,8 @@ Erst in dieser Reihenfolge entschärfen, nichts anderes:
 1. Länge um ±10 % erweitern (`--min-length`/`--max-length`),
 2. Geradheit 0.95 → 0.90 (`--straightness`),
 3. Puffer 50 → 30 m (`--buffer`).
+4. Abzweigungen zulassen (`--allow-branches`): Kandidaten mit bis zu 5 inneren
+   Abzweigungen akzeptieren, wenn alle anderen Kriterien erfüllt sind.
 
 **Niemals** „kein Punkt zweimal" oder das Längenfenster abschalten. Jede
 Anpassung mit Region und Datum in `reference/learnings.md` notieren.

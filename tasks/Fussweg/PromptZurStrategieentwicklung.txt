@@ -1,7 +1,0 @@
-Ich suche ungewöhnliche geographische Strukturen in Städten. Ein Beispiel wäre: Ich suche einen Fußweg in Hamburg mit folgenden Eigenschaften:
-- er dauert etwa 10 Minuten
-- man kann ihn nur zu Fuß gehen
-- es gibt keine parallel verlaufenden anderen Verkehrswege wie Straßen, Radwege oder Strassenbahntrassen
-- man kann auf dem Weg nicht abbiegen
-Lass uns zunächst nach Lösungsansätzen suchen, ohne sie auszuführen.
-

@@ -14,7 +14,8 @@ möglichst geradlinig und ohne einen Punkt zweimal zu besuchen.
 
 - **Region** (Pflicht): Stadt, Stadtteil, Ort oder Bounding Box (S, W, N, E)
 - Optional: Gehzeitfenster (`--min-length`/`--max-length`), Geradheitsschwelle
-  (`--straightness`), Puffer (`--buffer`), `--output`
+  (`--straightness`), Puffer (`--buffer`), Abzweigungen (`--allow-branches`),
+  `--output`
 
 **Dateien dieses Skills** (Pfade relativ zum Skill-Verzeichnis):
 
@@ -51,7 +52,8 @@ möglichst geradlinig und ohne einen Punkt zweimal zu besuchen.
    beschrieben nach `--output` schreiben.
 7. **Bei Problemen** (0 Treffer, Overpass-Fehler): `reference/kriterien.md`
    (§Ohne Treffer) konsultieren und dort gereiht entschärfen – Kriterien
-   nicht stillschweigend aufweichen.
+   nicht stillschweigend aufweichen. Reihenfolge: 1) Länge ±10 %,
+   2) Geradheit 0.95→0.90, 3) Puffer 50→30 m, 4) Abzweigungen bis zu 5 zulassen.
 8. **Feedback holen und Learnings schreiben (Wrap-up).** Nach dem Export dem
    Nutzer mit dem `question`-Tool zwei Fragen stellen:
    - Bewertung: **1–5** (Optionen „1 – sehr schlecht" bis „5 – sehr gut")
