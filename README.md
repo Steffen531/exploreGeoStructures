@@ -21,11 +21,11 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 
 # Beispiele
 
-## Ein einsamer Fußweg in Hamburg
-![Ein einsamer Fußweg in Hamburg](docs/Fussweg2.jpg)
+## Einsame Fußwege in München Giesing
+![Fußwege in Giesing](docs/Giesing_Fusswege.jpg)
 
-## Die belebtesten Orte im Bezirk Pankow dienstag vormittags
-![Die belebtesten Orte im Bezirk Pankow dienstag vormittags](docs/Ergebnis.jpg)
+## Die belebtesten Orte in Potsdam Sonntag abends
+![Die belebtesten Orte in Potsdam Sonntag abends](docs/Potsdam_belebtesteOrteSonntagAbends.jpg)
 
 ## Behörden, Botschaften & Co. in Leiden (Niederlande)
 ![Behörden, Botschaften & Co. in Leiden](docs/LeidenErg.jpg)
