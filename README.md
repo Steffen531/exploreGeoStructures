@@ -24,6 +24,7 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 1. Linux Rechner am Internet
 2. opencode V2 installiert
 3. python3 installiert
+4. git installiert
 
 ## Installation
 1. Download mittels `git clone git@github.com:Steffen531/exploreGeoStructures.git`
