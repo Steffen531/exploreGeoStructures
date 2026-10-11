@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÖPNV-Routen</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100%; }
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .route-info {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            background: #f8f9fa;
+        }
+        .route-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+        .route-info p {
+            margin: 2px 0;
+            font-size: 12px;
+        }
+        .legend {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 3px 0;
+        }
+        .legend-color {
+            width: 20px;
+            height: 4px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="info-panel">
+        <h2>ÖPNV-Routen</h2>
+        <div id="route-list"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+
+    <script>
+        const routen = [{"stationen": ["hbf", "hauptwache", "ost", "konstablerwache", "sued", "sachsenhausen", "hoechst"], "fahrten": [{"von": "hbf", "nach": "hauptwache", "linie": "S3", "verkehrsmittel": "s_bahn", "dauer_min": 4, "abfahrt": "18:00", "ankunft": "18:04", "gestoert": false}, {"von": "hauptwache", "nach": "ost", "linie": "S3", "verkehrsmittel": "s_bahn", "dauer_min": 4, "abfahrt": "18:12", "ankunft": "18:16", "gestoert": false}, {"von": "ost", "nach": "konstablerwache", "linie": "T11", "verkehrsmittel": "strassenbahn", "dauer_min": 4, "abfahrt": "18:20", "ankunft": "18:24", "gestoert": false}, {"von": "konstablerwache", "nach": "sued", "linie": "S7", "verkehrsmittel": "s_bahn", "dauer_min": 4, "abfahrt": "18:32", "ankunft": "18:36", "gestoert": false}, {"von": "sued", "nach": "sachsenhausen", "linie": "F1", "verkehrsmittel": "faehre", "dauer_min": 4, "abfahrt": "18:40", "ankunft": "18:44", "gestoert": false}, {"von": "sachsenhausen", "nach": "hoechst", "linie": "T18", "verkehrsmittel": "strassenbahn", "dauer_min": 4, "abfahrt": "18:54", "ankunft": "18:58", "gestoert": false}], "umstiege": [{"station": "ost", "von_linie": "S3", "nach_linie": "T11", "fussweg_min": 2, "wartezeit_min": 4, "gesamtzeit_min": 6}, {"station": "konstablerwache", "von_linie": "T11", "nach_linie": "S7", "fussweg_min": 2, "wartezeit_min": 6, "gesamtzeit_min": 8}, {"station": "sued", "von_linie": "S7", "nach_linie": "F1", "fussweg_min": 2, "wartezeit_min": 2, "gesamtzeit_min": 4}, {"station": "sachsenhausen", "von_linie": "F1", "nach_linie": "T18", "fussweg_min": 2, "wartezeit_min": 8, "gesamtzeit_min": 10}], "gesamt_dauer_min": 60, "fussweg_gesamt_min": 8, "wartezeit_gesamt_min": 28, "verkehrsmittel": ["faehre", "strassenbahn", "s_bahn"], "score": 85.0}, {"stationen": ["hbf", "hauptwache", "willy_brandt", "ost", "konstablerwache", "lokalbahnhof", "sued", "sachsenhausen", "hoechst"], "fahrten": [{"von": "hbf", "nach": "hauptwache", "linie": "S3", "verkehrsmittel": "s_bahn", "dauer_min": 4, "abfahrt": "18:00", "ankunft": "18:04", "gestoert": false}, {"von": "hauptwache", "nach": "willy_brandt", "linie": "U1", "verkehrsmittel": "u_bahn", "dauer_min": 4, "abfahrt": "18:12", "ankunft": "18:16", "gestoert": false}, {"von": "willy_brandt", "nach": "ost", "linie": "U8", "verkehrsmittel": "u_bahn", "dauer_min": 4, "abfahrt": "18:22", "ankunft": "18:26", "gestoert": false}, {"von": "ost", "nach": "konstablerwache", "linie": "T11", "verkehrsmittel": "strassenbahn", "dauer_min": 4, "abfahrt": "18:30", "ankunft": "18:34", "gestoert": false}, {"von": "konstablerwache", "nach": "lokalbahnhof", "linie": "T11", "verkehrsmittel": "strassenbahn", "dauer_min": 4, "abfahrt": "18:42", "ankunft": "18:46", "gestoert": false}, {"von": "lokalbahnhof", "nach": "sued", "linie": "T11", "verkehrsmittel": "strassenbahn", "dauer_min": 4, "abfahrt": "18:54", "ankunft": "18:58", "gestoert": false}, {"von": "sued", "nach": "sachsenhausen", "linie": "F1", "verkehrsmittel": "faehre", "dauer_min": 4, "abfahrt": "19:00", "ankunft": "19:04", "gestoert": false}, {"von": "sachsenhausen", "nach": "hoechst", "linie": "T18", "verkehrsmittel": "strassenbahn", "dauer_min": 4, "abfahrt": "19:14", "ankunft": "19:18", "gestoert": false}], "umstiege": [{"station": "hauptwache", "von_linie": "S3", "nach_linie": "U1", "fussweg_min": 2, "wartezeit_min": 8, "gesamtzeit_min": 10}, {"station": "willy_brandt", "von_linie": "U1", "nach_linie": "U8", "fussweg_min": 2, "wartezeit_min": 4, "gesamtzeit_min": 6}, {"station": "ost", "von_linie": "U8", "nach_linie": "T11", "fussweg_min": 2, "wartezeit_min": 2, "gesamtzeit_min": 4}, {"station": "sued", "von_linie": "T11", "nach_linie": "F1", "fussweg_min": 2, "wartezeit_min": 2, "gesamtzeit_min": 4}, {"station": "sachsenhausen", "von_linie": "F1", "nach_linie": "T18", "fussweg_min": 2, "wartezeit_min": 8, "gesamtzeit_min": 10}], "gesamt_dauer_min": 80, "fussweg_gesamt_min": 10, "wartezeit_gesamt_min": 38, "verkehrsmittel": ["u_bahn", "faehre", "strassenbahn", "s_bahn"], "score": 112.0}];
+        const stationen = {"hbf": {"name": "Frankfurt Hbf", "lat": 50.107, "lon": 8.6636}, "konstablerwache": {"name": "Konstablerwache", "lat": 50.113, "lon": 8.6895}, "hauptwache": {"name": "Hauptwache", "lat": 50.115, "lon": 8.677}, "willy_brandt": {"name": "Willy-Brandt-Platz", "lat": 50.109, "lon": 8.665}, "ost": {"name": "Frankfurt Ost", "lat": 50.113, "lon": 8.72}, "bornheim": {"name": "Bornheim", "lat": 50.12, "lon": 8.7}, "seckbach": {"name": "Seckbach", "lat": 50.13, "lon": 8.7}, "nordend": {"name": "Nordend", "lat": 50.12, "lon": 8.68}, "offenbach": {"name": "Offenbach Hbf", "lat": 50.1, "lon": 8.75}, "sued": {"name": "Frankfurt Süd", "lat": 50.09, "lon": 8.68}, "lokalbahnhof": {"name": "Lokalbahnhof", "lat": 50.095, "lon": 8.685}, "niederrad": {"name": "Niederrad", "lat": 50.08, "lon": 8.65}, "flughafen": {"name": "Flughafen", "lat": 50.03, "lon": 8.62}, "hoechst": {"name": "Frankfurt Höchst", "lat": 50.1, "lon": 8.6}, "nordweststadt": {"name": "Nordweststadt", "lat": 50.13, "lon": 8.65}, "bockenheim": {"name": "Bockenheim", "lat": 50.12, "lon": 8.64}, "westend": {"name": "Westend", "lat": 50.12, "lon": 8.65}, "gallus": {"name": "Gallus", "lat": 50.1, "lon": 8.64}, "ginnheim": {"name": "Ginnheim", "lat": 50.14, "lon": 8.65}, "sachsenhausen": {"name": "Sachsenhausen", "lat": 50.1, "lon": 8.66}, "mainz_hbf": {"name": "Mainz Hbf", "lat": 50.0, "lon": 8.6}, "darmstadt": {"name": "Darmstadt Hbf", "lat": 49.87, "lon": 8.65}};
+        const linienColors = {"S8": "#009933", "S9": "#009933", "S1": "#009933", "S2": "#009933", "S3": "#009933", "S4": "#009933", "S5": "#009933", "S6": "#009933", "S7": "#009933", "U1": "#0099FF", "U2": "#0099FF", "U3": "#0099FF", "U4": "#0099FF", "U5": "#0099FF", "U6": "#0099FF", "U7": "#0099FF", "U8": "#0099FF", "U9": "#0099FF", "R1": "#FF0000", "R2": "#FF0000", "R3": "#FF0000", "R4": "#FF0000", "R5": "#FF0000", "T11": "#FF6600", "T12": "#FF6600", "T14": "#FF6600", "T15": "#FF6600", "T16": "#FF6600", "T17": "#FF6600", "T18": "#FF6600", "T19": "#FF6600", "T20": "#FF6600", "T21": "#FF6600", "F1": "#0000FF", "F2": "#0000FF", "F3": "#0000FF", "F4": "#0000FF", "B30": "#888888", "B34": "#888888", "B36": "#888888"};
+
+        // Karte initialisieren
+        const map = L.map('map');
+
+        // OpenStreetMap Tile Layer
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Farben für Routen
+        const routeColors = ['#007bff', '#28a745', '#6f42c1', '#17a2b8', '#e83e8c'];
+
+        // Hilfsfunktion: Geometrie-Punkte für ein Segment holen
+        function getGeometryPoints(von, nach, linieId) {
+            if (!linienColors[linieId]) return [];
+            // In einer echten Implementierung würden hier die echten Geometrie-Punkte stehen
+            // Für jetzt: direkte Linie zwischen Stationen
+            return [];
+        }
+
+        // Routen zeichnen
+        const bounds = [];
+        routen.forEach((route, i) => {
+            const coords = [];
+            
+            route.stationen.forEach((sid, j) => {
+                if (stationen[sid]) {
+                    const station = stationen[sid];
+                    coords.push([station.lat, station.lon]);
+                    bounds.push([station.lat, station.lon]);
+                }
+                
+                // Geometrie zur nächsten Station
+                if (j + 1 < route.stationen.length) {
+                    const nextSid = route.stationen[j + 1];
+                    // Finde Linie für dieses Segment
+                    let linieId = null;
+                    for (const fahrt of route.fahrten) {
+                        if (fahrt.von === sid && fahrt.nach === nextSid) {
+                            linieId = fahrt.linie;
+                            break;
+                        }
+                    }
+                    if (linieId && stationen[nextSid]) {
+                        // Füge intermediate Punkte hinzu (lineare Interpolation)
+                        const station = stationen[sid];
+                        const nextStation = stationen[nextSid];
+                        for (let frac = 0.2; frac < 1; frac += 0.2) {
+                            const lat = station.lat + frac * (nextStation.lat - station.lat);
+                            const lon = station.lon + frac * (nextStation.lon - station.lon);
+                            coords.push([lat, lon]);
+                            bounds.push([lat, lon]);
+                        }
+                    }
+                }
+            });
+
+            if (coords.length > 0) {
+                L.polyline(coords, {
+                    color: routeColors[i % routeColors.length],
+                    weight: 4,
+                    opacity: 0.8
+                }).addTo(map);
+            }
+
+            // Marker für Stationen
+            route.stationen.forEach((sid, j) => {
+                if (stationen[sid]) {
+                    const station = stationen[sid];
+                    L.circleMarker([station.lat, station.lon], {
+                        radius: 6,
+                        fillColor: routeColors[i % routeColors.length],
+                        color: '#fff',
+                        weight: 2,
+                        fillOpacity: 1
+                    }).addTo(map).bindPopup(
+                        `<b>${station.name}</b><br>Route ${i+1}, Stop ${j+1}`
+                    );
+                }
+            });
+        };
+
+        // Karte auf Route zentrieren
+        if (bounds.length > 0) {
+            map.fitBounds(bounds);
+        }
+
+        // Legende: Verkehrsmittel-Farben
+        const legend = document.getElementById('legend');
+        const vmColors = {
+            's_bahn': '#009933',
+            'u_bahn': '#0099FF',
+            'strassenbahn': '#FF6600',
+            'regionalzug': '#FF0000',
+            'faehre': '#0000FF',
+            'bus': '#888888',
+            'fussweg': '#000000',
+            'ride_hailing': '#FF9900'
+        };
+        
+        // Sammle alle verwendeten Verkehrsmittel
+        const usedVM = new Set();
+        routen.forEach(route => {
+            route.verkehrsmittel.forEach(vm => usedVM.add(vm));
+        });
+        
+        usedVM.forEach(vm => {
+            const div = document.createElement('div');
+            div.className = 'legend-item';
+            div.innerHTML = '<span class="legend-color" style="background:' + (vmColors[vm] || '#000') + '"></span>' + vm;
+            legend.appendChild(div);
+        });
+
+        // Info-Panel
+        const routeList = document.getElementById('route-list');
+        routen.forEach((route, i) => {
+            const div = document.createElement('div');
+            div.className = 'route-info';
+            div.style.borderLeftColor = routeColors[i % routeColors.length];
+            div.innerHTML = `
+                <h3>Route ${i+1}</h3>
+                <p>Dauer: ${route.gesamt_dauer_min} Min</p>
+                <p>Umstiege: ${route.umstiege.length}</p>
+                <p>Verkehrsmittel: ${route.verkehrsmittel.join(', ')}</p>
+            `;
+            routeList.appendChild(div);
+        });
+    </script>
+</body>
+</html>

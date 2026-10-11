@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="dresden_malls_kandidaten" id="dresden_malls_kandidaten">
+	<SimpleField name="osm_type" type="string"></SimpleField>
+	<SimpleField name="osm_id" type="string"></SimpleField>
+	<SimpleField name="building" type="string"></SimpleField>
+	<SimpleField name="railway" type="string"></SimpleField>
+	<SimpleField name="building_levels" type="string"></SimpleField>
+	<SimpleField name="entrance_count" type="string"></SimpleField>
+	<SimpleField name="entrance_levels" type="string"></SimpleField>
+	<SimpleField name="distinct_levels" type="string"></SimpleField>
+	<SimpleField name="transit_count" type="string"></SimpleField>
+	<SimpleField name="url" type="string"></SimpleField>
+</Schema>
+<Folder><name>dresden_malls_kandidaten</name>
+  <Placemark id="dresden_malls_kandidaten.1">
+	<name>Räcknitz Forum</name>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#dresden_malls_kandidaten">
+		<SimpleData name="osm_type">way</SimpleData>
+		<SimpleData name="osm_id">24552405</SimpleData>
+		<SimpleData name="building">retail</SimpleData>
+		<SimpleData name="railway"></SimpleData>
+		<SimpleData name="building_levels">4</SimpleData>
+		<SimpleData name="entrance_count">7</SimpleData>
+		<SimpleData name="entrance_levels">-1;0;1;5</SimpleData>
+		<SimpleData name="distinct_levels">4</SimpleData>
+		<SimpleData name="transit_count">9</SimpleData>
+		<SimpleData name="url">https://www.openstreetmap.org/way/24552405</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>13.7433021,51.0240663 13.7432879,51.0240898 13.7432292,51.0240974 13.7432743,51.0242276 13.7433856,51.0242104 13.7435309,51.0241902 13.7436431,51.0241752 13.7439049,51.024141 13.7438519,51.0239937 13.7437984,51.0238409 13.7437675,51.0237478 13.7437595,51.0237269 13.7437537,51.0237143 13.743746,51.0237032 13.7437344,51.0236893 13.7437187,51.0236759 13.7437045,51.023664 13.7436867,51.0236513 13.74367,51.0236409 13.743654,51.0236319 13.7436371,51.0236243 13.7436194,51.0236175 13.743598,51.0236102 13.7435795,51.0236044 13.7435542,51.0235995 13.7435309,51.0235955 13.7435048,51.0235917 13.7434842,51.0235895 13.7434478,51.0235887 13.7433843,51.0235929 13.7432762,51.0236072 13.7432845,51.0236308 13.7433387,51.0237866 13.74338,51.0239052 13.7433228,51.0239124 13.7432815,51.0239374 13.743264,51.0239726 13.7432764,51.0240081 13.7433165,51.0240355 13.7433021,51.0240663</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark id="dresden_malls_kandidaten.2">
+	<name>Günther-Landgraf-Bau</name>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#dresden_malls_kandidaten">
+		<SimpleData name="osm_type">way</SimpleData>
+		<SimpleData name="osm_id">23289876</SimpleData>
+		<SimpleData name="building">retail</SimpleData>
+		<SimpleData name="railway"></SimpleData>
+		<SimpleData name="building_levels">2</SimpleData>
+		<SimpleData name="entrance_count">6</SimpleData>
+		<SimpleData name="entrance_levels">-1;0;1</SimpleData>
+		<SimpleData name="distinct_levels">3</SimpleData>
+		<SimpleData name="transit_count">4</SimpleData>
+		<SimpleData name="url">https://www.openstreetmap.org/way/23289876</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>13.7256975,51.0264982 13.7256259,51.0264973 13.7255536,51.0264964 13.7255498,51.0266166 13.7255491,51.0266366 13.7255394,51.0266365 13.7255349,51.0267791 13.7255322,51.0268609 13.7255489,51.0268611 13.7255676,51.0268613 13.7255638,51.0269818 13.7260263,51.0269877 13.7260914,51.0269885 13.7262022,51.0269899 13.7262061,51.0268686 13.7261269,51.0268676 13.7256915,51.0268621 13.7256987,51.0266382 13.725693,51.0266382 13.7256937,51.0266179 13.725695,51.0265789 13.7256968,51.0265201 13.7256975,51.0264982</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark id="dresden_malls_kandidaten.3">
+	<name>Dresden Hauptbahnhof</name>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#dresden_malls_kandidaten">
+		<SimpleData name="osm_type">way</SimpleData>
+		<SimpleData name="osm_id">22764481</SimpleData>
+		<SimpleData name="building">train_station</SimpleData>
+		<SimpleData name="railway"></SimpleData>
+		<SimpleData name="building_levels">1</SimpleData>
+		<SimpleData name="entrance_count">36</SimpleData>
+		<SimpleData name="entrance_levels">0;1</SimpleData>
+		<SimpleData name="distinct_levels">2</SimpleData>
+		<SimpleData name="transit_count">64</SimpleData>
+		<SimpleData name="url">https://www.openstreetmap.org/way/22764481</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>13.7334426,51.0404232 13.7335592,51.0403852 13.7335552,51.0403804 13.7335296,51.0403494 13.7334488,51.0402515 13.7334199,51.0402164 13.7333903,51.0401807 13.7333423,51.0401224 13.7332919,51.0401391 13.733259,51.0400995 13.7331713,51.0399938 13.733161,51.0399813 13.7331453,51.0399632 13.7331074,51.0399173 13.733095,51.0399022 13.7330828,51.0398874 13.7330434,51.0398397 13.7330288,51.0398221 13.7330205,51.039812 13.7329316,51.0397043 13.732896,51.0396612 13.7329141,51.0396553 13.7329515,51.0396431 13.7329124,51.0395958 13.7329025,51.03958 13.7328676,51.0395414 13.7328506,51.0395209 13.7327712,51.0394247 13.7327315,51.0393766 13.7327037,51.0393429 13.7326858,51.0393212 13.7325544,51.039364 13.7324337,51.0394034 13.7324224,51.0394071 13.732411,51.0394109 13.7324034,51.0394133 13.7323917,51.0394171 13.7323777,51.0394217 13.7323703,51.0394241 13.7323591,51.0394278 13.7323483,51.0394313 13.7320664,51.0395233 13.7320277,51.039516 13.7320018,51.0395246 13.7319887,51.0395486 13.7315983,51.0396758 13.7315744,51.0396836 13.731567,51.039686 13.7315562,51.0396895 13.7315415,51.0396943 13.7315333,51.0396969 13.7315105,51.0397043 13.7314382,51.0397279 13.7314032,51.0397218 13.7313764,51.0397305 13.7313694,51.0397504 13.7310692,51.0398481 13.7306763,51.0399761 13.7306441,51.0399701 13.730619,51.0399778 13.7306062,51.039999 13.7300685,51.0401741 13.7299172,51.0402234 13.7298841,51.0402177 13.7298581,51.0402259 13.7298523,51.0402445 13.7297141,51.0402895 13.7296803,51.0402835 13.7296589,51.0402907 13.7296459,51.0403118 13.7294944,51.0403612 13.7293748,51.0404001 13.729641,51.0407231 13.729756,51.0406856 13.729765,51.0406965 13.7298038,51.0407436 13.7298559,51.0408069 13.7299269,51.040893 13.7299556,51.0409279 13.7300192,51.041005 13.7300479,51.0410398 13.7301147,51.0411209 13.7301314,51.0411412 13.7301326,51.0411427 13.7300126,51.0411818 13.7302437,51.0414622 13.7303568,51.0414253 13.7303615,51.0414258 13.7303835,51.0414186 13.7303822,51.041417 13.730483,51.0413839 13.7304843,51.0413855 13.7305113,51.0413767 13.7305099,51.0413751 13.7306088,51.0413427 13.7306103,51.0413445 13.7306347,51.0413365 13.7306332,51.0413348 13.7307373,51.0413007 13.730739,51.0413027 13.7307647,51.0412943 13.7307631,51.0412923 13.7308136,51.0412758 13.7308692,51.0412575 13.7309432,51.0412333 13.7310069,51.0412124 13.7310683,51.0411923 13.7311147,51.0411771 13.7311168,51.0411796 13.7311461,51.04117 13.731144,51.0411675 13.7312423,51.0411353 13.7312442,51.0411376 13.7312716,51.0411286 13.7312697,51.0411263 13.7313671,51.0410944 13.731369,51.0410967 13.7313957,51.0410879 13.7313939,51.0410857 13.7314924,51.0410534 13.7314945,51.041056 13.7315219,51.041047 13.7315198,51.0410445 13.7316189,51.041012 13.7316211,51.0410147 13.7316498,51.0410053 13.7316475,51.0410026 13.7317449,51.0409707 13.7317472,51.0409735 13.731774,51.0409647 13.7317718,51.040962 13.7318743,51.0409284 13.7318765,51.0409311 13.7319029,51.0409224 13.7319007,51.0409198 13.7319991,51.0408876 13.7320015,51.0408905 13.732028,51.0408818 13.7320256,51.0408789 13.7321262,51.040846 13.7321288,51.0408492 13.7321572,51.0408399 13.7321546,51.0408367 13.7322532,51.0408046 13.7322577,51.04081 13.7323886,51.0407673 13.7324091,51.0407606 13.7324175,51.0407578 13.7324309,51.0407534 13.7324423,51.0407497 13.7324502,51.0407471 13.7324686,51.0407411 13.7324726,51.0407398 13.7327881,51.0406369 13.7330363,51.0405559 13.733224,51.0404946 13.7332463,51.0404873 13.7332539,51.0404848 13.733268,51.0404802 13.7332799,51.0404763 13.7332871,51.040474 13.7333091,51.0404668 13.7334426,51.0404232</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark id="dresden_malls_kandidaten.4">
+	<name>Dresden Hbf</name>
+	<ExtendedData><SchemaData schemaUrl="#dresden_malls_kandidaten">
+		<SimpleData name="osm_type">node</SimpleData>
+		<SimpleData name="osm_id">25397500</SimpleData>
+		<SimpleData name="building"></SimpleData>
+		<SimpleData name="railway">station</SimpleData>
+		<SimpleData name="building_levels"></SimpleData>
+		<SimpleData name="entrance_count">10</SimpleData>
+		<SimpleData name="entrance_levels">0;1</SimpleData>
+		<SimpleData name="distinct_levels">2</SimpleData>
+		<SimpleData name="transit_count">47</SimpleData>
+		<SimpleData name="url">https://www.openstreetmap.org/node/25397500</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>13.7320768,51.0402452</coordinates></Point>
+  </Placemark>
+  <Placemark id="dresden_malls_kandidaten.5">
+	<name>Bahnhof Freital-Potschappel</name>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#dresden_malls_kandidaten">
+		<SimpleData name="osm_type">way</SimpleData>
+		<SimpleData name="osm_id">151636755</SimpleData>
+		<SimpleData name="building">train_station</SimpleData>
+		<SimpleData name="railway"></SimpleData>
+		<SimpleData name="building_levels">2</SimpleData>
+		<SimpleData name="entrance_count">7</SimpleData>
+		<SimpleData name="entrance_levels">-1;0</SimpleData>
+		<SimpleData name="distinct_levels">2</SimpleData>
+		<SimpleData name="transit_count">14</SimpleData>
+		<SimpleData name="url">https://www.openstreetmap.org/way/151636755</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>13.6616518,51.0131624 13.6616601,51.0131568 13.6617112,51.0131229 13.6617447,51.0131006 13.6617851,51.0130738 13.6618871,51.0131346 13.6618926,51.013131 13.6618991,51.0131349 13.6619082,51.0131402 13.661915,51.0131443 13.6619245,51.01315 13.6619395,51.0131589 13.6619488,51.0131644 13.6619546,51.0131679 13.661946,51.0131736 13.6620519,51.0132368 13.6620134,51.0132623 13.6619814,51.0132836 13.6619217,51.0133232 13.6618158,51.0132601 13.6618119,51.0132578 13.6618023,51.0132521 13.6617932,51.0132467 13.6617766,51.0132367 13.6617616,51.0132278 13.6617538,51.0132232 13.6616518,51.0131624</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark id="dresden_malls_kandidaten.6">
+	<name></name>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#dresden_malls_kandidaten">
+		<SimpleData name="osm_type">way</SimpleData>
+		<SimpleData name="osm_id">116405572</SimpleData>
+		<SimpleData name="building">retail</SimpleData>
+		<SimpleData name="railway"></SimpleData>
+		<SimpleData name="building_levels">4</SimpleData>
+		<SimpleData name="entrance_count">5</SimpleData>
+		<SimpleData name="entrance_levels">0;1</SimpleData>
+		<SimpleData name="distinct_levels">2</SimpleData>
+		<SimpleData name="transit_count">4</SimpleData>
+		<SimpleData name="url">https://www.openstreetmap.org/way/116405572</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>13.6690051,51.045729 13.6690554,51.0457337 13.6694345,51.0457695 13.6695016,51.0454945 13.6694896,51.0454933 13.6694914,51.0454861 13.6695492,51.0454592 13.6695087,51.0454248 13.6695107,51.0454166 13.6695212,51.0454176 13.6695869,51.0451478 13.6691871,51.0451093 13.6691559,51.0451063 13.6691224,51.0452437 13.6693356,51.0452642 13.6693031,51.0453981 13.6693146,51.0453992 13.6693131,51.0454053 13.6692574,51.0454301 13.6693006,51.0454684 13.6692992,51.0454743 13.6692865,51.0454731 13.6692533,51.0456111 13.6690383,51.0455906 13.6690051,51.045729</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark id="dresden_malls_kandidaten.7">
+	<name></name>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#dresden_malls_kandidaten">
+		<SimpleData name="osm_type">way</SimpleData>
+		<SimpleData name="osm_id">13859431</SimpleData>
+		<SimpleData name="building">retail</SimpleData>
+		<SimpleData name="railway"></SimpleData>
+		<SimpleData name="building_levels">4</SimpleData>
+		<SimpleData name="entrance_count">2</SimpleData>
+		<SimpleData name="entrance_levels">0;1</SimpleData>
+		<SimpleData name="distinct_levels">2</SimpleData>
+		<SimpleData name="transit_count">8</SimpleData>
+		<SimpleData name="url">https://www.openstreetmap.org/way/13859431</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>13.7360944,51.0447782 13.7360866,51.0447613 13.7360792,51.0447627 13.7360898,51.0447854 13.736081,51.044787 13.7360834,51.0447921 13.736092,51.0447905 13.7361209,51.0448524 13.7361122,51.044854 13.7361145,51.0448589 13.7361229,51.0448573 13.736152,51.0449197 13.7361432,51.0449214 13.7361456,51.0449265 13.7361543,51.0449249 13.7361832,51.0449869 13.7361738,51.0449886 13.7361762,51.0449937 13.7361853,51.044992 13.7362143,51.0450541 13.7362055,51.0450557 13.7362079,51.045061 13.7362166,51.0450594 13.7362456,51.0451215 13.7362367,51.0451232 13.7362392,51.0451285 13.7362479,51.0451269 13.736277,51.0451893 13.7362679,51.045191 13.73627,51.0451955 13.736279,51.0451938 13.7363079,51.0452558 13.7362987,51.0452575 13.7363013,51.0452629 13.7363319,51.0452573 13.7363452,51.0452858 13.736452,51.045266 13.7364806,51.0453274 13.7364968,51.0453621 13.7365391,51.0453543 13.7365231,51.04532 13.7365054,51.0452821 13.7365156,51.0452802 13.7365174,51.045284 13.7366006,51.0452687 13.7364326,51.0449086 13.7364101,51.0448604 13.7363283,51.0448755 13.7363469,51.0449153 13.7363353,51.0449174 13.7363118,51.0449218 13.7362328,51.0447526 13.7361789,51.0447626 13.7360944,51.0447782</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

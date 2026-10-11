@@ -1,0 +1,8 @@
+osm_type,osm_id,name,building,railway,building_levels,entrance_count,entrance_levels,distinct_levels,transit_count,url
+way,24552405,Räcknitz Forum,retail,,4,7,-1;0;1;5,4,9,https://www.openstreetmap.org/way/24552405
+way,23289876,Günther-Landgraf-Bau,retail,,2,6,-1;0;1,3,4,https://www.openstreetmap.org/way/23289876
+way,22764481,Dresden Hauptbahnhof,train_station,,1,36,0;1,2,64,https://www.openstreetmap.org/way/22764481
+node,25397500,Dresden Hbf,,station,,10,0;1,2,47,https://www.openstreetmap.org/node/25397500
+way,151636755,Bahnhof Freital-Potschappel,train_station,,2,7,-1;0,2,14,https://www.openstreetmap.org/way/151636755
+way,116405572,,retail,,4,5,0;1,2,4,https://www.openstreetmap.org/way/116405572
+way,13859431,,retail,,4,2,0;1,2,8,https://www.openstreetmap.org/way/13859431

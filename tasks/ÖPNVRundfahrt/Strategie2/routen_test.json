@@ -1,0 +1,256 @@
+{
+  "start": "hbf",
+  "ziel": "hoechst",
+  "datum": "2026-12-01",
+  "uhrzeit": "18:00",
+  "routen": [
+    {
+      "stationen": [
+        "hbf",
+        "konstablerwache",
+        "sued",
+        "sachsenhausen",
+        "hoechst"
+      ],
+      "fahrten": [
+        {
+          "von": "hbf",
+          "nach": "konstablerwache",
+          "linie": "S8",
+          "verkehrsmittel": "s_bahn",
+          "dauer_min": 3,
+          "abfahrt": "18:00",
+          "ankunft": "18:07",
+          "gestoert": false
+        },
+        {
+          "von": "konstablerwache",
+          "nach": "sued",
+          "linie": "S7",
+          "verkehrsmittel": "s_bahn",
+          "dauer_min": 3,
+          "abfahrt": "18:07",
+          "ankunft": "18:14",
+          "gestoert": false
+        },
+        {
+          "von": "sued",
+          "nach": "sachsenhausen",
+          "linie": "F1",
+          "verkehrsmittel": "faehre",
+          "dauer_min": 3,
+          "abfahrt": "18:16",
+          "ankunft": "18:23",
+          "gestoert": false
+        },
+        {
+          "von": "sachsenhausen",
+          "nach": "hoechst",
+          "linie": "F1",
+          "verkehrsmittel": "faehre",
+          "dauer_min": 3,
+          "abfahrt": "18:25",
+          "ankunft": "18:32",
+          "gestoert": false
+        }
+      ],
+      "umstiege": [
+        {
+          "station": "konstablerwache",
+          "von_linie": "S8",
+          "nach_linie": "S7",
+          "fussweg_min": 2,
+          "wartezeit_min": 4,
+          "gesamtzeit_min": 6
+        },
+        {
+          "station": "sued",
+          "von_linie": "S7",
+          "nach_linie": "F1",
+          "fussweg_min": 2,
+          "wartezeit_min": 4,
+          "gesamtzeit_min": 6
+        }
+      ],
+      "gesamt_dauer_min": 32,
+      "fussweg_gesamt_min": 4,
+      "wartezeit_gesamt_min": 16,
+      "verkehrsmittel": [
+        "faehre",
+        "s_bahn"
+      ],
+      "score": 42.0
+    },
+    {
+      "stationen": [
+        "hbf",
+        "konstablerwache",
+        "sued",
+        "sachsenhausen",
+        "hoechst"
+      ],
+      "fahrten": [
+        {
+          "von": "hbf",
+          "nach": "konstablerwache",
+          "linie": "S8",
+          "verkehrsmittel": "s_bahn",
+          "dauer_min": 3,
+          "abfahrt": "18:00",
+          "ankunft": "18:07",
+          "gestoert": false
+        },
+        {
+          "von": "konstablerwache",
+          "nach": "sued",
+          "linie": "S7",
+          "verkehrsmittel": "s_bahn",
+          "dauer_min": 3,
+          "abfahrt": "18:07",
+          "ankunft": "18:14",
+          "gestoert": false
+        },
+        {
+          "von": "sued",
+          "nach": "sachsenhausen",
+          "linie": "F1",
+          "verkehrsmittel": "faehre",
+          "dauer_min": 3,
+          "abfahrt": "18:16",
+          "ankunft": "18:23",
+          "gestoert": false
+        },
+        {
+          "von": "sachsenhausen",
+          "nach": "hoechst",
+          "linie": "T18",
+          "verkehrsmittel": "strassenbahn",
+          "dauer_min": 3,
+          "abfahrt": "18:25",
+          "ankunft": "18:32",
+          "gestoert": false
+        }
+      ],
+      "umstiege": [
+        {
+          "station": "konstablerwache",
+          "von_linie": "S8",
+          "nach_linie": "S7",
+          "fussweg_min": 2,
+          "wartezeit_min": 4,
+          "gesamtzeit_min": 6
+        },
+        {
+          "station": "sued",
+          "von_linie": "S7",
+          "nach_linie": "F1",
+          "fussweg_min": 2,
+          "wartezeit_min": 4,
+          "gesamtzeit_min": 6
+        },
+        {
+          "station": "sachsenhausen",
+          "von_linie": "F1",
+          "nach_linie": "T18",
+          "fussweg_min": 2,
+          "wartezeit_min": 4,
+          "gesamtzeit_min": 6
+        }
+      ],
+      "gesamt_dauer_min": 34,
+      "fussweg_gesamt_min": 6,
+      "wartezeit_gesamt_min": 16,
+      "verkehrsmittel": [
+        "faehre",
+        "strassenbahn",
+        "s_bahn"
+      ],
+      "score": 47.0
+    },
+    {
+      "stationen": [
+        "hbf",
+        "konstablerwache",
+        "sued",
+        "sachsenhausen",
+        "hoechst"
+      ],
+      "fahrten": [
+        {
+          "von": "hbf",
+          "nach": "konstablerwache",
+          "linie": "S8",
+          "verkehrsmittel": "s_bahn",
+          "dauer_min": 3,
+          "abfahrt": "18:00",
+          "ankunft": "18:07",
+          "gestoert": false
+        },
+        {
+          "von": "konstablerwache",
+          "nach": "sued",
+          "linie": "S7",
+          "verkehrsmittel": "s_bahn",
+          "dauer_min": 3,
+          "abfahrt": "18:07",
+          "ankunft": "18:14",
+          "gestoert": false
+        },
+        {
+          "von": "sued",
+          "nach": "sachsenhausen",
+          "linie": "F1",
+          "verkehrsmittel": "faehre",
+          "dauer_min": 3,
+          "abfahrt": "18:16",
+          "ankunft": "18:23",
+          "gestoert": false
+        },
+        {
+          "von": "sachsenhausen",
+          "nach": "hoechst",
+          "linie": "F4",
+          "verkehrsmittel": "faehre",
+          "dauer_min": 3,
+          "abfahrt": "18:25",
+          "ankunft": "18:32",
+          "gestoert": false
+        }
+      ],
+      "umstiege": [
+        {
+          "station": "konstablerwache",
+          "von_linie": "S8",
+          "nach_linie": "S7",
+          "fussweg_min": 2,
+          "wartezeit_min": 4,
+          "gesamtzeit_min": 6
+        },
+        {
+          "station": "sued",
+          "von_linie": "S7",
+          "nach_linie": "F1",
+          "fussweg_min": 2,
+          "wartezeit_min": 4,
+          "gesamtzeit_min": 6
+        },
+        {
+          "station": "sachsenhausen",
+          "von_linie": "F1",
+          "nach_linie": "F4",
+          "fussweg_min": 2,
+          "wartezeit_min": 4,
+          "gesamtzeit_min": 6
+        }
+      ],
+      "gesamt_dauer_min": 34,
+      "fussweg_gesamt_min": 6,
+      "wartezeit_gesamt_min": 16,
+      "verkehrsmittel": [
+        "faehre",
+        "s_bahn"
+      ],
+      "score": 47.0
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+requests>=2.28.0
+osmnx>=1.6.0
+networkx>=3.0
+geopandas>=0.13.0
+shapely>=2.0.0
+folium>=0.14.0
+pykml>=0.2.0
+overpy>=0.6
+gtfs-kit>=0.1.0

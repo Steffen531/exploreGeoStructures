@@ -1,0 +1,846 @@
+osm_type,osm_id,name,building,railway,building_levels,entrance_count,entrance_levels,distinct_levels,transit_count,url
+node,25346731,Dresden-Friedrichstadt,,station,,0,,0,4,https://www.openstreetmap.org/node/25346731
+node,25397500,Dresden Hbf,,station,,10,0;1,2,47,https://www.openstreetmap.org/node/25397500
+node,91552412,Freital-Birkigt,,station,,8,,0,6,https://www.openstreetmap.org/node/91552412
+node,252416651,Bahnhof Zoo,,station,,1,,0,1,https://www.openstreetmap.org/node/252416651
+node,263480844,Dresden-Gittersee,,station,,0,,0,10,https://www.openstreetmap.org/node/263480844
+node,761364701,TK Maxx,,,,1,0,1,6,https://www.openstreetmap.org/node/761364701
+node,1055406062,Coswig (b Dresden),,station,,3,,0,12,https://www.openstreetmap.org/node/1055406062
+node,1280821133,Bahnhof Straßburger Platz,,station,,0,,0,6,https://www.openstreetmap.org/node/1280821133
+node,2684765813,Radebeul Ost,,station,,0,,0,12,https://www.openstreetmap.org/node/2684765813
+node,2723861214,Heidenau,,station,,0,,0,20,https://www.openstreetmap.org/node/2723861214
+node,2744503913,Dresden-Klotzsche,,station,,4,,0,23,https://www.openstreetmap.org/node/2744503913
+node,2746885438,Dresden Grenzstraße,,station,,0,,0,13,https://www.openstreetmap.org/node/2746885438
+node,2746933618,Dresden Flughafen,,station,,5,-1,1,7,https://www.openstreetmap.org/node/2746933618
+node,2749276857,Tharandt,,station,,0,,0,19,https://www.openstreetmap.org/node/2749276857
+node,2751547406,Freital-Potschappel,,station,,4,0,1,15,https://www.openstreetmap.org/node/2751547406
+node,2774330200,Cossebaude,,station,,0,,0,16,https://www.openstreetmap.org/node/2774330200
+node,2802148352,Radeberg,,station,,2,,0,27,https://www.openstreetmap.org/node/2802148352
+node,3332924794,Dresden Mitte,,station,,3,,0,31,https://www.openstreetmap.org/node/3332924794
+node,3723386251,Dresden-Neustadt,,station,,2,,0,43,https://www.openstreetmap.org/node/3723386251
+node,4546670712,DRK Gebrauchtwarenhaus,,,,2,,0,0,https://www.openstreetmap.org/node/4546670712
+node,6035103434,Woolworth,,,,3,,0,0,https://www.openstreetmap.org/node/6035103434
+node,7201283129,Ladengalerie Striesen,,,,8,,0,8,https://www.openstreetmap.org/node/7201283129
+node,9798370950,Woolworth,,,,4,,0,0,https://www.openstreetmap.org/node/9798370950
+node,9889084849,Radebeul Ost,,station,,0,,0,18,https://www.openstreetmap.org/node/9889084849
+node,10084958430,Woolworth,,,,2,,0,26,https://www.openstreetmap.org/node/10084958430
+node,10864566325,Freital-Hainsberg,,station,,1,,0,15,https://www.openstreetmap.org/node/10864566325
+node,11001472126,Friedewald (Kr Dresden) Bad,,station,,0,,0,5,https://www.openstreetmap.org/node/11001472126
+node,11031936916,Woolworth,,,,1,,0,6,https://www.openstreetmap.org/node/11031936916
+node,11329640893,Woolworth,,,,1,,0,8,https://www.openstreetmap.org/node/11329640893
+node,11998848482,Moritzburg,,station,,2,,0,6,https://www.openstreetmap.org/node/11998848482
+node,12457243929,TK Maxx,,,,0,,0,8,https://www.openstreetmap.org/node/12457243929
+relation,8261,Gorbitz Hof,retail,,3,2,,0,19,https://www.openstreetmap.org/relation/8261
+relation,7476416,POCO,retail,,2,0,,0,42,https://www.openstreetmap.org/relation/7476416
+relation,8279941,,retail,,3,0,,0,5,https://www.openstreetmap.org/relation/8279941
+relation,13747752,Centrum Galerie,,,,4,,0,25,https://www.openstreetmap.org/relation/13747752
+relation,13747754,,retail,,4,1,,0,19,https://www.openstreetmap.org/relation/13747754
+relation,13747755,,retail,,4,3,,0,25,https://www.openstreetmap.org/relation/13747755
+relation,15050409,Historischer Güterboden,train_station,,1,0,,0,12,https://www.openstreetmap.org/relation/15050409
+relation,15979238,,retail,,1,0,,0,24,https://www.openstreetmap.org/relation/15979238
+relation,16892414,Elbepark,retail,,,3,,0,9,https://www.openstreetmap.org/relation/16892414
+way,4707917,dresden.karree,retail,,2,1,,0,3,https://www.openstreetmap.org/way/4707917
+way,5200951,Netto Marken-Discount,retail,,1,1,,0,17,https://www.openstreetmap.org/way/5200951
+way,11171920,Netto Marken-Discount,retail,,,0,,0,4,https://www.openstreetmap.org/way/11171920
+way,11272971,Lidl,retail,,1,0,,0,4,https://www.openstreetmap.org/way/11272971
+way,11277320,Lidl,retail,,1,1,,0,0,https://www.openstreetmap.org/way/11277320
+way,11378057,Fontane-Center,retail,,,6,0,1,12,https://www.openstreetmap.org/way/11378057
+way,13859426,,retail,,,4,,0,11,https://www.openstreetmap.org/way/13859426
+way,13859427,,retail,,8,1,0,1,15,https://www.openstreetmap.org/way/13859427
+way,13859431,,retail,,4,2,0;1,2,8,https://www.openstreetmap.org/way/13859431
+way,13859444,,retail,,2,1,,0,5,https://www.openstreetmap.org/way/13859444
+way,13859465,Altmarkt-Galerie,,,,16,0,1,56,https://www.openstreetmap.org/way/13859465
+way,13859913,Prager Spitze,retail,,5,0,,0,32,https://www.openstreetmap.org/way/13859913
+way,15894776,,retail,,,1,,0,2,https://www.openstreetmap.org/way/15894776
+way,21867687,Gasthaus,retail,,1,0,,0,8,https://www.openstreetmap.org/way/21867687
+way,22764283,,retail,,,0,,0,8,https://www.openstreetmap.org/way/22764283
+way,22764481,Dresden Hauptbahnhof,train_station,,1,36,0;1,2,64,https://www.openstreetmap.org/way/22764481
+way,22986769,,retail,,2,0,,0,4,https://www.openstreetmap.org/way/22986769
+way,22986813,,retail,,2,0,,0,0,https://www.openstreetmap.org/way/22986813
+way,22987101,,retail,,,0,,0,7,https://www.openstreetmap.org/way/22987101
+way,22987104,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/22987104
+way,22989671,Netto Marken-Discount,retail,,1,1,,0,0,https://www.openstreetmap.org/way/22989671
+way,22992229,Aldi Nord,retail,,1,0,,0,8,https://www.openstreetmap.org/way/22992229
+way,22998028,,retail,,1,0,,0,16,https://www.openstreetmap.org/way/22998028
+way,22998029,,retail,,1,1,,0,16,https://www.openstreetmap.org/way/22998029
+way,22998030,H & H Döner-Dürum,retail,,1,1,,0,9,https://www.openstreetmap.org/way/22998030
+way,22999208,Glaskugelhaus am Wiener Platz,retail,,3,1,0,1,47,https://www.openstreetmap.org/way/22999208
+way,22999277,,retail,,2,0,,0,11,https://www.openstreetmap.org/way/22999277
+way,22999474,,retail,,2,1,0,1,5,https://www.openstreetmap.org/way/22999474
+way,22999478,,retail,,2,2,,0,8,https://www.openstreetmap.org/way/22999478
+way,22999479,,retail,,2,1,,0,11,https://www.openstreetmap.org/way/22999479
+way,22999965,,retail,,4,3,,0,36,https://www.openstreetmap.org/way/22999965
+way,23003455,Netto,retail,,,1,,0,3,https://www.openstreetmap.org/way/23003455
+way,23024264,,retail,,,0,,0,8,https://www.openstreetmap.org/way/23024264
+way,23052221,,retail,,,0,,0,3,https://www.openstreetmap.org/way/23052221
+way,23069747,Susi's Sportsbar,retail,,1,0,,0,19,https://www.openstreetmap.org/way/23069747
+way,23094143,,retail,,1,2,,0,7,https://www.openstreetmap.org/way/23094143
+way,23115427,,retail,,1,4,,0,8,https://www.openstreetmap.org/way/23115427
+way,23125106,,retail,,6,1,,0,8,https://www.openstreetmap.org/way/23125106
+way,23130287,Speicher,retail,,2,0,,0,2,https://www.openstreetmap.org/way/23130287
+way,23168101,,retail,,,1,,0,0,https://www.openstreetmap.org/way/23168101
+way,23168110,METRO,retail,,,1,,0,0,https://www.openstreetmap.org/way/23168110
+way,23233536,,retail,,1,0,,0,9,https://www.openstreetmap.org/way/23233536
+way,23280466,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/23280466
+way,23282775,Netto Marken-Discount,retail,,1,0,,0,25,https://www.openstreetmap.org/way/23282775
+way,23284113,Lidl,retail,,1,1,,0,11,https://www.openstreetmap.org/way/23284113
+way,23289876,Günther-Landgraf-Bau,retail,,2,6,-1;0;1,3,4,https://www.openstreetmap.org/way/23289876
+way,23295403,Netto Marken-Discount,retail,,1,0,,0,17,https://www.openstreetmap.org/way/23295403
+way,23307545,pitstop,retail,,3,0,,0,9,https://www.openstreetmap.org/way/23307545
+way,23342082,Selah Coffee House,retail,,1,1,,0,3,https://www.openstreetmap.org/way/23342082
+way,23342084,,retail,,1,1,,0,2,https://www.openstreetmap.org/way/23342084
+way,23390623,,retail,,,1,,0,8,https://www.openstreetmap.org/way/23390623
+way,23390626,Lidl,retail,,1,0,,0,7,https://www.openstreetmap.org/way/23390626
+way,23423105,Netto Marken-Discount,retail,,,1,,0,0,https://www.openstreetmap.org/way/23423105
+way,23539867,OBI,retail,,,3,,0,14,https://www.openstreetmap.org/way/23539867
+way,23539868,Simmel-Markt,retail,,,4,,0,9,https://www.openstreetmap.org/way/23539868
+way,23588612,Elbepark Stadthaus,retail,,,0,,0,15,https://www.openstreetmap.org/way/23588612
+way,23588613,,retail,,,4,,0,17,https://www.openstreetmap.org/way/23588613
+way,23680927,Netto Marken-Discount,retail,,1,3,,0,6,https://www.openstreetmap.org/way/23680927
+way,23752791,,retail,,1,0,,0,7,https://www.openstreetmap.org/way/23752791
+way,23752799,Kaufland,retail,,3,1,,0,13,https://www.openstreetmap.org/way/23752799
+way,23752803,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/23752803
+way,23820262,Tusculum,retail,,,2,,0,5,https://www.openstreetmap.org/way/23820262
+way,23820322,,train_station,,,3,,0,0,https://www.openstreetmap.org/way/23820322
+way,23820529,Netto Marken-Discount,retail,,1,0,,0,8,https://www.openstreetmap.org/way/23820529
+way,23914676,Lidl,retail,,1,1,,0,10,https://www.openstreetmap.org/way/23914676
+way,24042700,Netto Marken-Discount,retail,,1,0,,0,8,https://www.openstreetmap.org/way/24042700
+way,24355870,,retail,,3,2,,0,0,https://www.openstreetmap.org/way/24355870
+way,24365741,Aldi,supermarket,,,1,,0,4,https://www.openstreetmap.org/way/24365741
+way,24374257,,retail,,1,2,,0,14,https://www.openstreetmap.org/way/24374257
+way,24374607,Konsum,retail,,1,1,,0,0,https://www.openstreetmap.org/way/24374607
+way,24374647,Fristo,retail,,1,1,,0,12,https://www.openstreetmap.org/way/24374647
+way,24381743,Manufaktur,retail,,2,0,,0,8,https://www.openstreetmap.org/way/24381743
+way,24382401,Getränkemarkt Below,retail,,1,0,,0,9,https://www.openstreetmap.org/way/24382401
+way,24393536,Total,retail,,1,0,,0,1,https://www.openstreetmap.org/way/24393536
+way,24415624,,train_station,,3,0,,0,12,https://www.openstreetmap.org/way/24415624
+way,24415643,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/24415643
+way,24415647,,retail,,2,0,,0,2,https://www.openstreetmap.org/way/24415647
+way,24415648,,retail,,2,1,,0,2,https://www.openstreetmap.org/way/24415648
+way,24552390,Konsum,retail,,1,1,,0,9,https://www.openstreetmap.org/way/24552390
+way,24552405,Räcknitz Forum,retail,,4,7,-1;0;1;5,4,9,https://www.openstreetmap.org/way/24552405
+way,24559074,Aldi Nord,retail,,1,1,,0,5,https://www.openstreetmap.org/way/24559074
+way,24560261,,retail,,2,0,,0,9,https://www.openstreetmap.org/way/24560261
+way,24560262,Universa Haus,retail,,5,1,,0,9,https://www.openstreetmap.org/way/24560262
+way,24621666,Kleinnaundorf,train_station,,,2,,0,1,https://www.openstreetmap.org/way/24621666
+way,24669142,Globus Baumarkt,retail,,,2,,0,4,https://www.openstreetmap.org/way/24669142
+way,24678211,Netto Marken-Discount,retail,,,0,,0,6,https://www.openstreetmap.org/way/24678211
+way,24734326,,retail,,2,0,,0,6,https://www.openstreetmap.org/way/24734326
+way,24739520,Schillergalerie,retail,,2,0,,0,19,https://www.openstreetmap.org/way/24739520
+way,24739679,,retail,,2,1,,0,4,https://www.openstreetmap.org/way/24739679
+way,24739680,,retail,,1,0,,0,3,https://www.openstreetmap.org/way/24739680
+way,24739765,,retail,,3,0,,0,1,https://www.openstreetmap.org/way/24739765
+way,24795178,Norma,retail,,,0,,0,5,https://www.openstreetmap.org/way/24795178
+way,24824713,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/24824713
+way,24890191,,retail,,,2,,0,0,https://www.openstreetmap.org/way/24890191
+way,24897217,Lidl,retail,,1,0,,0,16,https://www.openstreetmap.org/way/24897217
+way,24921624,Asia Imbiss & Döner Kebab,retail,,,0,,0,6,https://www.openstreetmap.org/way/24921624
+way,24967327,Netto Marken-Discount,retail,,1,1,,0,12,https://www.openstreetmap.org/way/24967327
+way,24968040,Autohaus Pietzsch,retail,,,0,,0,0,https://www.openstreetmap.org/way/24968040
+way,24969329,,retail,,,0,,0,4,https://www.openstreetmap.org/way/24969329
+way,24969657,,retail,,,0,,0,0,https://www.openstreetmap.org/way/24969657
+way,24981611,,retail,,1,3,,0,4,https://www.openstreetmap.org/way/24981611
+way,24981960,,retail,,6,2,,0,12,https://www.openstreetmap.org/way/24981960
+way,24981962,,retail,,6,1,,0,9,https://www.openstreetmap.org/way/24981962
+way,25033949,Lidl,retail,,1,4,,0,10,https://www.openstreetmap.org/way/25033949
+way,25128427,toom Baumarkt,retail,,1,2,,0,4,https://www.openstreetmap.org/way/25128427
+way,25210755,,retail,,,0,,0,4,https://www.openstreetmap.org/way/25210755
+way,25237741,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/25237741
+way,25298131,,retail,,,3,,0,0,https://www.openstreetmap.org/way/25298131
+way,25347302,,retail,,1,0,,0,9,https://www.openstreetmap.org/way/25347302
+way,25347303,,retail,,,0,,0,1,https://www.openstreetmap.org/way/25347303
+way,25347304,,retail,,2,0,,0,6,https://www.openstreetmap.org/way/25347304
+way,25347508,Löma-Center,retail,,,0,,0,5,https://www.openstreetmap.org/way/25347508
+way,25682158,SCHIEDT Büro+Computer,retail,,1,0,,0,0,https://www.openstreetmap.org/way/25682158
+way,25836887,Otto-Dix Center,yes,,,0,,0,4,https://www.openstreetmap.org/way/25836887
+way,25881059,,retail,,,0,,0,0,https://www.openstreetmap.org/way/25881059
+way,25897820,,retail,,2,0,,0,0,https://www.openstreetmap.org/way/25897820
+way,26132244,,train_station,,1,0,,0,23,https://www.openstreetmap.org/way/26132244
+way,26563196,Aldi,retail,,,0,,0,8,https://www.openstreetmap.org/way/26563196
+way,26701945,,retail,,,0,,0,0,https://www.openstreetmap.org/way/26701945
+way,26705751,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/26705751
+way,26705763,,retail,,2,2,,0,6,https://www.openstreetmap.org/way/26705763
+way,26705767,,retail,,2,2,1,1,8,https://www.openstreetmap.org/way/26705767
+way,26814630,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/26814630
+way,27102375,Altes Fährgut Loschwitz,retail,,1,0,,0,7,https://www.openstreetmap.org/way/27102375
+way,27102377,,retail,,1,0,,0,9,https://www.openstreetmap.org/way/27102377
+way,27102964,Alte Feuerwache Loschwitz,retail,,1,0,,0,11,https://www.openstreetmap.org/way/27102964
+way,27112929,Prohliszentrum,retail,,,2,0,1,8,https://www.openstreetmap.org/way/27112929
+way,27124456,"Antike Möbel ""Alte Wache""",retail,,1,0,,0,12,https://www.openstreetmap.org/way/27124456
+way,27159662,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/27159662
+way,27276981,,retail,,2,2,,0,4,https://www.openstreetmap.org/way/27276981
+way,27283167,,retail,,1,0,,0,13,https://www.openstreetmap.org/way/27283167
+way,27425054,,retail,,4,0,,0,8,https://www.openstreetmap.org/way/27425054
+way,27425129,,retail,,2,0,,0,8,https://www.openstreetmap.org/way/27425129
+way,27444115,Aldi,retail,,1,1,,0,4,https://www.openstreetmap.org/way/27444115
+way,27444117,,retail,,2,0,,0,4,https://www.openstreetmap.org/way/27444117
+way,27444151,,retail,,1,1,,0,10,https://www.openstreetmap.org/way/27444151
+way,27444425,,retail,,1,0,,0,17,https://www.openstreetmap.org/way/27444425
+way,27569935,Denns BioMarkt,retail,,1,0,,0,7,https://www.openstreetmap.org/way/27569935
+way,27570317,geofux,retail,,2,0,,0,4,https://www.openstreetmap.org/way/27570317
+way,27717706,KLAX,retail,,1,0,,0,24,https://www.openstreetmap.org/way/27717706
+way,27820103,Netto Marken-Discount,retail,,1,3,,0,16,https://www.openstreetmap.org/way/27820103
+way,27867384,Netto Marken-Discount,retail,,1,0,,0,15,https://www.openstreetmap.org/way/27867384
+way,28000103,Netto Marken-Discount,retail,,1,0,,0,2,https://www.openstreetmap.org/way/28000103
+way,28072835,Lidl,retail,,1,0,,0,8,https://www.openstreetmap.org/way/28072835
+way,28236974,,retail,,,0,,0,2,https://www.openstreetmap.org/way/28236974
+way,28251577,,train_station,,1,0,,0,18,https://www.openstreetmap.org/way/28251577
+way,28380120,Lidl,retail,,1,0,,0,0,https://www.openstreetmap.org/way/28380120
+way,28545517,Friseur Salon Sylli,retail,,,0,,0,11,https://www.openstreetmap.org/way/28545517
+way,28545523,,retail,,,0,,0,8,https://www.openstreetmap.org/way/28545523
+way,28563762,,retail,,,0,,0,9,https://www.openstreetmap.org/way/28563762
+way,28698807,Edeka center Heeresbäckerei,retail,,1,0,,0,7,https://www.openstreetmap.org/way/28698807
+way,28988590,,retail,,1,1,,0,0,https://www.openstreetmap.org/way/28988590
+way,29087603,REWE,retail,,2,0,,0,18,https://www.openstreetmap.org/way/29087603
+way,29101418,,train_station,,2,0,,0,19,https://www.openstreetmap.org/way/29101418
+way,29122208,Hammer,retail,,1,0,,0,0,https://www.openstreetmap.org/way/29122208
+way,29339897,,retail,,,0,,0,5,https://www.openstreetmap.org/way/29339897
+way,29340710,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/29340710
+way,29346444,2radHenke,retail,,1,0,,0,4,https://www.openstreetmap.org/way/29346444
+way,29580159,,retail,,,0,,0,3,https://www.openstreetmap.org/way/29580159
+way,29580176,Kaufland,retail,,,1,,0,5,https://www.openstreetmap.org/way/29580176
+way,30028202,Küchen-Profi-Center,retail,,,0,,0,10,https://www.openstreetmap.org/way/30028202
+way,30031118,,retail,,,2,,0,15,https://www.openstreetmap.org/way/30031118
+way,30060766,Kulturbahnhof Radebeul,train_station,,2,0,,0,24,https://www.openstreetmap.org/way/30060766
+way,30061134,REWE Keyser,retail,,,0,,0,5,https://www.openstreetmap.org/way/30061134
+way,30061165,,retail,,,1,,0,4,https://www.openstreetmap.org/way/30061165
+way,30099094,Lidl,retail,,1,2,,0,6,https://www.openstreetmap.org/way/30099094
+way,30338540,,retail,,,0,,0,0,https://www.openstreetmap.org/way/30338540
+way,30342309,,retail,,,3,2,1,6,https://www.openstreetmap.org/way/30342309
+way,30719008,,retail,,2,4,,0,24,https://www.openstreetmap.org/way/30719008
+way,30749722,,retail,,1,1,,0,0,https://www.openstreetmap.org/way/30749722
+way,30836470,OBI,retail,,1,0,,0,4,https://www.openstreetmap.org/way/30836470
+way,30836568,BAUEN+LEBEN GmbH & Co. KG,retail,,2,0,,0,2,https://www.openstreetmap.org/way/30836568
+way,30977581,Hornbach,retail,,1,3,,0,4,https://www.openstreetmap.org/way/30977581
+way,30993366,JYSK,retail,,1,0,,0,5,https://www.openstreetmap.org/way/30993366
+way,31096575,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/31096575
+way,31170583,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/31170583
+way,31170669,,retail,,1,2,0,1,14,https://www.openstreetmap.org/way/31170669
+way,31245566,,retail,,3,0,,0,12,https://www.openstreetmap.org/way/31245566
+way,31245567,Netto Marken-Discount,retail,,1,0,,0,12,https://www.openstreetmap.org/way/31245567
+way,31245574,Lidl,retail,,,1,,0,10,https://www.openstreetmap.org/way/31245574
+way,31246229,Seidnitz Center,yes,,,6,,0,6,https://www.openstreetmap.org/way/31246229
+way,31263896,PENNY,retail,,1,1,,0,8,https://www.openstreetmap.org/way/31263896
+way,31263897,OBI,retail,,2,2,,0,8,https://www.openstreetmap.org/way/31263897
+way,31281082,,retail,,1,1,,0,10,https://www.openstreetmap.org/way/31281082
+way,31516992,,retail,,3,0,,0,2,https://www.openstreetmap.org/way/31516992
+way,31546914,"""Laubegaster Wache""",retail,,2,0,,0,15,https://www.openstreetmap.org/way/31546914
+way,31546926,,retail,,,0,,0,8,https://www.openstreetmap.org/way/31546926
+way,31648917,,retail,,3,0,,0,6,https://www.openstreetmap.org/way/31648917
+way,32131145,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/32131145
+way,32396753,Aldi,supermarket,,,0,,0,5,https://www.openstreetmap.org/way/32396753
+way,32511541,Netto Marken-Discount,retail,,1,0,,0,4,https://www.openstreetmap.org/way/32511541
+way,32532661,,retail,,1,1,,0,0,https://www.openstreetmap.org/way/32532661
+way,32765125,,train_station,,1,2,,0,9,https://www.openstreetmap.org/way/32765125
+way,32847585,,retail,,1,2,,0,4,https://www.openstreetmap.org/way/32847585
+way,32966749,,retail,,2,2,0,1,13,https://www.openstreetmap.org/way/32966749
+way,32974373,,retail,,1,0,,0,18,https://www.openstreetmap.org/way/32974373
+way,32974374,,retail,,3,0,,0,18,https://www.openstreetmap.org/way/32974374
+way,32974375,,retail,,1,0,,0,18,https://www.openstreetmap.org/way/32974375
+way,32977604,,retail,,,0,,0,2,https://www.openstreetmap.org/way/32977604
+way,33043086,,retail,,2,1,,0,4,https://www.openstreetmap.org/way/33043086
+way,33271578,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/33271578
+way,33560712,Konsum,retail,,1,0,,0,5,https://www.openstreetmap.org/way/33560712
+way,33772157,,retail,,4,6,0,1,49,https://www.openstreetmap.org/way/33772157
+way,33807043,McDonald's,retail,,1,0,,0,8,https://www.openstreetmap.org/way/33807043
+way,33994623,,retail,,5,0,,0,6,https://www.openstreetmap.org/way/33994623
+way,34105746,Leubnitz Treff,retail,,,0,,0,4,https://www.openstreetmap.org/way/34105746
+way,34125463,Netto Marken-Discount,retail,,1,0,,0,5,https://www.openstreetmap.org/way/34125463
+way,34385151,,retail,,2,0,,0,5,https://www.openstreetmap.org/way/34385151
+way,34420477,Otto-Dix-Center,commercial,,3,3,,0,4,https://www.openstreetmap.org/way/34420477
+way,34513617,Öz Nemrut,retail,,1,0,,0,12,https://www.openstreetmap.org/way/34513617
+way,34764131,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/34764131
+way,35431795,Netto Marken-Discount,retail,,1,1,,0,4,https://www.openstreetmap.org/way/35431795
+way,35558880,Fristo,retail,,1,0,,0,5,https://www.openstreetmap.org/way/35558880
+way,35675530,Lidl,retail,,1,1,,0,12,https://www.openstreetmap.org/way/35675530
+way,35676197,Einkehr am Palmenhaus,retail,,,1,,0,8,https://www.openstreetmap.org/way/35676197
+way,35745582,,retail,,1,0,,0,13,https://www.openstreetmap.org/way/35745582
+way,35745587,,retail,,,0,,0,11,https://www.openstreetmap.org/way/35745587
+way,35787946,star Shop,retail,,1,0,,0,8,https://www.openstreetmap.org/way/35787946
+way,35825848,Netto Marken-Discount,retail,,1,0,,0,7,https://www.openstreetmap.org/way/35825848
+way,36780670,,retail,,2,0,,0,6,https://www.openstreetmap.org/way/36780670
+way,36780671,,retail,,3,0,,0,9,https://www.openstreetmap.org/way/36780671
+way,36819335,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/36819335
+way,36910149,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/36910149
+way,37173276,,retail,,2,1,,0,0,https://www.openstreetmap.org/way/37173276
+way,37583448,,retail,,1,0,,0,11,https://www.openstreetmap.org/way/37583448
+way,37686810,Fristo,retail,,,0,,0,8,https://www.openstreetmap.org/way/37686810
+way,37726678,Netto Marken-Discount,retail,,1,1,,0,3,https://www.openstreetmap.org/way/37726678
+way,37935819,Weltclub - afropa e.V.,retail,,2,1,,0,4,https://www.openstreetmap.org/way/37935819
+way,38113506,,retail,,1,0,,0,13,https://www.openstreetmap.org/way/38113506
+way,38113581,,retail,,1,0,,0,12,https://www.openstreetmap.org/way/38113581
+way,38241946,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/38241946
+way,38241972,Familienzentrum Heiderand,retail,,2,1,,0,12,https://www.openstreetmap.org/way/38241972
+way,38564097,Aldi Nord,retail,,1,1,,0,15,https://www.openstreetmap.org/way/38564097
+way,38939373,Netto Marken-Discount,retail,,1,0,,0,4,https://www.openstreetmap.org/way/38939373
+way,39189619,,retail,,,0,,0,12,https://www.openstreetmap.org/way/39189619
+way,39230247,Aldi,retail,,1,1,,0,13,https://www.openstreetmap.org/way/39230247
+way,39340136,,retail,,1,0,,0,2,https://www.openstreetmap.org/way/39340136
+way,39498236,,retail,,1,0,,0,12,https://www.openstreetmap.org/way/39498236
+way,40025841,,retail,,1,0,,0,15,https://www.openstreetmap.org/way/40025841
+way,40063322,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/40063322
+way,40065814,Kaufland,retail,,1,1,0,1,11,https://www.openstreetmap.org/way/40065814
+way,40589084,,retail,,,0,,0,5,https://www.openstreetmap.org/way/40589084
+way,40944325,,retail,,,1,,0,16,https://www.openstreetmap.org/way/40944325
+way,41917194,Katy's Garage - Club und Bar,retail,,2,1,,0,4,https://www.openstreetmap.org/way/41917194
+way,41920385,Netto,supermarket,,,1,,0,12,https://www.openstreetmap.org/way/41920385
+way,41977871,,retail,,2,0,,0,14,https://www.openstreetmap.org/way/41977871
+way,41988760,Löbtau-Passage,retail,,3,2,0,1,17,https://www.openstreetmap.org/way/41988760
+way,42002384,Netto Marken-Discount,retail,,1,0,,0,10,https://www.openstreetmap.org/way/42002384
+way,42336651,McDonald's,retail,,1,1,,0,4,https://www.openstreetmap.org/way/42336651
+way,42429031,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/42429031
+way,42607161,,retail,,2,1,,0,2,https://www.openstreetmap.org/way/42607161
+way,42615265,Bahnhof Moritzburg,train_station,,,2,,0,6,https://www.openstreetmap.org/way/42615265
+way,43210065,Bäckerei Walther,retail,,1,0,,0,8,https://www.openstreetmap.org/way/43210065
+way,43339292,Empfangsgebäude Friedewald (Kr Dresden) Bad,train_station,,,0,,0,5,https://www.openstreetmap.org/way/43339292
+way,44006440,Netto,supermarket,,1,4,,0,2,https://www.openstreetmap.org/way/44006440
+way,44145797,,retail,,,0,,0,12,https://www.openstreetmap.org/way/44145797
+way,44145824,,retail,,,0,,0,3,https://www.openstreetmap.org/way/44145824
+way,44145993,Netto Marken-Discount,retail,,1,0,,0,6,https://www.openstreetmap.org/way/44145993
+way,44642121,,retail,,2,2,,0,6,https://www.openstreetmap.org/way/44642121
+way,44645948,,retail,,,0,,0,6,https://www.openstreetmap.org/way/44645948
+way,44828918,Zoundhouse,retail,,1,0,,0,0,https://www.openstreetmap.org/way/44828918
+way,45426289,,retail,,2,0,,0,14,https://www.openstreetmap.org/way/45426289
+way,45935213,,retail,,1.5,2,,0,17,https://www.openstreetmap.org/way/45935213
+way,45935222,,retail,,1.5,4,,0,17,https://www.openstreetmap.org/way/45935222
+way,46106622,Zur Hexe,retail,,1,0,,0,14,https://www.openstreetmap.org/way/46106622
+way,46505897,dm,retail,,1,1,,0,6,https://www.openstreetmap.org/way/46505897
+way,47091841,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/47091841
+way,47355989,,retail,,,0,,0,0,https://www.openstreetmap.org/way/47355989
+way,47381227,Netto Marken-Discount,retail,,1,0,,0,19,https://www.openstreetmap.org/way/47381227
+way,47977613,,retail,,1,2,,0,8,https://www.openstreetmap.org/way/47977613
+way,48523557,,retail,,1,0,,0,20,https://www.openstreetmap.org/way/48523557
+way,48797624,Lidl,retail,,1,1,,0,4,https://www.openstreetmap.org/way/48797624
+way,49845868,,retail,,2,1,,0,13,https://www.openstreetmap.org/way/49845868
+way,51274116,Multipolster,retail,,,0,,0,8,https://www.openstreetmap.org/way/51274116
+way,51792164,,retail,,1,1,,0,7,https://www.openstreetmap.org/way/51792164
+way,51972986,JYSK,retail,,,0,,0,4,https://www.openstreetmap.org/way/51972986
+way,53411294,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/53411294
+way,53662673,Lidl,retail,,1,1,,0,3,https://www.openstreetmap.org/way/53662673
+way,55527326,Auto Maxx,retail,,1,1,,0,6,https://www.openstreetmap.org/way/55527326
+way,55970661,Einkaufsgalerie,retail,,,2,,0,2,https://www.openstreetmap.org/way/55970661
+way,57379818,,retail,,2,0,,0,15,https://www.openstreetmap.org/way/57379818
+way,57913819,Netto Marken-Discount,retail,,1,0,,0,8,https://www.openstreetmap.org/way/57913819
+way,60910616,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/60910616
+way,61434326,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/61434326
+way,62032798,,retail,,,0,,0,8,https://www.openstreetmap.org/way/62032798
+way,62789950,Kletterparadies,retail,,,0,,0,15,https://www.openstreetmap.org/way/62789950
+way,64781993,,retail,,1,1,,0,2,https://www.openstreetmap.org/way/64781993
+way,64781997,,retail,,1,1,,0,2,https://www.openstreetmap.org/way/64781997
+way,67264996,PENNY,retail,,1,1,,0,4,https://www.openstreetmap.org/way/67264996
+way,68259090,,retail,,,0,,0,1,https://www.openstreetmap.org/way/68259090
+way,69863463,Mietgeräte Wiener,retail,,1,1,,0,11,https://www.openstreetmap.org/way/69863463
+way,76702073,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/76702073
+way,76734135,Autohaus Anders GmbH,retail,,,0,,0,5,https://www.openstreetmap.org/way/76734135
+way,77764551,EDEKA C+C Großmarkt,retail,,,0,,0,10,https://www.openstreetmap.org/way/77764551
+way,78163956,,retail,,1,0,,0,7,https://www.openstreetmap.org/way/78163956
+way,78391660,Fliesen-Profi,retail,,,0,,0,6,https://www.openstreetmap.org/way/78391660
+way,83711853,,retail,,,0,,0,12,https://www.openstreetmap.org/way/83711853
+way,83731775,,retail,,,0,,0,2,https://www.openstreetmap.org/way/83731775
+way,83897756,,retail,,,0,,0,6,https://www.openstreetmap.org/way/83897756
+way,84661003,,retail,,1,0,,0,15,https://www.openstreetmap.org/way/84661003
+way,85314751,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/85314751
+way,85941957,,retail,,2,1,,0,4,https://www.openstreetmap.org/way/85941957
+way,86163106,Mercedes Benz,retail,,2,0,,0,7,https://www.openstreetmap.org/way/86163106
+way,87049083,Möbel Boss,retail,,3,0,,0,0,https://www.openstreetmap.org/way/87049083
+way,87280930,Kess-Center,retail,,2,4,,0,19,https://www.openstreetmap.org/way/87280930
+way,92331085,,retail,,,2,,0,8,https://www.openstreetmap.org/way/92331085
+way,93105231,,retail,,,0,,0,11,https://www.openstreetmap.org/way/93105231
+way,94163078,Gartenlokal Fortschritt,retail,,1,1,,0,4,https://www.openstreetmap.org/way/94163078
+way,94670833,Thomas Philipps Sonderposten,retail,,,1,,0,5,https://www.openstreetmap.org/way/94670833
+way,94670963,Hohenbusch Center Weixdorf,yes,,,3,,0,8,https://www.openstreetmap.org/way/94670963
+way,94711071,,retail,,1.5,2,,0,11,https://www.openstreetmap.org/way/94711071
+way,96421742,,retail,,2,1,,0,4,https://www.openstreetmap.org/way/96421742
+way,98463758,,retail,,,0,,0,3,https://www.openstreetmap.org/way/98463758
+way,98492742,,retail,,2,0,,0,4,https://www.openstreetmap.org/way/98492742
+way,99471967,Netto Marken-Discount,retail,,1,0,,0,12,https://www.openstreetmap.org/way/99471967
+way,99996659,,retail,,1,0,,0,9,https://www.openstreetmap.org/way/99996659
+way,100879671,Netto Marken-Discount,retail,,,0,,0,4,https://www.openstreetmap.org/way/100879671
+way,102039263,,retail,,3,0,,0,23,https://www.openstreetmap.org/way/102039263
+way,102039268,,retail,,2,2,,0,23,https://www.openstreetmap.org/way/102039268
+way,103374883,,retail,,1,2,,0,11,https://www.openstreetmap.org/way/103374883
+way,103759483,,retail,,1,0,,0,2,https://www.openstreetmap.org/way/103759483
+way,103759487,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/103759487
+way,103759488,Fristo,retail,,1,0,,0,2,https://www.openstreetmap.org/way/103759488
+way,104358900,,train_station,,3,0,,0,19,https://www.openstreetmap.org/way/104358900
+way,104891036,,retail,,,0,,0,3,https://www.openstreetmap.org/way/104891036
+way,105764224,Gärtnerhaus,retail,,1,0,,0,3,https://www.openstreetmap.org/way/105764224
+way,106695888,Fristo,retail,,1,1,,0,6,https://www.openstreetmap.org/way/106695888
+way,106695889,Lidl,retail,,1,2,,0,15,https://www.openstreetmap.org/way/106695889
+way,107101643,,retail,,5,8,,0,37,https://www.openstreetmap.org/way/107101643
+way,108121827,,retail,,,0,,0,2,https://www.openstreetmap.org/way/108121827
+way,108235016,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/108235016
+way,110521673,,retail,,,0,,0,4,https://www.openstreetmap.org/way/110521673
+way,110785688,,retail,,2,0,,0,8,https://www.openstreetmap.org/way/110785688
+way,111403026,,retail,,1,0,,0,9,https://www.openstreetmap.org/way/111403026
+way,111739076,,retail,,1,2,,0,4,https://www.openstreetmap.org/way/111739076
+way,112023454,,retail,,,0,,0,0,https://www.openstreetmap.org/way/112023454
+way,112023457,,retail,,,0,,0,4,https://www.openstreetmap.org/way/112023457
+way,112023494,,retail,,,0,,0,4,https://www.openstreetmap.org/way/112023494
+way,114716655,,retail,,1,0,,0,12,https://www.openstreetmap.org/way/114716655
+way,115015074,Trollhus,retail,,2,0,,0,5,https://www.openstreetmap.org/way/115015074
+way,116396752,Badusan,retail,,1,0,,0,0,https://www.openstreetmap.org/way/116396752
+way,116396753,Flath Getränke & Mehr,retail,,,0,,0,0,https://www.openstreetmap.org/way/116396753
+way,116405572,,retail,,4,5,0;1,2,4,https://www.openstreetmap.org/way/116405572
+way,116405573,,retail,,2,0,,0,4,https://www.openstreetmap.org/way/116405573
+way,116542489,Wreesmann,retail,,1,0,,0,9,https://www.openstreetmap.org/way/116542489
+way,117649713,Lidl,retail,,1,1,,0,6,https://www.openstreetmap.org/way/117649713
+way,117960669,,retail,,1,2,,0,12,https://www.openstreetmap.org/way/117960669
+way,118389655,Fristo,retail,,,0,,0,4,https://www.openstreetmap.org/way/118389655
+way,118563299,Freital-Hainsberg,train_station,,2,1,,0,15,https://www.openstreetmap.org/way/118563299
+way,118850178,,retail,,1,0,,0,9,https://www.openstreetmap.org/way/118850178
+way,118850203,,retail,,1,0,,0,7,https://www.openstreetmap.org/way/118850203
+way,118850220,Sachsengarage,retail,,1,0,,0,3,https://www.openstreetmap.org/way/118850220
+way,119293720,Restaurant & Hotel Schöne Aussicht,retail,,2,0,,0,5,https://www.openstreetmap.org/way/119293720
+way,121923463,,retail,,2,0,,0,9,https://www.openstreetmap.org/way/121923463
+way,124768715,,retail,,,1,,0,9,https://www.openstreetmap.org/way/124768715
+way,125143567,,retail,,3,1,,0,8,https://www.openstreetmap.org/way/125143567
+way,125143592,,retail,,2,0,,0,12,https://www.openstreetmap.org/way/125143592
+way,126278967,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/126278967
+way,128287318,Kaufland,retail,,,0,,0,2,https://www.openstreetmap.org/way/128287318
+way,128569958,,retail,,1,3,,0,0,https://www.openstreetmap.org/way/128569958
+way,128734489,,retail,,1,0,,0,5,https://www.openstreetmap.org/way/128734489
+way,132687957,,retail,,,0,,0,8,https://www.openstreetmap.org/way/132687957
+way,132725111,,retail,,1,0,,0,5,https://www.openstreetmap.org/way/132725111
+way,134568031,bilgro,retail,,,0,,0,10,https://www.openstreetmap.org/way/134568031
+way,135671324,,retail,,,0,,0,22,https://www.openstreetmap.org/way/135671324
+way,135672237,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/135672237
+way,136177295,Netto Marken-Discount,retail,,1,3,,0,10,https://www.openstreetmap.org/way/136177295
+way,136298347,,retail,,3,0,,0,34,https://www.openstreetmap.org/way/136298347
+way,136647229,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/136647229
+way,136647244,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/136647244
+way,138403439,,retail,,,0,,0,2,https://www.openstreetmap.org/way/138403439
+way,138403440,,retail,,,0,,0,4,https://www.openstreetmap.org/way/138403440
+way,138403443,,retail,,,6,,0,13,https://www.openstreetmap.org/way/138403443
+way,138451978,,retail,,,0,,0,5,https://www.openstreetmap.org/way/138451978
+way,138470845,Neustädter Markthalle,retail,,2,3,,0,6,https://www.openstreetmap.org/way/138470845
+way,138719825,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/138719825
+way,138928518,Asia4Friends,retail,,2,1,,0,7,https://www.openstreetmap.org/way/138928518
+way,139890511,,retail,,1,0,,0,7,https://www.openstreetmap.org/way/139890511
+way,140012113,,retail,,,0,,0,6,https://www.openstreetmap.org/way/140012113
+way,140044015,Aldi Nord,retail,,1,0,,0,8,https://www.openstreetmap.org/way/140044015
+way,140044022,MD-Automobile,retail,,2,0,,0,16,https://www.openstreetmap.org/way/140044022
+way,140516842,Scheren Große,retail,,1,0,,0,7,https://www.openstreetmap.org/way/140516842
+way,142807027,McDonald's,retail,,,0,,0,6,https://www.openstreetmap.org/way/142807027
+way,143417250,,retail,,,0,,0,4,https://www.openstreetmap.org/way/143417250
+way,143551638,,train_station,,1,4,,0,27,https://www.openstreetmap.org/way/143551638
+way,144276958,Einkaufszentrum Silberberg-Center Radeberg,yes,,1,2,,0,6,https://www.openstreetmap.org/way/144276958
+way,145007458,,train_station,,2,0,,0,10,https://www.openstreetmap.org/way/145007458
+way,145042878,,retail,,,0,,0,23,https://www.openstreetmap.org/way/145042878
+way,145042902,,retail,,2,1,,0,23,https://www.openstreetmap.org/way/145042902
+way,145296844,,retail,,,1,,0,3,https://www.openstreetmap.org/way/145296844
+way,145616749,VG BIO-Markt DD-Strehlen,retail,,1,0,,0,4,https://www.openstreetmap.org/way/145616749
+way,145618590,Franz-Holzapfel-Hausverwaltung,retail,,3,0,,0,0,https://www.openstreetmap.org/way/145618590
+way,145623775,,retail,,3,3,0,1,17,https://www.openstreetmap.org/way/145623775
+way,146077776,diska,supermarket,,,1,,0,0,https://www.openstreetmap.org/way/146077776
+way,146077778,Aldi,retail,,,0,,0,0,https://www.openstreetmap.org/way/146077778
+way,146348923,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/146348923
+way,146953888,,retail,,,4,1,1,4,https://www.openstreetmap.org/way/146953888
+way,147699215,,retail,,1,1,,0,2,https://www.openstreetmap.org/way/147699215
+way,148295176,Haus E,retail,,,0,,0,0,https://www.openstreetmap.org/way/148295176
+way,148333006,Netto Marken-Discount,retail,,1,1,,0,12,https://www.openstreetmap.org/way/148333006
+way,148503746,Fressnapf,retail,,1,1,,0,6,https://www.openstreetmap.org/way/148503746
+way,148631112,Lidl,retail,,1,0,,0,0,https://www.openstreetmap.org/way/148631112
+way,148631238,,retail,,,0,,0,0,https://www.openstreetmap.org/way/148631238
+way,148730046,Little John Bikes,retail,,,1,,0,12,https://www.openstreetmap.org/way/148730046
+way,148845488,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/148845488
+way,149040343,Rosen-Eck Gärtnerei Christfried Gäbler,retail,,,0,,0,0,https://www.openstreetmap.org/way/149040343
+way,149047655,,retail,,,0,,0,0,https://www.openstreetmap.org/way/149047655
+way,149137076,Bürgerzentrum Waldschänke Hellerau,retail,,2,1,,0,0,https://www.openstreetmap.org/way/149137076
+way,149402265,,retail,,,0,,0,5,https://www.openstreetmap.org/way/149402265
+way,149402268,,retail,,,0,,0,5,https://www.openstreetmap.org/way/149402268
+way,149402320,,retail,,,0,,0,5,https://www.openstreetmap.org/way/149402320
+way,149775692,Konsum,retail,,1,0,,0,8,https://www.openstreetmap.org/way/149775692
+way,149815663,,retail,,6,3,,0,12,https://www.openstreetmap.org/way/149815663
+way,150554230,,retail,,4,1,,0,3,https://www.openstreetmap.org/way/150554230
+way,150751724,Hofladen Weixdorf,retail,,,1,,0,0,https://www.openstreetmap.org/way/150751724
+way,150764361,Lidl,retail,,1,0,,0,14,https://www.openstreetmap.org/way/150764361
+way,150818307,,retail,,1,1,,0,6,https://www.openstreetmap.org/way/150818307
+way,150839890,,retail,,,0,,0,9,https://www.openstreetmap.org/way/150839890
+way,150916699,,retail,,1,0,,0,27,https://www.openstreetmap.org/way/150916699
+way,151172495,,retail,,1,3,,0,24,https://www.openstreetmap.org/way/151172495
+way,151172496,,retail,,2,1,,0,24,https://www.openstreetmap.org/way/151172496
+way,151528642,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/151528642
+way,151540318,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/151540318
+way,151621304,,retail,,,1,,0,4,https://www.openstreetmap.org/way/151621304
+way,151621305,,retail,,,2,,0,4,https://www.openstreetmap.org/way/151621305
+way,151621306,,retail,,,1,,0,4,https://www.openstreetmap.org/way/151621306
+way,151626834,,retail,,,0,,0,4,https://www.openstreetmap.org/way/151626834
+way,151631777,,retail,,3,0,,0,8,https://www.openstreetmap.org/way/151631777
+way,151636755,Bahnhof Freital-Potschappel,train_station,,2,7,-1;0,2,14,https://www.openstreetmap.org/way/151636755
+way,151647428,,retail,,1,3,,0,13,https://www.openstreetmap.org/way/151647428
+way,151746862,Lex & Hesse,retail,,,0,,0,0,https://www.openstreetmap.org/way/151746862
+way,152607431,,retail,,2,0,,0,0,https://www.openstreetmap.org/way/152607431
+way,154109781,,retail,,2,0,,0,3,https://www.openstreetmap.org/way/154109781
+way,154109791,Leubnitz-Passagen,apartments,,3,5,,0,16,https://www.openstreetmap.org/way/154109791
+way,154904908,Bahnhof Hänichen-Goldene Höhe,train_station,,1,1,,0,2,https://www.openstreetmap.org/way/154904908
+way,155055809,,retail,,,0,,0,6,https://www.openstreetmap.org/way/155055809
+way,155635914,Konsum,retail,,1,1,,0,10,https://www.openstreetmap.org/way/155635914
+way,156780695,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/156780695
+way,156780697,Handy-Werkstatt,retail,,1,0,,0,9,https://www.openstreetmap.org/way/156780697
+way,156840328,,retail,,,0,,0,6,https://www.openstreetmap.org/way/156840328
+way,163014376,,retail,,2,1,,0,4,https://www.openstreetmap.org/way/163014376
+way,163960650,Fahrzeugservice Silbermann,retail,,2,0,,0,17,https://www.openstreetmap.org/way/163960650
+way,164763390,Total Wash,retail,,,0,,0,4,https://www.openstreetmap.org/way/164763390
+way,165947103,Aldi Nord,retail,,,2,,0,6,https://www.openstreetmap.org/way/165947103
+way,165947108,REWE,retail,,,4,,0,6,https://www.openstreetmap.org/way/165947108
+way,166123228,TTM,retail,,1,0,,0,2,https://www.openstreetmap.org/way/166123228
+way,166369063,,retail,,,0,,0,2,https://www.openstreetmap.org/way/166369063
+way,166646161,,retail,,3,0,,0,10,https://www.openstreetmap.org/way/166646161
+way,167092227,Schweißtechnik Morgenstern,retail,,1,0,,0,6,https://www.openstreetmap.org/way/167092227
+way,167220887,Fressnapf,retail,,,2,,0,14,https://www.openstreetmap.org/way/167220887
+way,167582323,,retail,,,0,,0,9,https://www.openstreetmap.org/way/167582323
+way,167783531,Aldi Nord,retail,,1,1,,0,9,https://www.openstreetmap.org/way/167783531
+way,168451927,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/168451927
+way,168490740,,retail,,,1,,0,4,https://www.openstreetmap.org/way/168490740
+way,170282329,,retail,,2,0,,0,9,https://www.openstreetmap.org/way/170282329
+way,171455063,,retail,,1,0,,0,7,https://www.openstreetmap.org/way/171455063
+way,171459310,diska,supermarket,,1,3,,0,4,https://www.openstreetmap.org/way/171459310
+way,171619335,Haus 22,retail,,,4,,0,12,https://www.openstreetmap.org/way/171619335
+way,171632972,,train_station,,2,0,,0,6,https://www.openstreetmap.org/way/171632972
+way,172086236,Mythos Palace,retail,,1,1,,0,8,https://www.openstreetmap.org/way/172086236
+way,172188595,Stadtteilzentrum Emmers,retail,,,1,,0,8,https://www.openstreetmap.org/way/172188595
+way,172317619,,retail,,1,1,0,1,4,https://www.openstreetmap.org/way/172317619
+way,172454285,,retail,,1,0,,0,2,https://www.openstreetmap.org/way/172454285
+way,172890104,,retail,,1,1,,0,23,https://www.openstreetmap.org/way/172890104
+way,172952626,Kardesch Market,supermarket,,1,0,,0,4,https://www.openstreetmap.org/way/172952626
+way,173062802,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/173062802
+way,174681932,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/174681932
+way,174738429,REWE To Go,retail,,1,0,,0,8,https://www.openstreetmap.org/way/174738429
+way,174738430,Spar Express,retail,,1,0,,0,18,https://www.openstreetmap.org/way/174738430
+way,175996941,,retail,,2,2,,0,3,https://www.openstreetmap.org/way/175996941
+way,175996947,toom Baumarkt,retail,,2,1,,0,3,https://www.openstreetmap.org/way/175996947
+way,176338078,,train_station,,1,0,,0,23,https://www.openstreetmap.org/way/176338078
+way,176338079,,retail,,3,0,,0,25,https://www.openstreetmap.org/way/176338079
+way,177096766,,retail,,,1,,0,4,https://www.openstreetmap.org/way/177096766
+way,177096768,,retail,,,0,,0,4,https://www.openstreetmap.org/way/177096768
+way,177983857,,retail,,1,0,,0,11,https://www.openstreetmap.org/way/177983857
+way,178329007,,retail,,2,0,,0,4,https://www.openstreetmap.org/way/178329007
+way,178329010,DAS Environmental Experts GmbH,retail,,1,0,,0,0,https://www.openstreetmap.org/way/178329010
+way,178329011,Netto Marken-Discount,supermarket,,,0,,0,6,https://www.openstreetmap.org/way/178329011
+way,178332414,Rossmann,retail,,1,0,,0,5,https://www.openstreetmap.org/way/178332414
+way,179485368,Weißeritzpark,yes,,,18,,0,11,https://www.openstreetmap.org/way/179485368
+way,179928628,,retail,,2,0,,0,10,https://www.openstreetmap.org/way/179928628
+way,181512072,,retail,,,0,,0,12,https://www.openstreetmap.org/way/181512072
+way,181512075,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/181512075
+way,181644075,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/181644075
+way,182047565,Donaths ganz neue Welt,retail,,2,0,,0,4,https://www.openstreetmap.org/way/182047565
+way,182237109,,retail,,1,2,,0,10,https://www.openstreetmap.org/way/182237109
+way,182623326,PENNY,retail,,1,0,,0,4,https://www.openstreetmap.org/way/182623326
+way,182917927,,retail,,,0,,0,0,https://www.openstreetmap.org/way/182917927
+way,183332519,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/183332519
+way,183332521,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/183332521
+way,183362207,,retail,,1,0,,0,11,https://www.openstreetmap.org/way/183362207
+way,184562661,,retail,,1,1,,0,26,https://www.openstreetmap.org/way/184562661
+way,184623676,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/184623676
+way,184742625,,retail,,4,0,,0,2,https://www.openstreetmap.org/way/184742625
+way,184970954,Volkshaus Laubegast,retail,,2,0,,0,16,https://www.openstreetmap.org/way/184970954
+way,184975774,Aldi,retail,,1,0,,0,2,https://www.openstreetmap.org/way/184975774
+way,184975787,,retail,,,0,,0,0,https://www.openstreetmap.org/way/184975787
+way,186663869,,retail,,,0,,0,0,https://www.openstreetmap.org/way/186663869
+way,187227098,,retail,,,0,,0,10,https://www.openstreetmap.org/way/187227098
+way,188199526,star shop,retail,,1,1,,0,10,https://www.openstreetmap.org/way/188199526
+way,189141740,Clubhaus,retail,,1,0,,0,0,https://www.openstreetmap.org/way/189141740
+way,189373428,,retail,,1,1,,0,4,https://www.openstreetmap.org/way/189373428
+way,190455967,,retail,,,1,,0,3,https://www.openstreetmap.org/way/190455967
+way,190573070,,retail,,2,0,,0,3,https://www.openstreetmap.org/way/190573070
+way,190573093,,retail,,3,0,,0,3,https://www.openstreetmap.org/way/190573093
+way,191557956,Hornbach,retail,,1,0,,0,6,https://www.openstreetmap.org/way/191557956
+way,191621367,TTM,retail,,2,0,,0,2,https://www.openstreetmap.org/way/191621367
+way,196582992,,retail,,,0,,0,0,https://www.openstreetmap.org/way/196582992
+way,197829701,,retail,,,0,,0,8,https://www.openstreetmap.org/way/197829701
+way,198376810,Lidl,retail,,1,2,,0,4,https://www.openstreetmap.org/way/198376810
+way,198721149,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/198721149
+way,199673266,Citroen Autohaus Wojciech,retail,,,0,,0,4,https://www.openstreetmap.org/way/199673266
+way,200948696,Konsum,retail,,1,0,,0,2,https://www.openstreetmap.org/way/200948696
+way,201306704,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/201306704
+way,203650889,Esso Snack & Shop,retail,,,0,,0,0,https://www.openstreetmap.org/way/203650889
+way,203732001,Showboxx,retail,,2,0,,0,4,https://www.openstreetmap.org/way/203732001
+way,204032889,PitStop,retail,,1,0,,0,20,https://www.openstreetmap.org/way/204032889
+way,204207530,Einkaufszentrum Straßenbahnhof Mickten,,,,3,,0,24,https://www.openstreetmap.org/way/204207530
+way,204817570,,retail,,,0,,0,16,https://www.openstreetmap.org/way/204817570
+way,205535415,,retail,,,0,,0,9,https://www.openstreetmap.org/way/205535415
+way,206521574,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/206521574
+way,207213492,,retail,,2,0,,0,2,https://www.openstreetmap.org/way/207213492
+way,207578273,IKEA,retail,,2,1,,0,2,https://www.openstreetmap.org/way/207578273
+way,207912870,diska,retail,,1,1,,0,6,https://www.openstreetmap.org/way/207912870
+way,208035668,,retail,,,3,,0,2,https://www.openstreetmap.org/way/208035668
+way,208114195,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/208114195
+way,209021875,,retail,,5,0,,0,9,https://www.openstreetmap.org/way/209021875
+way,209289952,,retail,,2,0,,0,4,https://www.openstreetmap.org/way/209289952
+way,211022234,,retail,,,1,,0,6,https://www.openstreetmap.org/way/211022234
+way,217689314,Dresdner Kaffee und Kakao Rösterei,retail,,,0,,0,4,https://www.openstreetmap.org/way/217689314
+way,217984504,Blumenhaus Lindenblüte,retail,,1,0,,0,12,https://www.openstreetmap.org/way/217984504
+way,217993443,,retail,,3,0,,0,12,https://www.openstreetmap.org/way/217993443
+way,218103118,,retail,,1,0,,0,24,https://www.openstreetmap.org/way/218103118
+way,218104410,,retail,,1,1,,0,15,https://www.openstreetmap.org/way/218104410
+way,218558662,,retail,,,0,,0,10,https://www.openstreetmap.org/way/218558662
+way,218558665,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/218558665
+way,218975349,,retail,,,0,,0,2,https://www.openstreetmap.org/way/218975349
+way,219136750,,retail,,2,0,,0,0,https://www.openstreetmap.org/way/219136750
+way,220632797,,retail,,2,0,,0,8,https://www.openstreetmap.org/way/220632797
+way,223417669,,retail,,1,1,,0,4,https://www.openstreetmap.org/way/223417669
+way,223598544,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/223598544
+way,224210075,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/224210075
+way,225731890,Selgros,retail,,,0,,0,2,https://www.openstreetmap.org/way/225731890
+way,227012313,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/227012313
+way,227411225,,retail,,2,1,,0,3,https://www.openstreetmap.org/way/227411225
+way,227704124,,retail,,1,0,,0,12,https://www.openstreetmap.org/way/227704124
+way,227831491,,retail,,2,0,,0,12,https://www.openstreetmap.org/way/227831491
+way,227839753,,retail,,2,0,,0,13,https://www.openstreetmap.org/way/227839753
+way,227846516,,retail,,,0,,0,16,https://www.openstreetmap.org/way/227846516
+way,228069880,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/228069880
+way,228866679,Aral,retail,,,0,,0,5,https://www.openstreetmap.org/way/228866679
+way,229454220,,retail,,0,2,,0,5,https://www.openstreetmap.org/way/229454220
+way,229454222,,retail,,,0,,0,8,https://www.openstreetmap.org/way/229454222
+way,229725602,Weißiger Werkstätten,retail,,,0,,0,7,https://www.openstreetmap.org/way/229725602
+way,230506220,,retail,,,0,,0,0,https://www.openstreetmap.org/way/230506220
+way,230509661,,retail,,,0,,0,4,https://www.openstreetmap.org/way/230509661
+way,230703312,,retail,,,0,,0,4,https://www.openstreetmap.org/way/230703312
+way,230709317,,retail,,,1,,0,8,https://www.openstreetmap.org/way/230709317
+way,230740510,,retail,,1,0,,0,5,https://www.openstreetmap.org/way/230740510
+way,231381037,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/231381037
+way,231834401,Windbergbahnmuseum,train_station,,,0,,0,10,https://www.openstreetmap.org/way/231834401
+way,232137562,,train_station,,3,0,,0,9,https://www.openstreetmap.org/way/232137562
+way,232318822,,retail,,,0,,0,4,https://www.openstreetmap.org/way/232318822
+way,233778779,Bahnhof Karcherallee,train_station,,1,0,,0,6,https://www.openstreetmap.org/way/233778779
+way,233879966,Vereinsheim,retail,,1,1,,0,2,https://www.openstreetmap.org/way/233879966
+way,234336281,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/234336281
+way,234990393,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/234990393
+way,236243126,Einkehr An Der Heidemühle,retail,,,1,,0,4,https://www.openstreetmap.org/way/236243126
+way,236243127,Kaminbaude,retail,,,1,,0,4,https://www.openstreetmap.org/way/236243127
+way,236248498,,retail,,1,0,,0,12,https://www.openstreetmap.org/way/236248498
+way,236475217,,retail,,1,1,,0,12,https://www.openstreetmap.org/way/236475217
+way,237742887,Aldi Nord,retail,,1,0,,0,12,https://www.openstreetmap.org/way/237742887
+way,237866343,,retail,,,1,,0,0,https://www.openstreetmap.org/way/237866343
+way,238582225,Bahnhof Dresden-Neustadt,train_station,,2,6,0,1,45,https://www.openstreetmap.org/way/238582225
+way,238946089,,retail,,1,1,,0,10,https://www.openstreetmap.org/way/238946089
+way,239349553,,retail,,,0,,0,0,https://www.openstreetmap.org/way/239349553
+way,239795486,,retail,,1,2,,0,12,https://www.openstreetmap.org/way/239795486
+way,240357512,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/240357512
+way,240396296,Bäckerei Krause,retail,,1,1,,0,0,https://www.openstreetmap.org/way/240396296
+way,240858206,,retail,,,0,,0,4,https://www.openstreetmap.org/way/240858206
+way,241493437,,retail,,1,0,,0,9,https://www.openstreetmap.org/way/241493437
+way,243719324,,retail,,2,0,,0,6,https://www.openstreetmap.org/way/243719324
+way,245493587,,retail,,,0,,0,6,https://www.openstreetmap.org/way/245493587
+way,245954324,,retail,,,0,,0,0,https://www.openstreetmap.org/way/245954324
+way,247276678,Raumkunst Arndt,retail,,,0,,0,4,https://www.openstreetmap.org/way/247276678
+way,248105020,Ess-Perlen - Ernährungsberatung,retail,,,1,,0,5,https://www.openstreetmap.org/way/248105020
+way,251859305,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/251859305
+way,251859306,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/251859306
+way,251859307,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/251859307
+way,251859308,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/251859308
+way,251859309,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/251859309
+way,251859310,,retail,,1,0,,0,13,https://www.openstreetmap.org/way/251859310
+way,253254841,star shop,retail,,1,0,,0,0,https://www.openstreetmap.org/way/253254841
+way,255678205,Edeka Scheller,retail,,,0,,0,6,https://www.openstreetmap.org/way/255678205
+way,255903867,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/255903867
+way,258105262,Servicezentrum,retail,,1,2,,0,18,https://www.openstreetmap.org/way/258105262
+way,258301750,,retail,,,0,,0,4,https://www.openstreetmap.org/way/258301750
+way,260981133,,retail,,1,1,,0,0,https://www.openstreetmap.org/way/260981133
+way,264364259,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/264364259
+way,264364262,,retail,,,0,,0,4,https://www.openstreetmap.org/way/264364262
+way,265102266,,retail,,6,2,0,1,9,https://www.openstreetmap.org/way/265102266
+way,267014684,Gärtnerei Kühnel,retail,,,0,,0,2,https://www.openstreetmap.org/way/267014684
+way,268021231,,retail,,,0,,0,8,https://www.openstreetmap.org/way/268021231
+way,270403282,,retail,,,0,,0,20,https://www.openstreetmap.org/way/270403282
+way,278481960,,train_station,,,0,,0,2,https://www.openstreetmap.org/way/278481960
+way,279252089,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/279252089
+way,279499916,,train_station,,,0,,0,9,https://www.openstreetmap.org/way/279499916
+way,286263344,HEM Shop,retail,,1,0,,0,0,https://www.openstreetmap.org/way/286263344
+way,286400717,Shell Select,retail,,1,0,,0,0,https://www.openstreetmap.org/way/286400717
+way,286703986,,retail,,1,0,,0,12,https://www.openstreetmap.org/way/286703986
+way,287901447,Aldi,supermarket,,,0,,0,8,https://www.openstreetmap.org/way/287901447
+way,288767448,,retail,,2,0,,0,12,https://www.openstreetmap.org/way/288767448
+way,289407076,,retail,,1,2,,0,0,https://www.openstreetmap.org/way/289407076
+way,289909679,,retail,,1,2,,0,14,https://www.openstreetmap.org/way/289909679
+way,293325171,,train_station,,,0,,0,10,https://www.openstreetmap.org/way/293325171
+way,296223778,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/296223778
+way,297640121,,retail,,,0,,0,0,https://www.openstreetmap.org/way/297640121
+way,298030701,,retail,,,0,,0,4,https://www.openstreetmap.org/way/298030701
+way,304265380,Netto,retail,,1,1,,0,12,https://www.openstreetmap.org/way/304265380
+way,307600177,Barthel Media@Home,retail,,1,0,,0,0,https://www.openstreetmap.org/way/307600177
+way,309677882,Die Fahrradkette,retail,,,0,,0,4,https://www.openstreetmap.org/way/309677882
+way,311153608,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/311153608
+way,312812448,,retail,,5,18,,0,13,https://www.openstreetmap.org/way/312812448
+way,316012216,Dehner,retail,,1,1,,0,6,https://www.openstreetmap.org/way/316012216
+way,321306316,,retail,,2,0,,0,3,https://www.openstreetmap.org/way/321306316
+way,322291694,Simmel-Center,retail,,2,9,0,1,19,https://www.openstreetmap.org/way/322291694
+way,322793631,,retail,,,0,,0,4,https://www.openstreetmap.org/way/322793631
+way,323506200,,retail,,,1,,0,7,https://www.openstreetmap.org/way/323506200
+way,325711874,,retail,,1,4,,0,17,https://www.openstreetmap.org/way/325711874
+way,325754553,,retail,,1,0,,0,3,https://www.openstreetmap.org/way/325754553
+way,326161361,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/326161361
+way,326632776,,retail,,1,0,,0,11,https://www.openstreetmap.org/way/326632776
+way,327505447,,retail,,2,0,,0,5,https://www.openstreetmap.org/way/327505447
+way,327666942,,retail,,,0,,0,5,https://www.openstreetmap.org/way/327666942
+way,327666949,,retail,,3,0,,0,5,https://www.openstreetmap.org/way/327666949
+way,332129283,,retail,,,2,,0,4,https://www.openstreetmap.org/way/332129283
+way,332643032,,retail,,,0,,0,0,https://www.openstreetmap.org/way/332643032
+way,334663489,,retail,,1,1,,0,13,https://www.openstreetmap.org/way/334663489
+way,341185041,,retail,,,0,,0,0,https://www.openstreetmap.org/way/341185041
+way,351523046,Star,retail,,1,0,,0,4,https://www.openstreetmap.org/way/351523046
+way,355328775,,retail,,,0,,0,3,https://www.openstreetmap.org/way/355328775
+way,356295163,SP1,retail,,,1,,0,21,https://www.openstreetmap.org/way/356295163
+way,356632119,Bahnhof Dresden-Klotzsche,train_station,,2,3,,0,23,https://www.openstreetmap.org/way/356632119
+way,370540750,,retail,,1,5,0,1,7,https://www.openstreetmap.org/way/370540750
+way,373798833,,retail,,2,0,,0,8,https://www.openstreetmap.org/way/373798833
+way,374443598,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/374443598
+way,380526636,,retail,,,0,,0,7,https://www.openstreetmap.org/way/380526636
+way,382956143,,retail,,1,0,,0,7,https://www.openstreetmap.org/way/382956143
+way,383349377,,retail,,2,1,,0,35,https://www.openstreetmap.org/way/383349377
+way,383445679,Wintergarten,retail,,1,0,,0,6,https://www.openstreetmap.org/way/383445679
+way,385668439,,retail,,1,0,,0,14,https://www.openstreetmap.org/way/385668439
+way,387463702,,retail,,1,0,,0,13,https://www.openstreetmap.org/way/387463702
+way,387587215,,retail,,,0,,0,6,https://www.openstreetmap.org/way/387587215
+way,387587216,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/387587216
+way,401435047,,retail,,2,3,,0,3,https://www.openstreetmap.org/way/401435047
+way,402054367,,retail,,,0,,0,5,https://www.openstreetmap.org/way/402054367
+way,410332011,,retail,,,1,,0,0,https://www.openstreetmap.org/way/410332011
+way,414701063,,retail,,1,5,,0,16,https://www.openstreetmap.org/way/414701063
+way,418262376,,retail,,,0,,0,12,https://www.openstreetmap.org/way/418262376
+way,418323791,,train_station,,2,3,,0,12,https://www.openstreetmap.org/way/418323791
+way,427335936,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/427335936
+way,427836958,,retail,,2,2,,0,23,https://www.openstreetmap.org/way/427836958
+way,444592955,,retail,,,0,,0,2,https://www.openstreetmap.org/way/444592955
+way,450096257,,retail,,,0,,0,20,https://www.openstreetmap.org/way/450096257
+way,450096601,Auto Motorrad Pietzsch,retail,,,0,,0,2,https://www.openstreetmap.org/way/450096601
+way,461105908,,retail,,1,0,,0,11,https://www.openstreetmap.org/way/461105908
+way,461105909,,retail,,1,0,,0,9,https://www.openstreetmap.org/way/461105909
+way,483553522,,retail,,2,0,,0,4,https://www.openstreetmap.org/way/483553522
+way,498648238,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/498648238
+way,508981197,Konsum,retail,,,1,,0,6,https://www.openstreetmap.org/way/508981197
+way,520581470,Fährhaus von 1860,retail,,,1,,0,4,https://www.openstreetmap.org/way/520581470
+way,520967020,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/520967020
+way,535283190,,retail,,,0,,0,3,https://www.openstreetmap.org/way/535283190
+way,544727305,,retail,,1,0,,0,2,https://www.openstreetmap.org/way/544727305
+way,549932550,,train_station,signal_box,1,0,,0,1,https://www.openstreetmap.org/way/549932550
+way,556504649,,retail,,2,1,,0,1,https://www.openstreetmap.org/way/556504649
+way,570023953,,retail,,1,2,,0,4,https://www.openstreetmap.org/way/570023953
+way,570506549,,retail,,,1,,0,9,https://www.openstreetmap.org/way/570506549
+way,572154239,,retail,,1,1,,0,12,https://www.openstreetmap.org/way/572154239
+way,577838021,Eisladen Mickten,retail,,1,0,,0,8,https://www.openstreetmap.org/way/577838021
+way,579343894,,retail,,,0,,0,7,https://www.openstreetmap.org/way/579343894
+way,580072035,,retail,,,0,,0,23,https://www.openstreetmap.org/way/580072035
+way,580085553,Baustoffhandel Miersch & Stephan GmbH,retail,,,0,,0,4,https://www.openstreetmap.org/way/580085553
+way,580602042,,retail,,,0,,0,9,https://www.openstreetmap.org/way/580602042
+way,581277740,,retail,,,0,,0,6,https://www.openstreetmap.org/way/581277740
+way,582981681,,retail,,,2,,0,23,https://www.openstreetmap.org/way/582981681
+way,582981697,Bäckerei Jürgen Richter,retail,,,0,,0,23,https://www.openstreetmap.org/way/582981697
+way,582981701,,retail,,,0,,0,23,https://www.openstreetmap.org/way/582981701
+way,582981761,,retail,,,0,,0,12,https://www.openstreetmap.org/way/582981761
+way,583357060,,retail,,,0,,0,8,https://www.openstreetmap.org/way/583357060
+way,583757353,,retail,,3,0,,0,4,https://www.openstreetmap.org/way/583757353
+way,583757384,,retail,,1,0,,0,1,https://www.openstreetmap.org/way/583757384
+way,583757401,,retail,,2,0,,0,0,https://www.openstreetmap.org/way/583757401
+way,583761546,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/583761546
+way,585201604,,retail,,,0,,0,0,https://www.openstreetmap.org/way/585201604
+way,585201721,,retail,,2,0,,0,6,https://www.openstreetmap.org/way/585201721
+way,585204072,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/585204072
+way,585736679,,retail,,,3,,0,11,https://www.openstreetmap.org/way/585736679
+way,585736680,,retail,,,2,,0,11,https://www.openstreetmap.org/way/585736680
+way,585894808,,train_station,,2,4,0,1,45,https://www.openstreetmap.org/way/585894808
+way,586098761,,retail,,,0,,0,11,https://www.openstreetmap.org/way/586098761
+way,586098763,,retail,,,0,,0,11,https://www.openstreetmap.org/way/586098763
+way,586098765,Galeria,retail,,6,3,0,1,12,https://www.openstreetmap.org/way/586098765
+way,586715536,,retail,,1,1,0,1,8,https://www.openstreetmap.org/way/586715536
+way,586870677,TG Automobile,retail,,1,0,,0,0,https://www.openstreetmap.org/way/586870677
+way,588186032,,retail,,1,0,,0,7,https://www.openstreetmap.org/way/588186032
+way,588186145,,retail,,,1,,0,24,https://www.openstreetmap.org/way/588186145
+way,588449535,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/588449535
+way,589283870,,retail,,2,0,,0,0,https://www.openstreetmap.org/way/589283870
+way,589283871,,retail,,2,0,,0,0,https://www.openstreetmap.org/way/589283871
+way,591326468,Zschach Center,retail,,1,2,,0,8,https://www.openstreetmap.org/way/591326468
+way,591650533,,retail,,,0,,0,0,https://www.openstreetmap.org/way/591650533
+way,596839877,,retail,,1,1,,0,7,https://www.openstreetmap.org/way/596839877
+way,643068468,,retail,,,0,,0,3,https://www.openstreetmap.org/way/643068468
+way,644523339,,retail,,,0,,0,4,https://www.openstreetmap.org/way/644523339
+way,648526085,,retail,,2,0,,0,4,https://www.openstreetmap.org/way/648526085
+way,648526086,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/648526086
+way,665409601,,retail,,1,0,,0,20,https://www.openstreetmap.org/way/665409601
+way,670401359,,retail,,1,2,,0,6,https://www.openstreetmap.org/way/670401359
+way,672128919,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/672128919
+way,679036656,,retail,,,0,,0,16,https://www.openstreetmap.org/way/679036656
+way,679036658,,retail,,,0,,0,13,https://www.openstreetmap.org/way/679036658
+way,700194361,,retail,,,0,,0,4,https://www.openstreetmap.org/way/700194361
+way,702148943,Deutsche Telekom,retail,,,0,,0,0,https://www.openstreetmap.org/way/702148943
+way,708296360,Fahrrad XXL,retail,,,1,,0,8,https://www.openstreetmap.org/way/708296360
+way,712483245,Die Autofinder,retail,,,0,,0,4,https://www.openstreetmap.org/way/712483245
+way,727503821,,retail,,,1,0,1,0,https://www.openstreetmap.org/way/727503821
+way,731782351,,retail,,,1,,0,7,https://www.openstreetmap.org/way/731782351
+way,743334648,,retail,,2,0,,0,11,https://www.openstreetmap.org/way/743334648
+way,747940846,,retail,,,1,,0,6,https://www.openstreetmap.org/way/747940846
+way,747963097,Netto Marken-Discount,retail,,,0,,0,8,https://www.openstreetmap.org/way/747963097
+way,757257005,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/757257005
+way,768890944,Bauhaus,retail,,1,0,,0,20,https://www.openstreetmap.org/way/768890944
+way,771971976,,retail,,1,0,,0,17,https://www.openstreetmap.org/way/771971976
+way,771971977,,retail,,1,0,,0,17,https://www.openstreetmap.org/way/771971977
+way,772005051,,retail,,1,0,,0,17,https://www.openstreetmap.org/way/772005051
+way,772005052,,retail,,1,0,,0,13,https://www.openstreetmap.org/way/772005052
+way,772005053,,retail,,1,0,,0,17,https://www.openstreetmap.org/way/772005053
+way,786361122,,retail,,,0,,0,0,https://www.openstreetmap.org/way/786361122
+way,788908400,Blumen 123,retail,,,0,,0,14,https://www.openstreetmap.org/way/788908400
+way,796575303,toom Baumarkt,retail,,1,0,,0,3,https://www.openstreetmap.org/way/796575303
+way,799505849,Drehstuhl Dresden,retail,,,2,,0,10,https://www.openstreetmap.org/way/799505849
+way,816208447,,retail,,,0,,0,0,https://www.openstreetmap.org/way/816208447
+way,816567033,,retail,,,4,,0,3,https://www.openstreetmap.org/way/816567033
+way,820272293,,retail,,2,1,,0,4,https://www.openstreetmap.org/way/820272293
+way,822598822,,retail,,,2,,0,5,https://www.openstreetmap.org/way/822598822
+way,825103405,Aldi Nord,retail,,1,0,,0,20,https://www.openstreetmap.org/way/825103405
+way,832991903,,retail,,1,0,,0,4,https://www.openstreetmap.org/way/832991903
+way,833049589,sanisax,retail,,1,0,,0,15,https://www.openstreetmap.org/way/833049589
+way,839819639,,retail,,,0,,0,6,https://www.openstreetmap.org/way/839819639
+way,840584957,Porsche Zentrum Dresden,retail,,2,0,,0,6,https://www.openstreetmap.org/way/840584957
+way,878290932,Butterfly Ink,retail,,,0,,0,2,https://www.openstreetmap.org/way/878290932
+way,885839246,,retail,,1,0,,0,6,https://www.openstreetmap.org/way/885839246
+way,888364452,Aldi,retail,,1,0,,0,8,https://www.openstreetmap.org/way/888364452
+way,888694993,PENNY,retail,,,0,,0,0,https://www.openstreetmap.org/way/888694993
+way,889338829,,retail,,1,0,,0,8,https://www.openstreetmap.org/way/889338829
+way,916737422,,retail,,,0,,0,5,https://www.openstreetmap.org/way/916737422
+way,916737423,,retail,,1,0,,0,5,https://www.openstreetmap.org/way/916737423
+way,948451048,,retail,,,2,0,1,14,https://www.openstreetmap.org/way/948451048
+way,980836398,,retail,,1,3,0,1,21,https://www.openstreetmap.org/way/980836398
+way,1000282155,Aldi,supermarket,,1,1,,0,22,https://www.openstreetmap.org/way/1000282155
+way,1007112976,,retail,,1,0,,0,23,https://www.openstreetmap.org/way/1007112976
+way,1015837077,Aldi Nord,supermarket,,,0,,0,6,https://www.openstreetmap.org/way/1015837077
+way,1022675775,,retail,,1,0,,0,15,https://www.openstreetmap.org/way/1022675775
+way,1022675776,,retail,,,1,,0,13,https://www.openstreetmap.org/way/1022675776
+way,1028122577,JET Tankstelle,retail,,1,1,,0,2,https://www.openstreetmap.org/way/1028122577
+way,1057178335,,retail,,,0,,0,4,https://www.openstreetmap.org/way/1057178335
+way,1057677295,,retail,,,1,,0,0,https://www.openstreetmap.org/way/1057677295
+way,1057677296,,retail,,,1,,0,0,https://www.openstreetmap.org/way/1057677296
+way,1066725698,Ottendorfer Mühlenbäcker,retail,,1,1,,0,6,https://www.openstreetmap.org/way/1066725698
+way,1074188033,Konsum,retail,,1,0,,0,4,https://www.openstreetmap.org/way/1074188033
+way,1091397521,,retail,,,0,,0,8,https://www.openstreetmap.org/way/1091397521
+way,1092156750,Kehl und Klingenberger,retail,,1,0,,0,4,https://www.openstreetmap.org/way/1092156750
+way,1096344530,,retail,,1,0,,0,10,https://www.openstreetmap.org/way/1096344530
+way,1111845763,Mömax,retail,,,1,,0,21,https://www.openstreetmap.org/way/1111845763
+way,1123064605,,retail,,,0,,0,0,https://www.openstreetmap.org/way/1123064605
+way,1133584487,Hornbach,retail,,,0,,0,2,https://www.openstreetmap.org/way/1133584487
+way,1137976906,,retail,,,1,,0,24,https://www.openstreetmap.org/way/1137976906
+way,1137976907,,retail,,,0,,0,24,https://www.openstreetmap.org/way/1137976907
+way,1137976908,,retail,,,0,,0,24,https://www.openstreetmap.org/way/1137976908
+way,1149910871,,retail,,,0,,0,3,https://www.openstreetmap.org/way/1149910871
+way,1149917510,Eierautomat,retail,,1,1,,0,0,https://www.openstreetmap.org/way/1149917510
+way,1178572295,PENNY,supermarket,,,3,,0,3,https://www.openstreetmap.org/way/1178572295
+way,1185551296,,retail,,,0,,0,22,https://www.openstreetmap.org/way/1185551296
+way,1188421712,,retail,,1,0,,0,0,https://www.openstreetmap.org/way/1188421712
+way,1188421713,Netto Marken-Discount,retail,,,0,,0,0,https://www.openstreetmap.org/way/1188421713
+way,1192518003,EDEKA center Peltzer,retail,,,0,,0,6,https://www.openstreetmap.org/way/1192518003
+way,1194977535,,retail,,5,0,,0,8,https://www.openstreetmap.org/way/1194977535
+way,1209850468,Curry Haus 2,retail,,,0,,0,8,https://www.openstreetmap.org/way/1209850468
+way,1227979954,,retail,,,0,,0,10,https://www.openstreetmap.org/way/1227979954
+way,1233550787,Kaufpark Dresden-Nickern,retail,,,2,,0,22,https://www.openstreetmap.org/way/1233550787
+way,1265257909,,retail,,6,1,,0,15,https://www.openstreetmap.org/way/1265257909
+way,1284813497,,retail,,1,1,,0,0,https://www.openstreetmap.org/way/1284813497
+way,1304082177,Aldi Nord,retail,,1,4,,0,17,https://www.openstreetmap.org/way/1304082177
+way,1340238582,Werkzeughandel Paufler,retail,,1,0,,0,0,https://www.openstreetmap.org/way/1340238582
+way,1353924918,,retail,,,0,,0,4,https://www.openstreetmap.org/way/1353924918
+way,1367951173,toom Baumarkt,retail,,,0,,0,2,https://www.openstreetmap.org/way/1367951173
+way,1367951174,toom Gartencenter,retail,,,0,,0,2,https://www.openstreetmap.org/way/1367951174
+way,1367988496,,retail,,,2,,0,6,https://www.openstreetmap.org/way/1367988496
+way,1417031167,,retail,,,0,,0,4,https://www.openstreetmap.org/way/1417031167
+way,1489743763,,retail,,,0,,0,4,https://www.openstreetmap.org/way/1489743763
+way,1530622927,,retail,,,0,,0,5,https://www.openstreetmap.org/way/1530622927
+way,1541261142,,retail,,,0,,0,2,https://www.openstreetmap.org/way/1541261142
+way,1541261143,,retail,,1,0,,0,2,https://www.openstreetmap.org/way/1541261143
