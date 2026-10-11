@@ -21,14 +21,19 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 
 # Wie nutzt man das Paket?
 ## Voraussetzungen
-1. Linux Rechner
+1. Linux Rechner am Internet
 2. opencode V2 installiert
-3. python installiert
+3. python3 installiert
 
 ## Installation
-1. Download mittels `git clone`
+1. Download mittels `git clone git@github.com:Steffen531/exploreGeoStructures.git`
 2. Im obersten Verzeichnis `exploreGeoStructures` ein Python virtual environment mittel `python3 -m venv venv` anlegen
-3. 
+
+## Erste Schritte
+1. `opencode` ausführen
+2. Mit `/skills` skills anzeigen: es sollten die oben beschriebenen skills zu sehen sein
+3. Eine erste Aufgabe stellen wie z.B. "Suche Behörden in Bochum"
+   
 # Beispiele
 
 ## Einsame Fußwege in München Giesing
