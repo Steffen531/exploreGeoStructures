@@ -32,9 +32,9 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 ![Behörden, Botschaften & Co. in Leiden](docs/Leiden.jpg)
 
 ## Malls, Bahnhöfe u.ä. in Dresden
-![Malls & Co. in Dresden](docs/MallsEtcDresden.jpg)
+![Malls & Co. in Dresden](docs/DresdenMallsEtc.jpg)
 
 ## Eine 1-stündige ÖPNV-Rundfahrt am 1.12.26 in Frankfurt a.M. ab 18:00 Uhr
-![ÖPNV-Rundfahrt in FFM](docs/ÖPNV.jpg)
+![ÖPNV-Rundfahrt in FFM](docs/ÖPNVFrankfurt.jpg)
 
 # Nächste Schritte
