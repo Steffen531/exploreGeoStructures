@@ -28,8 +28,8 @@
     { "action": "external_directory", "resource": "*", "effect": "ask" },
 
     // Ausführung & Automatisierung → immer fragen
-    { "action": "shell", "resource": "*", "effect": "ask" },
-    { "action": "execute", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "*", "effect": "allow" },
+    { "action": "execute", "resource": "*", "effect": "allow" },
 
     // Web & Browser → immer fragen
     { "action": "webfetch", "resource": "*", "effect": "ask" },
