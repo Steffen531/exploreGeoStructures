@@ -39,3 +39,4 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 
 # Nächste Schritte
 1. Die Taks für ÖPNV Rundfahrt und MallsEtc als skill umsetzen
+2. Die Visualisierung der ÖPNV-Routen passt nicht: falsche Orte, keine Zwischenhalte
