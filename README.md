@@ -19,6 +19,16 @@ Die skills sind die zentralen und wichtigsten Teile. Jeder Skill besteht aus ein
 
 Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-improving-ai-skills-claude-code) angelegt. Länder und Städte haben unterschiedliche Datenquellen für Geodaten. Die Zugriffe auf solche Dienste variieren ebenfalls. Solche Erkenntnisse speichert sich der skill am Ende und fragt den Nutzer nach einem feedback.
 
+# Wie nutzt man das Paket?
+## Voraussetzungen
+1. Linux Rechner
+2. opencode V2 installiert
+3. python installiert
+
+## Installation
+1. Download mittels `git clone`
+2. Im obersten Verzeichnis `exploreGeoStructures` ein Python virtual environment mittel `python3 -m venv venv` anlegen
+3. 
 # Beispiele
 
 ## Einsame Fußwege in München Giesing
