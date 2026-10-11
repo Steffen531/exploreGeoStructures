@@ -38,3 +38,4 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 ![ÖPNV-Rundfahrt in FFM](docs/ÖPNVFrankfurt.jpg)
 
 # Nächste Schritte
+1. Die Taks für ÖPNV Rundfahrt und MallsEtc als skill umsetzen
