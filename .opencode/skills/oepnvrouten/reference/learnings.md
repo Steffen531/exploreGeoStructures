@@ -15,6 +15,14 @@ Pflegen:
 
 ## Was gut lief
 
+- Stuttgart Hbf → Bad Cannstatt, 15.10.2026: 621 Stationen und 84 Linien (light_rail, bus) via Overpass-API im Hbf/Cannstatt-Bereich erfolgreich abgefragt. Abfrage in 5 Teile nach route_type aufgeteilt.
+
 ## Was nicht lief
 
+- S-Bahn- und Tram-Relationsabfragen (route_type=train, tram) über Overpass lieferten 504 Timeouts.
+- Ranking war falsch: Bus wurde über S-Bahn bevorzugt, weil die ersten 3 gefundenen Routen zurückgegeben wurden statt alle zu sammeln und nach Score zu rangieren.
+- Verkehrsmittel-Prioritäten falsch: Bus hatte bessere Priorität als S-Bahn. Nutzer-Feedback 15.10.2026: Dauer ist hartes Fenster kein Ranking; Schienenverkehr (Straßenbahn, Regionalzug, U-Bahn, S-Bahn) muss Bus bevorzugen.
+
 ## Offene Fragen
+
+- Fahrtzeiten aktuell geschätzt (3 Min/Segment), keine echten GTFS-Fahrpländaten. Könnte mit VVS-GTFS-Feed verbessert werden.

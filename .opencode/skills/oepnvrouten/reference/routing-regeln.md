@@ -13,7 +13,7 @@ keine Rückkehr zu bereits besuchten Haltestellen.
 
 ### 2. Kein Straßenabschnitt zweimal
 
-Jede Kante (Verbindung zwischen zwei Stationen) darf nur einmal verwendet
+Jede Kante (Verbindung zwischen Stationen) darf nur einmal verwendet
 werden. Kein Zurücklaufen auf derselben Strecke.
 
 ### 3. Start ≠ Ende
@@ -23,51 +23,53 @@ explizit denselben Start-End-Punkt (muss im Skill-Log vermerkt werden).
 
 ### 4. Keine Zwischenstopps
 
-Nur Start, Umstiege und Ende sind erlaubt. Keine „Sightseeing-Pausen"
-oder festgelegten Stopps auf der Strecke.
+Nur Start, Umstiege und Ende sind erlaubt.
 
-### 5. Alle Abfahrtszeiten >= aktuelles Datum+Uhrzeit
+### 5. Alle Abfahrtszeiten >= Nutzer-Datum + Nutzer-Uhrzeit
 
-Die Route muss mit dem konfigurierten Datum und der Uhrzeit starten
-und im Rahmen des Dauer-Fensters bleiben.
+Die Route muss innerhalb des vom Nutzer vorgegebenen Zeitfensters liegen.
+Die Dauer ist ein **hartes Filter**, kein Ranking-Kriterium.
 
-## Optimierungsziele (priorisiert)
+## Optimierungsziele (Ranking, priorisiert)
 
 | Priorität | Ziel | Umsetzung |
 |-----------|------|-----------|
-| 1 | Kurze Umstiegszeiten | Gewicht `w1` in Kostenfunktion |
-| 2 | Strikte Keine-Wiederholungen | Harte Constraints (siehe oben) |
-| 3 | Störungen/Absagen berücksichtigen | Echtzeit-Daten, Alternativen suchen |
-| 4 | Einhaltung der Dauer | Harte Constraints (Dauer-Fenster) |
-| 5 | Einhaltung der Umstiegsanzahl | Harte Constraints (min/max) |
+| 1 | Kurze Umstiegszeiten | Gewicht `w1` in Score |
+| 2 | Schienenverkehr bevorzugt | Straßenbahn/U-Bahn/S-Bahn/Regionalzug besser als Bus |
+| 3 | Vielfalt der Verkehrsmittel | Routen mit unterschiedlichen Verkehrsmitteln bevorzugen |
+
+Nicht Ranking-Kriterien (harte Filter): Dauer, Geschwindigkeit, Kosten.
 
 ## Kostenfunktion
 
 ```
-Cost = w1 * (Fußwegzeit) + w2 * (Wartezeit) + w3 * (Constraint-Strafen)
+Score = w1 * (Fußwegzeit + Wartezeit) + w2 * Σ Verkehrsmittel-Priorität
 ```
 
-Standard-Gewichte:
-- `w1 = 2.0` (Fußgewege priorisieren)
-- `w2 = 2.0` (Wartezeiten priorisieren)
-- `w3 = 1.0` (Constraint-Strafen für Verkehrsmittel-Typen)
+- `w1 = 2.0` – Umstiegszeiten stark bestrafen
+- `w2 = 1.0` – Schienenverkehr bevorzugen
 
-## Verkehrsmittel-Prioritäten
+## Verkehrsmittel-Prioritäten (niedriger = besser)
 
 | Verkehrsmittel | Priorität | Begründung |
 |----------------|-----------|------------|
-| Regionalzug | 1 | Schnellste, wenige Halte |
-| S-Bahn | 2 | Schnell, eigenes Gleis |
-| U-Bahn | 2 | Schnell, unterirdisch |
-| Straßenbahn | 3 | Mittel, oft eigenes Gleisbett |
-| Fähre | 4 | Landschaftlich, aber langsam |
-| Ride-Hailing | 5 | Dynamisch, aber teuer |
+| Straßenbahn | 1 | Schienen, oft eigenes Gleisbett |
+| Regionalzug | 1 | Schienen, wenige Halte |
+| U-Bahn | 1 | Schienen, schnell |
+| S-Bahn | 1 | Schienen, schnell |
+| Fähre | 2 | Wasserweg, landschaftlich |
+| Ride-Hailing | 3 | Flexibel, aber teuer/unkontrollierbar |
+| Bus | 4 | Straßenverkehr, langsam |
 | Fußweg | 5 | Nur für Umstiege |
-| Bus | 6 | Langsam, Straßenverkehr |
+
+Schienengebundene Verkehrsmittel erhalten die beste Priorität (1),
+Buse die schlechteste (4). Straßenbahnschienen zählen als Schienenverkehr.
 
 ## Diversitäts-Regeln
 
-- **3 Routen-Vorschläge:** Der Algorithmus sucht 3 verschiedene Routen.
+- **Erst sammeln, dann rangieren:** Der Algorithmus findet ALLE Routen
+  innerhalb der harten Constraints, sortiert sie nach Score und gibt die
+  Top 3 zurück. Nicht die ersten 3 gefundenen Routen.
 - **Diversitäts-Bonus:** Stationen, die noch nicht in früheren Routen
   vorkamen, erhalten einen Bonus von +5.
 - **Mindestens 2 neue Stationen:** Jede neue Route muss mindestens
@@ -76,9 +78,7 @@ Standard-Gewichte:
 ## Score-Berechnung
 
 ```
-Score = 2.0 * (Fußweggesamt) + 2.0 * (Wartezeitgesamt) + 1.0 * (Umstiegsanzahl)
-      + Σ Verkehrsmittel-Priorität
+Score = 2.0 * (Fußweggesamt + Wartezeitgesamt) + 1.0 * Σ Verkehrsmittel-Priorität
 ```
 
-Niedriger Score = bessere Route. Der Score wird in `zusammenfassung.json`
-für jeden Routen-Vorschlag angegeben.
+Niedriger Score = bessere Route.
