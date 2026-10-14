@@ -9,7 +9,7 @@ Ein KI Assistent, der nach besonderen geographischen Strukturen und Bewegungsmus
 * `AGENTS.md` - zentrale Anweisungen (Nutzung python venv, Visualisierung auf Karten mittels kml-files für openstreetmap, ...)
 * `.opencode/skills` - hier sind skills definiert, die einen gewissen Reifegrad haben. Mit "/skills" kann man sie in opencode auflisten
 und mit "@" einen einzelnen Skill benutzen
-* `.opencode/skill/fussweg` - sucht einen möglichst geraden Fußweg ohne parallele Verkehrswege und ohne Abzweigungen von gewisser Länge bzw. Passierdauer
+* `.opencode/skills/fussweg` - sucht einen möglichst geraden Fußweg ohne parallele Verkehrswege und ohne Abzweigungen von gewisser Länge bzw. Passierdauer
 * `.opencode/skills/behoerdenetc` - sucht nach Behörden, Botschaften, Polizeidienststellen etc. in einer Stadt oder einem Stadtteil
 * `.opencode/skills/belebteOrte` - sucht nach Orten in einer Stadt oder einem Stadtteil, die in einem Zeitfenster besonders belebt sind
 
@@ -54,5 +54,6 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 ![ÖPNV-Rundfahrt in FFM](docs/ÖPNVFrankfurt.jpg)
 
 # Nächste Schritte
-1. Die Taks für ÖPNV Rundfahrt und MallsEtc als skill umsetzen
+1. Die Taks MallsEtc als skill umsetzen
 2. Die Visualisierung der ÖPNV-Routen passt nicht: falsche Orte, keine Zwischenhalte
+3. Den neuen oepnvrouten-skill testen (besonders Visualisierung)
