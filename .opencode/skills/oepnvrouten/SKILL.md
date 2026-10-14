@@ -1,6 +1,6 @@
 ---
 name: oepnvrouten
-description: Findet ÖPNV-Routen in beliebigen Städten weltweit – kombiniert GTFS-Fahrpläne, OSM-Daten, OpenTripPlanner und Ride-Hailing zu einem 3-Routen-Vorschlag mit konkreten Abfahrtszeiten. Wird verwendet bei "suche ÖPNV-Rundfahrt", "finde ÖPNV-Route", "ÖPNV-Fahrt planen" oder ähnlichen Anfragen.
+description: Findet ÖPNV-Routen in beliebigen Städten weltweit – kombiniert GTFS-Fahrpläne, OSM-Daten, OpenTripPlanner und Ride-Hailing zu einem 3-Routen-Vorschlag mit konkreten Abfahrtszeiten. Wird verwendet bei "suche ÖPNV", "finde ÖPNV-Route", "ÖPNV planen" oder ähnlichen Anfragen.
 ---
 
 # Skill: ÖPNV-Routen finden

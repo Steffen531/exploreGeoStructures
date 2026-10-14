@@ -10,8 +10,10 @@ Ein KI Assistent, der nach besonderen geographischen Strukturen und Bewegungsmus
 * `.opencode/skills` - hier sind skills definiert, die einen gewissen Reifegrad haben. Mit "/skills" kann man sie in opencode auflisten
 und mit "@" einen einzelnen Skill benutzen
 * `.opencode/skills/fussweg` - sucht einen möglichst geraden Fußweg ohne parallele Verkehrswege und ohne Abzweigungen von gewisser Länge bzw. Passierdauer
+* `.opencode/skills/mallsetc` - sucht nach Einkaufszentren, Bahnhöfen und Passagen mit mehreren Ausgängen, Ausgängen auf unterschiedlichen Ebenen und ÖPNV-Anbindung
 * `.opencode/skills/behoerdenetc` - sucht nach Behörden, Botschaften, Polizeidienststellen etc. in einer Stadt oder einem Stadtteil
 * `.opencode/skills/belebteOrte` - sucht nach Orten in einer Stadt oder einem Stadtteil, die in einem Zeitfenster besonders belebt sind
+* `.opencode/skills/oepnvrouten` - sucht  nach einer ÖPNV-Route mit mehreren und unterschiedlichen Verkehrsmitteln, kurzen Umsteigezeiten, ohne Rückkehr an bereits besuchte Haltetellen
 
 # Design der Skills
 
