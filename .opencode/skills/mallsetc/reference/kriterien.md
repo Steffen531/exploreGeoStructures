@@ -10,8 +10,12 @@ Kontext für Schritt 5 des `SKILL.md`-Prozesses. Alle Kriterien sind
 - Eingänge werden am **Gebäudepolygon** gematcht (Spatial Join, nicht am
   Zentrions-Puffer), mit **10 m Toleranz** an der Gebäudekante – Eingänge
   liegen meist genau auf der Wand.
-- Punkt-Kandidaten (z. B. `railway=station` ohne Gebäudepolygon): **60 m
-  Radius** um den Punkt.
+- Punkt-Kandidaten (ohne Gebäudepolygon):
+  - **Bahnhöfe** (`railway=station` bzw. `public_transport=station`): **60 m
+    Radius** – deren Eingänge verteilen sich über die ganze Stationsfläche.
+  - **Alle anderen Punkte** (z. B. `shop=department_store` als Node): nur
+    **20 m Radius**. Ein großer Radius fängt sonst Eingänge benachbarter
+    Gebäude → falsche Treffer (Berlin-Mitte, siehe `learnings.md`).
 - Zählweise: Anzahl der `entrance`-Nodes im Puffer je Gebäude.
 
 ## ÖPNV-Anbindung (Muss: mind. 1 in 200 m)

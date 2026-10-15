@@ -41,8 +41,10 @@ Hinweise:
   praktisch dieselben Treffer.
 - **Nominatim für die BBox** nutzen (`geocode_to_gdf`), nicht für die
   Abfrage selbst.
-- Antworten als Pickle in `cache/` cachen (`REFRESH=1` / `--refresh`
-  umgeht den Cache) – GPKG verträgt Spaltennamen mit Doppelpunkt nicht.
+- Antworten als Pickle in `cache/` cachen (`--refresh` umgeht den Cache) –
+  GPKG verträgt Spaltennamen mit Doppelpunkt nicht. Cache-Dateiname enthält
+  einen Hash der BBox (`<label>_<hash>.pkl`) – sonst würde ein Lauf für eine
+  andere Stadt den alten Cache laden.
 - **429 = Rate-Limit:** Backoff mit steigender Wartezeit, danach nächster
   Server; nie dieselbe Abfrage im Kreis wiederholen.
 - **413 = Body zu groß:** Query auf Bbox umstellen oder Filter splitten.
@@ -55,3 +57,6 @@ Hinweise:
   eigenen User-Agent mitsenden, Ergebnisse cachen.
 - Für die BBox der Region (`accept-language` setzen); für die exakte
   Stadtgrenze `polygon_geojson=1` (optional – siehe `SKILL.md` Schritt 7).
+- **Auf die BBox-Größe achten:** Stadtteil-Namen können zu einer winzigen
+  Punkt-BBox auflösen („Berlin-Mitte" → 300 × 450 m → 0 Treffer). Dann die
+  BBox des Stadtteils explizit angeben (`--bbox S W N E`).

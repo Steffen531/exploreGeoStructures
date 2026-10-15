@@ -23,6 +23,17 @@ Pflegen:
   Body-Limit erreichbar.
 - Dresden (11.10.2026): Pickle-Cache für Rohdaten – Reruns komplett ohne
   Netz; GPKG-Cache scheitert an Doppelpunkt in Spaltennamen (`ref:vvo`).
+- Dresden-Neustadt (15.10.2026): Cache-Dateiname mit BBox-Hash versehen –
+  sonst lädt ein Lauf für eine andere Region den alten Cache (still falsche
+  Ergebnisse).
+- Berlin-Mitte (15.10.2026): 60-m-Radius nur noch für Bahnhöfe, 20 m für
+  andere Punkt-Kandidaten – „Guru Shop" (`shop=department_store` als Node,
+  kein Gebäude) hatte durch 60 m neun Eingänge aus der Umgebung gesammelt
+  (falscher Treffer). Danach 26 statt 27 Kandidaten, Trefferliste sauberer.
+- Berlin-Mitte (15.10.2026): Eingänge eines Bahnhofs können Mehrfach-Level
+  tragen (`level="-5;-3;-1;0"`) – Union über alle Eingänge ist korrekt,
+  daraus können mehr Ebenen als Eingänge entstehen (Alexanderplatz: 2
+  Eingänge, 4 Ebenen).
 
 ## Was nicht lief
 

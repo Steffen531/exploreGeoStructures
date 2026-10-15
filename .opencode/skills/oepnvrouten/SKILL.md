@@ -53,12 +53,18 @@ Das Verzeichnis `tasks/` ignorieren.
    Stadtteil-Zuordnung für jede Station. Nominatim-Geocoding für Start-/
    Endpunkt. Als Vorlage: `reference/oepnvrouten_suche.py`.
 5. **Routing durchführen.** `reference/routing-regeln.md` laden und alle
-   Constraints anwenden: strikte Keine-Wiederholungen (Station, Straßenabschnitt,
-   Stadtteil), Dauer-Fenster, Umstiegsanzahl, keine Zwischenstopps,
-   kurze Umstiegszeiten (Priorität 1). Multi-Objective-Algorithmus
-   (DFS mit Diversitäts-Belohnung) findet 3 Routen-Vorschläge.
+   Constraints anwenden:
+   - **Start ≠ Ende**: Keine Rundtouren (harte Constraint)
+   - **Keine Zwischenstopps**: Nur Start, Umstiege und Ende
+   - **Strikte Keine-Wiederholungen**: Jede Station, jeder Straßenabschnitt,
+     jeder Stadtteil nur einmal
+   - **Kurze Umstiegszeiten**: Fußwege + Wartezeit minimieren (Priorität 1)
+   - **Störungen/Absagen berücksichtigen**: Echtzeit-Daten, Alternativen suchen
+   - **Ride-Hailing als Brücke**: Ersatz für fehlende ÖPNV-Verbindungen
+   - **3 Routen-Vorschläge**: Multi-Objective-Algorithmus findet genau 3 Optionen
+   - **Kartenvisualisierung**: KML/GPX-Export für umap.openstreetmap.de
 6. **Rangieren und exportieren.** Verbliebene Routen nach Score ranken
-   (kurze Umstiegszeiten + schnelle Verkehrsmittel zuerst) und wie in
+   (kurze Umstiegszeiten + schienengebundene Verkehrsmittel bevorzugt) und wie in
    "Output" beschrieben nach `--output` schreiben.
 7. **Bei Problemen** (0 Treffer, GTFS-Fehler, keine erreichbare Route):
    `reference/fehlerbehandlung.md` laden und den passenden Eintrag ausführen.

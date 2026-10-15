@@ -44,8 +44,9 @@ Das Verzeichnis `tasks/` ignorieren.
    Abschnitte anwenden: Overpass mit Fallback-Servern und den Filtern für
    Gebäude, ÖPNV und Eingänge. Als Vorlage: `reference/malls_suche.py`.
 4. **Eingänge und ÖPNV den Gebäuden zuordnen.** Spatial Join in
-   **metrischem CRS** (UTM): Eingänge am Gebäudepolygon (10 m Toleranz,
-   60 m für Punkt-Kandidaten), ÖPNV-Zentroide im 200-m-Puffer. Auf die
+   **metrischem CRS** (UTM): Eingänge am Gebäudepolygon (10 m Toleranz),
+   für Punkt-Kandidaten 60 m **nur bei Bahnhöfen**, sonst 20 m
+   (`reference/kriterien.md`), ÖPNV-Zentroide im 200-m-Puffer. Auf die
    Positions-Spalte `bidx` gruppieren, nicht auf `index_right` (hängt von den
    Index-Namen ab).
 5. **Kriterien prüfen.** `reference/kriterien.md` laden und **alle**

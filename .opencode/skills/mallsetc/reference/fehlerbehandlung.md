@@ -14,7 +14,8 @@ Kontext für Schritt 7 des `SKILL.md`-Prozesses. Eintragsweise abarbeiten.
 | `KeyError: index_right` | Spatial Join auf Positions-Spalte `bidx` gruppieren, nicht auf `index_right` |
 | GPKG-Cache schlägt fehl (Spaltenname mit Doppelpunkt) | Pickle-Cache verwenden |
 | Gebäude ohne Namen | Leerer Name ist erlaubt; in KML/GPX Beschreibung aus Attributen bauen |
-| Punkt-Kandidaten (railway=station ohne Polygon) | 60 m Radius statt Polygon-Toleranz |
+| Punkt-Kandidaten (railway=station ohne Polygon) | 60 m Radius für Bahnhöfe, 20 m für alle anderen Punkte – sonst falsche Treffer über Nachbargebäude |
+| Nominatim löst Stadtteil-Namen zu winziger BBox auf | BBox prüfen: „Berlin-Mitte" ergab 300 × 450 m → 0 Treffer. Dann explizite BBox des Stadtteils angeben (`--bbox S W N E`) |
 
 **Immer:** Ergebnis-Cache (Pickle) nutzen, damit ein Lauf ohne Netz
 reproduzierbar ist; verworfene Kandidaten mit Grund in `zusammenfassung.json`

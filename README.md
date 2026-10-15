@@ -56,7 +56,5 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 ![ÖPNV-Rundfahrt in FFM](docs/ÖPNVFrankfurt.jpg)
 
 # Nächste Schritte
-1. Prüfe die verhaltensregeln in tasks/ÖPNVRundfahrt/Strategie2/Strategie.md. Diese *müssen* in .opencode/skills/oepnvrouten/SKILL.md enthalten sein
-2. oepnvrouten-skill: Die Visualisierung der ÖPNV-Routen prüfen: Werden sanfte Linien angezeigt oder nur die Umsteigepunkte?
-3. Den neuen oepnvrouten-skill testen (besonders Visualisierung)
-4. Den neuen mallsetc-Skill testen
+1. oepnvrouten-skill: Die Visualisierung der ÖPNV-Routen prüfen: Werden sanfte Linien angezeigt oder nur die Umsteigepunkte?
+2. Den neuen oepnvrouten-skill testen (findet er die richtigen Routen? Nicht die schnellsten! Visualisierung?)

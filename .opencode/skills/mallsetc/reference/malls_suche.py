@@ -29,8 +29,9 @@ warnings.filterwarnings("ignore")
 # ---------------------------------------------------------------------------
 # Konfiguration
 # ---------------------------------------------------------------------------
-BUFFER_ENTRANCE = 10    # m Toleranz Gebäudekande -> Eingang (Polygone)
-BUFFER_POINT = 60       # m Radius für Punkt-Kandidaten (z.B. railway=station)
+BUFFER_ENTRANCE = 10    # m Toleranz Gebäudekante -> Eingang (Polygone)
+BUFFER_POINT = 60       # m Radius für Punkt-Kandidaten Bahnhöfe (railway=station)
+BUFFER_POINT_SMALL = 20 # m Radius für andere Punkt-Kandidaten (z.B. shop-Nodes)
 BUFFER_TRANSIT = 200    # m Maximalabstand zur ÖPNV-Infrastruktur
 MIN_ENTRANCES = 2       # min. Eingänge
 MIN_TRANSIT = 1         # min. ÖPNV-Objekte im Puffer
@@ -171,9 +172,16 @@ def _bbox(place):
     return (left, bottom, right, top)
 
 
+def _cache_key(bbox):
+    """Kurzer Hash der BBox – der Cache ist sonst regionsübergreifend falsch."""
+    import hashlib
+    text = ",".join(f"{v:.4f}" for v in bbox)
+    return hashlib.md5(text.encode()).hexdigest()[:8]
+
+
 def load_features(cache_dir, label, tags, refresh, bbox):
     """Abfrage mit Datei-Cache (Pickle), damit Läufe ohne Netz möglich sind."""
-    cache_path = os.path.join(cache_dir, f"{label}.pkl")
+    cache_path = os.path.join(cache_dir, f"{label}_{_cache_key(bbox)}.pkl")
 
     if os.path.exists(cache_path) and not refresh:
         gdf = pd.read_pickle(cache_path)
@@ -279,10 +287,18 @@ def analyze(cache_dir, place, refresh, output_dir, bbox):
     # -- Eingänge: Gebäudepolygon (+ Toleranz) enthält Eingang -----------------
     # Wichtig: explizite Positions-Spalte "bidx" statt auf die Spalte
     # "index_right" von sjoin zu vertrauen (haengt von den Index-Namen ab).
-    # Toleranz je nach Geometrietyp: Punkte groesser, Polygone schmaler.
+    # Toleranz je nach Geometrietyp: Polygone schmal (10 m), Punkte breiter –
+    # aber der große Radius nur für Bahnhöfe (railway=station). Bei anderen
+    # Punkten (z.B. shop=department_store als Node) fängt 60 m Eingänge
+    # benachbarter Gebäude -> falsche Treffer (siehe learnings.md).
+    is_point = buildings_p.geometry.geom_type.isin(["Point", "MultiPoint"])
+    railway = buildings_p.get("railway", pd.Series("", index=buildings_p.index)).fillna("").astype(str)
+    pt = buildings_p.get("public_transport", pd.Series("", index=buildings_p.index)).fillna("").astype(str)
+    is_station = railway.eq("station") | pt.isin(["station", "stop_position"])
     buildings_p["entry_radius"] = np.where(
-        buildings_p.geometry.geom_type.isin(["Point", "MultiPoint"]),
-        BUFFER_POINT, BUFFER_ENTRANCE,
+        is_point,
+        np.where(is_station, BUFFER_POINT, BUFFER_POINT_SMALL),
+        BUFFER_ENTRANCE,
     )
     entry_buffers = gpd.GeoDataFrame(
         {"bidx": positions},
