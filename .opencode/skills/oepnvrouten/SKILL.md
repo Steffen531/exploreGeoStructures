@@ -51,21 +51,21 @@ Das Verzeichnis `tasks/` ignorieren.
    Abschnitte anwenden: ÖPNV-Graph aus OSM/GTFS (Knoten = Stationen,
    Kanten = Linienverläufe), Straßen-Graph für Fußwege/Ride-Hailing (OSRM),
    Stadtteil-Zuordnung für jede Station. Nominatim-Geocoding für Start-/
-   Endpunkt. Als Vorlage: `reference/oepnvrouten_suche.py`.
-5. **Routing durchführen.** `reference/routing-regeln.md` laden und alle
-   Constraints anwenden:
-   - **Start ≠ Ende**: Keine Rundtouren (harte Constraint)
-   - **Keine Zwischenstopps**: Nur Start, Umstiege und Ende
-   - **Strikte Keine-Wiederholungen**: Jede Station, jeder Straßenabschnitt,
-     jeder Stadtteil nur einmal
-   - **Kurze Umstiegszeiten**: Fußwege + Wartezeit minimieren (Priorität 1)
-   - **Störungen/Absagen berücksichtigen**: Echtzeit-Daten, Alternativen suchen
-   - **Ride-Hailing als Brücke**: Ersatz für fehlende ÖPNV-Verbindungen
-   - **3 Routen-Vorschläge**: Multi-Objective-Algorithmus findet genau 3 Optionen
-   - **Kartenvisualisierung**: KML/GPX-Export für umap.openstreetmap.de
+   Endpunkt. **Station-Clustering ist Pflicht** (150 m), sonst gibt es keine
+   Routen. Als Vorlage: `reference/oepnvrouten_suche.py` (vollständig
+   implementiert).
+5. **Routing durchführen.** Primär **GTFS-Fahrplan-Routing** für echte
+   Abfahrts-/Ankunftszeiten: `reference/datenquellen.md` (§GTFS) laden, den
+   Feed für die Region extrahieren und zeitabhängig routen (früheste Ankunft
+   ab Nutzer-Uhrzeit, 3 unterschiedliche Verbindungen). Das OSM-Routing aus
+   `reference/routing-regeln.md` (Constraints, Score) ist der **Fallback**,
+   falls kein GTFS-Feed/kein Fahrplan verfügbar ist – dort sind die Zeiten
+   Schätzwerte.
 6. **Rangieren und exportieren.** Verbliebene Routen nach Score ranken
-   (kurze Umstiegszeiten + schienengebundene Verkehrsmittel bevorzugt) und wie in
-   "Output" beschrieben nach `--output` schreiben.
+   (kurze Umstiegszeiten + schienengebundene Verkehrsmittel bevorzugt), **echte
+   Fahrweg-Geometrien** der verwendeten Linien laden
+   (`relation(ID); way(r); out geom;`) und wie in "Output" beschrieben nach
+   `--output` schreiben. Keine Luftlinien zwischen Haltestellen.
 7. **Bei Problemen** (0 Treffer, GTFS-Fehler, keine erreichbare Route):
    `reference/fehlerbehandlung.md` laden und den passenden Eintrag ausführen.
    Constraints nacheinander entschärfen (NUR in dieser Reihenfolge):
@@ -100,22 +100,23 @@ Ebene" → Karte teilen.
 
 ## Skript
 
-`reference/oepnvrouten_suche.py` ist die Vorlage für Schritte 2–6:
+`reference/oepnvrouten_suche.py` ist die Vorlage für Schritte 2–6. Es führt
+**zuerst** das GTFS-Fahrplan-Routing aus (echte Zeiten) und fällt bei
+Fehlern aufs OSM-Routing zurück:
 
 ```bash
 # Stadt mit Start und Ende
 .venv/bin/python reference/oepnvrouten_suche.py \
   --stadt "Berlin" \
-  --datum 2026-11-01 --uhrzeit 18:30 \
-  --start "Alexanderplatz" --end "Tempelhofer Feld" \
-  --dauer-min 60 --dauer-max 120 \
-  --umstiege-min 1 --umstiege-max 5 \
+  --datum 2026-10-16 --uhrzeit 15:00 \
+  --start "Zoologischer Garten" --end "Ostkreuz" \
   --output results/berlin
 
 # Stadtteil / Ausschnitt per Bounding Box (S W N E)
 .venv/bin/python reference/oepnvrouten_suche.py \
-  --bbox 52.45 13.25 52.55 13.45 \
-  --datum 2026-11-01 --uhrzeit 18:30 \
+  --bbox 52.45 13.25 52.58 13.55 \
+  --datum 2026-10-16 --uhrzeit 15:00 \
+  --start "Zoologischer Garten" --end "Ostkreuz" \
   --output results/berlin-mitte
 ```
 
@@ -123,13 +124,14 @@ Ebene" → Karte teilen.
 |---|---|---|
 | `--stadt` | – | Stadt oder Stadtteil (z. B. „Berlin, Deutschland") |
 | `--bbox` | – | Bounding Box (S, W, N, E) |
-| `--datum` | – | Startdatum (ISO, z. B. `2026-11-01`) |
-| `--uhrzeit` | – | Startzeit (HH:MM, z. B. `18:30`) |
-| `--start` | – | Startpunkt (Name oder Station-ID) |
-| `--end` | – | Endpunkt (Name oder Station-ID) |
-| `--dauer-min` | 60 | Mindestdauer in Minuten |
-| `--dauer-max` | 120 | Maximale Dauer in Minuten |
-| `--umstiege-min` | 1 | Mindestanzahl Umstiege |
-| `--umstiege-max` | 5 | Maximale Anzahl Umstiege |
+| `--datum` | `2026-10-16` | Startdatum (ISO) – steuert den GTFS-Fahrplan |
+| `--uhrzeit` | `15:00` | Startzeit (HH:MM) – ab dann wird geroutet |
+| `--start` | – | Startpunkt (Name) |
+| `--end` | – | Endpunkt (Name) |
+| `--dauer-min` | 60 | (OSM-Fallback) Mindestdauer in Minuten |
+| `--dauer-max` | 120 | (OSM-Fallback) Maximale Dauer in Minuten |
+| `--umstiege-min` | 1 | (OSM-Fallback) Mindestanzahl Umstiege |
+| `--umstiege-max` | 5 | (OSM-Fallback) Maximale Anzahl Umstiege |
 | `--qid` | – | Wikidata-QID des Ortes (nie raten) |
 | `--output` | `ergebnis` | Ausgabeverzeichnis |
+| `--refresh` | aus | Cache ignorieren (GTFS + OSM) |

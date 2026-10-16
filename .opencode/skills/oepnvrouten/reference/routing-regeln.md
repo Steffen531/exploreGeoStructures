@@ -70,10 +70,14 @@ Buse die schlechteste (4). Straßenbahnschienen zählen als Schienenverkehr.
 - **Erst sammeln, dann rangieren:** Der Algorithmus findet ALLE Routen
   innerhalb der harten Constraints, sortiert sie nach Score und gibt die
   Top 3 zurück. Nicht die ersten 3 gefundenen Routen.
-- **Diversitäts-Bonus:** Stationen, die noch nicht in früheren Routen
-  vorkamen, erhalten einen Bonus von +5.
-- **Mindestens 2 neue Stationen:** Jede neue Route muss mindestens
-  2 Stationen enthalten, die noch nicht in den vorherigen Routen waren.
+- **Kanten-Ausschluss pro Runde (bewährt):** Ein deterministischer DFS liefert
+  sonst 3× dieselbe Route. Stattdessen sperrt jede Runde die Kanten der
+  bereits gewählten Route – so werden die 3 Vorschläge garantiert unterschiedlich
+  (Berlin 16.10.2026: 3 Routen mit 66/76/110 Min statt 3× 107 Min).
+- **Schienenverkehr zuerst:** Bei Kanten mit mehreren Linien die Nachbarn nach
+  Modus-Priorität sortieren, damit die bessere Linie gewählt wird.
+- **Mindestens 2 neue Stationen:** Jede neue Route sollte Stationen enthalten,
+  die noch nicht in den vorherigen Routen vorkamen (Ziel, nicht Garantie).
 
 ## Score-Berechnung
 

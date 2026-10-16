@@ -17,6 +17,8 @@ und mit "@" einen einzelnen Skill benutzen
 
 # Design der Skills
 
+Sie nutzen API-Zugänge zu Kartendiensten wie OSM/overpass, Echtzeit-Verkehrsdatenquellen via GTFS und andere opendata-Angebote. Da die skills ihre Aufgaben weltweit bewältigen sollen, müssen sie für eine bisher nicht bearbeitete Stadt oder Region zunächst die besten Datenquellen recherchieren (Datenquellen-Scouting).
+
 Die skills sind die zentralen und wichtigsten Teile. Jeder Skill besteht aus einer `SKILL.md`-Datei, die den Skill, seinen Ablauf, seine Ein- und Ausgabe definiert. Daten, die hierfür benötigt werden, wie Formatvorgaben, Regeln, etc. sind in files im Verzeichnis `reference` ausgelagert und werden in der SKILL.md referenziert. Siehe [Claude code Skill Architecture](https://www.mindstudio.ai/blog/claude-code-skills-architecture-skill-md-reference-files)
 
 Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-improving-ai-skills-claude-code) angelegt. Länder und Städte haben unterschiedliche Datenquellen für Geodaten. Die Zugriffe auf solche Dienste variieren ebenfalls. Solche Erkenntnisse speichert sich der skill am Ende und fragt den Nutzer nach einem feedback.
@@ -56,5 +58,4 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 ![ÖPNV-Rundfahrt in FFM](docs/ÖPNVFrankfurt.jpg)
 
 # Nächste Schritte
-1. oepnvrouten-skill: Die Visualisierung der ÖPNV-Routen prüfen: Werden sanfte Linien angezeigt oder nur die Umsteigepunkte?
-2. Den neuen oepnvrouten-skill testen (findet er die richtigen Routen? Nicht die schnellsten! Visualisierung?)
+1. Wäre es sinnvoll, spezielle opencode agents zu definieren und zu nutzen? ZB einen agent für datenquellen-scouting, einen agent für python skripts etc.

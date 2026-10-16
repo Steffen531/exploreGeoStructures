@@ -1,860 +1,1151 @@
 #!/usr/bin/env python3
 """
-ÖPNV-Routen finden – Kombinierter Ansatz (Skill: oepnvrouten)
-1. Datenquellen scoutern und bewerten          -> reference/datenquellen.md
-2. Netzwerk aufbauen (ÖPNV-Graph, Gehwege)      -> reference/datenquellen.md
-3. Routing mit strikten Constraints             -> reference/routing-regeln.md
-4. 3 Routen-Vorschläge exportieren             -> SKILL.md "Output"
+ÖPNV-Routen finden – Arbeitsversion (Skill: oepnvrouten)
+
+1. Datenquellen scoutern und bewerten               -> reference/datenquellen.md
+2. Netzwerk aufbauen (Stationen, Linien, Clustering) -> reference/datenquellen.md
+3. Routing mit strikten Constraints + Diversität    -> reference/routing-regeln.md
+4. Echte Fahrweg-Geometrie laden                    -> reference/datenquellen.md
+5. 3 Routen-Vorschläge exportieren                  -> SKILL.md "Output"
 
 Ablauf: SKILL.md (Prozess, Schritte 1-8, inkl. Learnings-Loop).
 
-WICHTIG: KML/GPX-Export zeigt SANFTe Linien mit interpolierten Zwischenpunkten,
-nicht nur Stationen. Dazu wird jede Linie mit Geometrie-Dict erweitert.
+WICHTIG:
+  * Station-Clustering ist Pflicht: In OSM sind S-Bahn/U-Bahn/Bus/Tram an einem
+    Bahnhof getrennte Knoten – ohne Clustering zerfällt der Graph in hunderte
+    Komponenten und es gibt keine Routen (Berlin: 1209 Komponenten ohne,
+    1180 Verkehrsknoten mit 150-m-Clustering).
+  * Export zeigt ECHTE Fahrwege (Strecken-Segmente der Linien), keine
+    Luftlinien: relation(ID); way(r); out geom;
+  * Fahrtzeiten sind Schätzwerte (kein GTFS): distance / mode speed.
 """
 
 import argparse
 import json
 import math
-import heapq
+import time
+from collections import deque
 from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Set, Tuple
-from dataclasses import dataclass, field
-from enum import Enum
-from xml.etree.ElementTree import Element, SubElement, tostring
-from xml.dom import minidom
 
 import requests
 
+CACHE_DIR = Path("results/cache")
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-# ============================================================================
-# Datenmodelle
-# ============================================================================
+OVERPASS_SERVERS = [
+    "https://overpass-api.de/api/interpreter",
+    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
+]
+HEADERS = {"User-Agent": "exploreGeoStructures-oepnvrouten/1.0 (OpenCode skill)"}
+RETRY_DELAYS = [3, 8]
 
-class VerkehrsmittelTyp(Enum):
-    S_BAHN = "s_bahn"
-    U_BAHN = "u_bahn"
-    STRASSENBAHN = "strassenbahn"
-    BUS = "bus"
-    REGIONALZUG = "regionalzug"
-    FAEHRE = "faehre"
-    RIDE_HAILING = "ride_hailing"
-    FUSSWEG = "fussweg"
-
-
-@dataclass
-class Station:
-    id: str
-    name: str
-    lat: float
-    lon: float
-    verkehrsmittel: List[VerkehrsmittelTyp] = field(default_factory=list)
-    stadtteil: str = ""
-
-
-@dataclass
-class Linie:
-    id: str
-    name: str
-    typ: VerkehrsmittelTyp
-    stationen: List[str]
-    farbe: str = "#000000"
-    geometrie: Dict[Tuple[str, str], List[Tuple[float, float]]] = field(default_factory=dict)
-
-    def add_geometrie(self, von: str, nach: str, coords: List[Tuple[float, float]]):
-        """Fügt Geometrie-Koordinaten für ein Segment hinzu."""
-        self.geometrie[(von, nach)] = coords
+# Schätzwerte (kein GTFS): Geschwindigkeit in m/Min
+GESCHWINDIGKEIT = {
+    "u_bahn": 500,
+    "s_bahn": 583,
+    "regionalzug": 833,
+    "strassenbahn": 300,
+    "bus": 250,
+    "faehre": 250,
+    "fussweg": 80,
+}
+MODE_PRIO = {
+    "regionalzug": 1,
+    "s_bahn": 2,
+    "u_bahn": 2,
+    "strassenbahn": 3,
+    "faehre": 4,
+    "bus": 10,
+    "fussweg": 5,
+}
+AUFENTHALT_MIN = 1  # Haltezeit pro Zwischenstation
+UMSTIEG_FUSS_MIN = 2  # Gehzeit beim Umsteigen
+UMSTIEG_WARTE_MIN = 4  # Wartezeit auf die nächste Bahn
+CLUSTER_RADIUS_M = 150  # Stationen-Cluster (Umstiegsmodell)
 
 
-@dataclass
-class Fahrt:
-    von: str
-    nach: str
-    linie: str
-    verkehrsmittel: VerkehrsmittelTyp
-    dauer_min: int
-    abfahrt: str
-    ankunft: str
-    gestoert: bool = False
+def log(msg):
+    print(f"{time.strftime('%H:%M:%S')} {msg}", flush=True)
 
 
-@dataclass
-class Umstieg:
-    station: str
-    von_linie: str
-    nach_linie: str
-    fussweg_min: int
-    wartezeit_min: int
-
-    @property
-    def gesamtzeit_min(self) -> int:
-        return self.fussweg_min + self.wartezeit_min
-
-
-@dataclass
-class Route:
-    stationen: List[str]
-    fahrten: List[Fahrt]
-    umstiege: List[Umstieg]
-    gesamt_dauer_min: int
-    fussweg_gesamt_min: int
-    wartezeit_gesamt_min: int
-    verkehrsmittel: List[VerkehrsmittelTyp]
-    score: float = 0.0
-
-    def to_dict(self):
-        return {
-            "stationen": self.stationen,
-            "fahrten": [
-                {
-                    "von": f.von,
-                    "nach": f.nach,
-                    "linie": f.linie,
-                    "verkehrsmittel": f.verkehrsmittel.value,
-                    "dauer_min": f.dauer_min,
-                    "abfahrt": f.abfahrt,
-                    "ankunft": f.ankunft,
-                    "gestoert": f.gestoert,
-                }
-                for f in self.fahrten
-            ],
-            "umstiege": [
-                {
-                    "station": u.station,
-                    "von_linie": u.von_linie,
-                    "nach_linie": u.nach_linie,
-                    "fussweg_min": u.fussweg_min,
-                    "wartezeit_min": u.wartezeit_min,
-                    "gesamtzeit_min": u.gesamtzeit_min,
-                }
-                for u in self.umstiege
-            ],
-            "gesamt_dauer_min": self.gesamt_dauer_min,
-            "fussweg_gesamt_min": self.fussweg_gesamt_min,
-            "wartezeit_gesamt_min": self.wartezeit_gesamt_min,
-            "verkehrsmittel": [v.value for v in self.verkehrsmittel],
-            "score": self.score,
-        }
+# ---------------------------------------------------------------------------
+# Overpass-Client mit Fallback und Cache
+# ---------------------------------------------------------------------------
+def overpass(query, name, refresh=False):
+    cache = CACHE_DIR / f"{name}.json"
+    if cache.exists() and not refresh:
+        log(f"  [Cache] {name}")
+        return json.loads(cache.read_text(encoding="utf-8"))
+    last = None
+    for server in OVERPASS_SERVERS:
+        for attempt, delay in enumerate(RETRY_DELAYS):
+            try:
+                r = requests.post(
+                    server, data={"data": query}, headers=HEADERS, timeout=150
+                )
+                if r.status_code == 200:
+                    data = r.json()
+                    cache.write_text(json.dumps(data), encoding="utf-8")
+                    log(f"  [Overpass] {name} <- {server.split('/')[2]}")
+                    return data
+                last = f"HTTP {r.status_code}"
+            except Exception as err:
+                last = f"{type(err).__name__}: {str(err)[:60]}"
+            if attempt < len(RETRY_DELAYS) - 1:
+                time.sleep(delay)
+    raise RuntimeError(f"Overpass fehlgeschlagen für '{name}': {last}")
 
 
-# ============================================================================
-# Phase 1: Daten-Scout
-# ============================================================================
-
-class DatenScout:
-    """Findet und bewertet Datenquellen für eine Stadt."""
-
-    OVERPASS_SERVERS = [
-        "https://overpass-api.de/api/interpreter",
-        "https://overpass.kumi.systems/api/interpreter",
-        "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-        "https://overpass.private.coffee/api/interpreter",
-    ]
-
-    HEADERS = {"User-Agent": "exploreGeoStructures-oepnvrouten/1.0 (OpenCode skill)"}
-
-    BEKANNT_GTFS = {
-        "Berlin": "https://www.vbb.de/media/download/2024-03-28_gtfs.zip",
-        "Hamburg": "https://www.hvv.de/de/fahrplaene/abruf-fahrplandaten/hvv-fahrplandaten-gtfs",
-        "München": "https://www.mvv-muenchen.de/fahrplanauskunft/fuer-entwickler/index.html",
-        "Wien": "https://www.wienerlinien.at/feed/gtfs",
-        "Zürich": "https://www.opentransportdata.swiss/de/dataset/timetable-2024-gtfs",
-        "Paris": "https://.iledefrance-mobilites.fr/pages/offres-open-data",
-        "London": "https://tfl.gov.uk/info-for/open-data-users/",
-        "New York": "http://web.mta.info/developers/download.html",
-        "Tokyo": "https://www.odpt.org/developers/",
-        "Sydney": "https://transportnsw.info/data/developers",
-    }
-
-    BEKANNT_OTP = {
-        "Berlin": "https://otp.bbnavi.de",
-        "Hamburg": "https://otp.hamburg.de",
-        "München": "https://otp.mvv-muenchen.de",
-        "Frankfurt": "https://otp.rmv.de",
-    }
-
-    def __init__(self, stadt: str):
-        self.stadt = stadt
-        self.quellen: List[Dict] = []
-        self.bbox: Optional[Tuple[float, float, float, float]] = None
-
-    def finde_datenquellen(self) -> List[Dict]:
-        """Hauptfunktion: Findet alle verfügbaren Datenquellen."""
-        self._check_overpass()
-        self._check_gtfs()
-        self._check_otp()
-        self._check_ride_hailing()
-        self._check_osrm()
-        self.quellen.sort(key=lambda q: q.get("qualitaets_score", 0), reverse=True)
-        return self.quellen
-
-    def _check_overpass(self):
-        """Prüft Overpass API für OSM-Daten."""
-        query = f"""
-        [out:json][timeout:25];
-        area["name"="{self.stadt}"]->.searchArea;
-        (
-          node["public_transport"="station"](area.searchArea);
-          node["public_transport"="stop_position"](area.searchArea);
-          node["highway"="bus_stop"](area.searchArea);
-          node["railway"="station"](area.searchArea);
-          node["railway"="halt"](area.searchArea);
-          node["amenity"="ferry_terminal"](area.searchArea);
-        );
-        out count;
-        """
-        try:
-            response = requests.post(
-                self.OVERPASS_SERVERS[0],
-                data={"data": query},
-                headers=self.HEADERS,
-                timeout=30
-            )
-            if response.status_code == 200:
-                data = response.json()
-                anzahl = data.get("elements", [{}])[0].get("tags", {}).get("total", 0)
-                verfuegbar = anzahl > 0
-                score = min(anzahl / 100, 1.0)
-                if data.get("elements"):
-                    bounds = data["elements"][0].get("bounds")
-                    if bounds:
-                        self.bbox = (
-                            bounds.get("minlon", 0),
-                            bounds.get("minlat", 0),
-                            bounds.get("maxlon", 0),
-                            bounds.get("maxlat", 0)
-                        )
-                quelle = {
-                    "typ": "overpass",
-                    "name": "OpenStreetMap (Overpass API)",
-                    "verfuegbar": verfuegbar,
-                    "qualitaets_score": score,
-                    "beschreibung": f"{anzahl} ÖPNV-Stationen",
-                }
-            else:
-                quelle = {"typ": "overpass", "verfuegbar": False, "qualitaets_score": 0}
-        except Exception as e:
-            quelle = {"typ": "overpass", "verfuegbar": False, "qualitaets_score": 0, "fehler": str(e)}
-        self.quellen.append(quelle)
-
-    def _check_gtfs(self):
-        """Sucht nach GTFS-Feeds für die Stadt."""
-        feed_url = self.BEKANNT_GTFS.get(self.stadt)
-        quelle = {
-            "typ": "gtfs",
-            "name": f"GTFS-Feed ({self.stadt})",
-            "verfuegbar": feed_url is not None,
-            "qualitaets_score": 0.9 if feed_url else 0,
-            "beschreibung": feed_url or "Kein bekannter GTFS-Feed",
-        }
-        self.quellen.append(quelle)
-
-    def _check_otp(self):
-        """Prüft OpenTripPlanner Instanzen."""
-        otp_url = self.BEKANNT_OTP.get(self.stadt)
-        quelle = {
-            "typ": "otp",
-            "name": f"OTP-Instanz ({self.stadt})",
-            "verfuegbar": otp_url is not None,
-            "qualitaets_score": 0.95 if otp_url else 0,
-            "beschreibung": otp_url or "Keine bekannte OTP-Instanz",
-        }
-        self.quellen.append(quelle)
-
-    def _check_ride_hailing(self):
-        """Prüfts Ride-Hailing Anbieter."""
-        quelle = {
-            "typ": "ride_hailing",
-            "name": f"Ride-Hailing ({self.stadt})",
-            "verfuegbar": True,
-            "qualitaets_score": 0.7,
-            "beschreibung": "Uber, Bolt, Free Now verfügbar",
-        }
-        self.quellen.append(quelle)
-
-    def _check_osrm(self):
-        """Prüft OSRM-Instanzen für Straßenrouting."""
-        quelle = {
-            "typ": "osrm",
-            "name": "OSRM",
-            "verfuegbar": True,
-            "qualitaets_score": 0.8,
-            "beschreibung": "https://router.project-osrm.org",
-        }
-        self.quellen.append(quelle)
+def bbox_str(bbox):
+    s, w, n, e = bbox
+    return f"({s},{w},{n},{e})"
 
 
-# ============================================================================
-# Phase 2: Netzwerk-Aufbau
-# ============================================================================
-
-class RoutingGraph:
-    """ÖPNV-Netzwerk: Knoten (Stationen), Kanten (Linienverläufe)."""
-
-    def __init__(self):
-        self.stationen: Dict[str, Station] = {}
-        self.linien: Dict[str, Linie] = {}
-        self.adjazenz: Dict[str, List[Tuple[str, str]]] = {}
-
-    def add_station(self, station: Station):
-        self.stationen[station.id] = station
-        if station.id not in self.adjazenz:
-            self.adjazenz[station.id] = []
-
-    def add_linie(self, linie: Linie):
-        self.linien[linie.id] = linie
-        for i in range(len(linie.stationen) - 1):
-            von = linie.stationen[i]
-            nach = linie.stationen[i + 1]
-            self.adjazenz.setdefault(von, []).append((nach, linie.id))
-
-    def get_nachbarn(self, station_id: str) -> List[Tuple[str, str]]:
-        return self.adjazenz.get(station_id, [])
-
-    def get_station(self, station_id: str) -> Optional[Station]:
-        return self.stationen.get(station_id)
-
-
-def add_line_with_geometry(linie: Linie, stationen: Dict[str, Station], segmente: int = 20):
-    """Fügt Zwischenpunkte entlang der Geraden zwischen je zwei Stationen hinzu."""
-    station_coords = {sid: (s.lat, s.lon) for sid, s in stationen.items()}
-    for i in range(len(linie.stationen) - 1):
-        von = linie.stationen[i]
-        nach = linie.stationen[i + 1]
-        if von in station_coords and nach in station_coords:
-            lat1, lon1 = station_coords[von]
-            lat2, lon2 = station_coords[nach]
-            intermediate = []
-            for j in range(1, segmente + 1):
-                frac = j / (segmente + 1)
-                intermediate.append((lon1 + frac * (lon2 - lon1), lat1 + frac * (lat2 - lat1), 0))
-            linie.add_geometrie(von, nach, intermediate)
-
-
-# ============================================================================
-# Phase 3: Routing
-# ============================================================================
-
-class Router:
-    """Multi-Objective Router mit strikten Constraints."""
-
-    def __init__(self, graph: RoutingGraph):
-        self.graph = graph
-        self.besuchte_routen: List[Route] = []
-
-    def finde_routen(
-        self,
-        start_id: str,
-        ziel_id: str,
-        datum: str,
-        uhrzeit: str,
-        dauer_min: int = 60,
-        dauer_max: int = 120,
-        umstiege_min: int = 1,
-        umstiege_max: int = 5,
-        anzahl_routen: int = 3,
-    ) -> List[Route]:
-        """Findet 3 Routen mit DFS + Diversitäts-Belohnung."""
-        start_zeit_min = self._zeit_zu_min(uhrzeit)
-
-        erreichbar = self._bfs_erreichbar(start_id, ziel_id)
-        if not erreichbar:
-            return []
-
-        routen = self._dfs_diversitaet(
-            start_id, ziel_id, start_zeit_min,
-            dauer_min, dauer_max, umstiege_min, umstiege_max, anzahl_routen
+def bbox_fuer_stadt(stadt, refresh=False):
+    """BBox einer Stadt über Nominatim (S, W, N, E)."""
+    cache = CACHE_DIR / "stadt_bbox.json"
+    if cache.exists() and not refresh:
+        daten = json.loads(cache.read_text(encoding="utf-8"))
+        if stadt in daten:
+            return tuple(daten[stadt])
+    r = requests.get(
+        "https://nominatim.openstreetmap.org/search",
+        params={"q": stadt, "format": "json", "limit": 1, "accept-language": "de"},
+        headers=HEADERS,
+        timeout=30,
+    )
+    treffer = r.json()
+    if not treffer:
+        raise SystemExit(f"Nominatim: '{stadt}' nicht gefunden")
+    b = [float(v) for v in treffer[0]["boundingbox"]]  # [S, N, W, E]
+    bbox = (b[0], b[2], b[1], b[3])  # (S, W, N, E)
+    daten = json.loads(cache.read_text(encoding="utf-8")) if cache.exists() else {}
+    daten[stadt] = list(bbox)
+    cache.write_text(json.dumps(daten, ensure_ascii=False), encoding="utf-8")
+    if abs(bbox[2] - bbox[3]) < 0.02:
+        log(
+            f"  WARNUNG: BBox von '{stadt}' ist sehr klein – "
+            f"ggf. explizit --bbox angeben"
         )
+    return bbox
 
-        if not routen:
-            routen = self._dfs_backtracking(
-                start_id, ziel_id, start_zeit_min,
-                dauer_min, dauer_max, umstiege_min, umstiege_max, anzahl_routen
-            )
 
-        for route in routen:
-            route.score = self._berechne_score(route)
-
-        routen.sort(key=lambda r: r.score)
-        return routen
-
-    def _dfs_diversitaet(self, start_id, ziel_id, start_zeit_min, dauer_min, dauer_max, umstiege_min, umstiege_max, anzahl_routen) -> List[Route]:
-        """DFS mit Diversitäts-Belohnung für 3 verschiedene Routen."""
-        gefundene_routen: List[Route] = []
-        start_station = self.graph.get_station(start_id)
-        if not start_station:
-            return []
-
-        stack = [(
-            [start_id], {start_id}, set(),
-            {start_station.stadtteil} if start_station.stadtteil else set(),
-            0, 0, 0, None, start_zeit_min, [], []
-        )]
-
-        iterationen = 0
-        max_iterationen = 50000
-
-        while stack and len(gefundene_routen) < anzahl_routen and iterationen < max_iterationen:
-            iterationen += 1
-            pfad, besuchte_st, besuchte_kanten, besuchte_stadtteile, umstiege, fussweg_gesamt, wartezeit_gesamt, letzte_linie, aktuelle_zeit, fahrten, umstiege_liste = stack.pop()
-
-            aktuelle_station = pfad[-1]
-
-            if aktuelle_station == ziel_id:
-                dauer = aktuelle_zeit - start_zeit_min
-                if dauer_min <= dauer <= dauer_max and umstiege_min <= len(umstiege_liste) <= umstiege_max:
-                    besuchte_stationen = set()
-                    for r in gefundene_routen:
-                        besuchte_stationen.update(r.stationen)
-                    neue_stationen = set(pfad) - besuchte_stationen
-                    if len(neue_stationen) >= 2 or len(gefundene_routen) == 0:
-                        route = Route(
-                            stationen=list(pfad), fahrten=list(fahrten),
-                            umstiege=list(umstiege_liste), gesamt_dauer_min=dauer,
-                            fussweg_gesamt_min=fussweg_gesamt, wartezeit_gesamt_min=wartezeit_gesamt,
-                            verkehrsmittel=list(set(f.verkehrsmittel for f in fahrten)),
-                        )
-                        gefundene_routen.append(route)
-                continue
-
-            if aktuelle_zeit - start_zeit_min > dauer_max:
-                continue
-            if len(umstiege_liste) > umstiege_max:
-                continue
-
-            for nachbar_id, linie_id in reversed(self.graph.get_nachbarn(aktuelle_station)):
-                nachbar_station = self.graph.get_station(nachbar_id)
-                if not nachbar_station:
-                    continue
-                if nachbar_id in besuchte_st:
-                    continue
-                kante = (aktuelle_station, nachbar_id)
-                if kante in besuchte_kanten:
-                    continue
-
-                linie = self.graph.linien.get(linie_id)
-                if not linie:
-                    continue
-
-                fahrzeit, wartezeit, fussweg = 3, 4, 0
-                neue_umstiege = list(umstiege_liste)
-                neue_fahrten = list(fahrten)
-
-                if letzte_linie is not None and letzte_linie != linie_id:
-                    fussweg = 2
-                    neue_umstiege.append(Umstieg(
-                        station=aktuelle_station, von_linie=letzte_linie,
-                        nach_linie=linie_id, fussweg_min=fussweg, wartezeit_min=wartezeit,
-                    ))
-
-                neue_zeit = aktuelle_zeit + fahrzeit + wartezeit + fussweg
-
-                stack.append((
-                    pfad + [nachbar_id],
-                    besuchte_st | {nachbar_id},
-                    besuchte_kanten | {kante},
-                    besuchte_stadtteile | ({nachbar_station.stadtteil} if nachbar_station.stadtteil else set()),
-                    len(neue_umstiege), fussweg_gesamt + fussweg, wartezeit_gesamt + wartezeit,
-                    linie_id, neue_zeit,
-                    neue_fahrten + [Fahrt(
-                        von=aktuelle_station, nach=nachbar_id, linie=linie_id,
-                        verkehrsmittel=linie.typ, dauer_min=fahrzeit,
-                        abfahrt=self._min_zu_zeit(aktuelle_zeit),
-                        ankunft=self._min_zu_zeit(neue_zeit - fussweg),
-                    )],
-                    neue_umstiege,
-                ))
-
-        return gefundene_routen
-
-    def _dfs_backtracking(self, start_id, ziel_id, start_zeit_min, dauer_min, dauer_max, umstiege_min, umstiege_max, anzahl_routen) -> List[Route]:
-        """Fallback DFS mit strikten Constraints."""
-        gefundene_routen: List[Route] = []
-        start_station = self.graph.get_station(start_id)
-        if not start_station:
-            return []
-
-        stack = [(
-            [start_id], {start_id}, set(),
-            {start_station.stadtteil} if start_station.stadtteil else set(),
-            0, 0, 0, None, start_zeit_min, [], []
-        )]
-
-        iterationen = 0
-        max_iterationen = 50000
-
-        while stack and len(gefundene_routen) < anzahl_routen * 3 and iterationen < max_iterationen:
-            iterationen += 1
-            pfad, besuchte_st, besuchte_kanten, besuchte_stadtteile, umstiege, fussweg_gesamt, wartezeit_gesamt, letzte_linie, aktuelle_zeit, fahrten, umstiege_liste = stack.pop()
-            aktuelle_station = pfad[-1]
-
-            if aktuelle_station == ziel_id:
-                dauer = aktuelle_zeit - start_zeit_min
-                if dauer_min <= dauer <= dauer_max and umstiege_min <= len(umstiege_liste) <= umstiege_max:
-                    route = Route(
-                        stationen=list(pfad), fahrten=list(fahrten),
-                        umstiege=list(umstiege_liste), gesamt_dauer_min=dauer,
-                        fussweg_gesamt_min=fussweg_gesamt, wartezeit_gesamt_min=wartezeit_gesamt,
-                        verkehrsmittel=list(set(f.verkehrsmittel for f in fahrten)),
-                    )
-                    gefundene_routen.append(route)
-                continue
-
-            if aktuelle_zeit - start_zeit_min > dauer_max:
-                continue
-            if len(umstiege_liste) > umstiege_max:
-                continue
-
-            for nachbar_id, linie_id in reversed(self.graph.get_nachbarn(aktuelle_station)):
-                nachbar_station = self.graph.get_station(nachbar_id)
-                if not nachbar_station:
-                    continue
-                if nachbar_id in besuchte_st:
-                    continue
-                kante = (aktuelle_station, nachbar_id)
-                if kante in besuchte_kanten:
-                    continue
-
-                linie = self.graph.linien.get(linie_id)
-                if not linie:
-                    continue
-
-                fahrzeit, wartezeit, fussweg = 3, 4, 0
-                neue_umstiege = list(umstiege_liste)
-                neue_fahrten = list(fahrten)
-
-                if letzte_linie is not None and letzte_linie != linie_id:
-                    fussweg = 2
-                    neue_umstiege.append(Umstieg(
-                        station=aktuelle_station, von_linie=letzte_linie,
-                        nach_linie=linie_id, fussweg_min=fussweg, wartezeit_min=wartezeit,
-                    ))
-
-                neue_zeit = aktuelle_zeit + fahrzeit + wartezeit + fussweg
-
-                stack.append((
-                    pfad + [nachbar_id],
-                    besuchte_st | {nachbar_id},
-                    besuchte_kanten | {kante},
-                    besuchte_stadtteile | ({nachbar_station.stadtteil} if nachbar_station.stadtteil else set()),
-                    len(neue_umstiege), fussweg_gesamt + fussweg, wartezeit_gesamt + wartezeit,
-                    linie_id, neue_zeit,
-                    neue_fahrten + [Fahrt(
-                        von=aktuelle_station, nach=nachbar_id, linie=linie_id,
-                        verkehrsmittel=linie.typ, dauer_min=fahrzeit,
-                        abfahrt=self._min_zu_zeit(aktuelle_zeit),
-                        ankunft=self._min_zu_zeit(neue_zeit - fussweg),
-                    )],
-                    neue_umstiege,
-                ))
-
-        return gefundene_routen[:anzahl_routen] if gefundene_routen else []
-
-    def _bfs_erreichbar(self, start_id: str, ziel_id: str) -> bool:
-        besucht = {start_id}
-        queue = [start_id]
-        while queue:
-            aktuell = queue.pop(0)
-            if aktuell == ziel_id:
-                return True
-            for nachbar_id, _ in self.graph.get_nachbarn(aktuell):
-                if nachbar_id not in besucht:
-                    besucht.add(nachbar_id)
-                    queue.append(nachbar_id)
-        return False
-
-    def _zeit_zu_min(self, zeit: str) -> int:
-        h, m = map(int, zeit.split(":"))
-        return h * 60 + m
-
-    def _min_zu_zeit(self, minuten: int) -> str:
-        h = (minuten // 60) % 24
-        m = minuten % 60
-        return f"{h:02d}:{m:02d}"
-
-    def _berechne_score(self, route: Route) -> float:
-        vm_prioritaet = {
-            VerkehrsmittelTyp.REGIONALZUG: 1, VerkehrsmittelTyp.S_BAHN: 2,
-            VerkehrsmittelTyp.U_BAHN: 2, VerkehrsmittelTyp.STRASSENBAHN: 3,
-            VerkehrsmittelTyp.FAEHRE: 4, VerkehrsmittelTyp.BUS: 10,
-            VerkehrsmittelTyp.FUSSWEG: 5, VerkehrsmittelTyp.RIDE_HAILING: 6,
+# ---------------------------------------------------------------------------
+# Daten laden
+# ---------------------------------------------------------------------------
+def lade_stationen(bbox, refresh=False):
+    bb = bbox_str(bbox)
+    query = f"""
+    [out:json][timeout:90];
+    (
+      node["public_transport"="station"]{bb};
+      node["public_transport"="stop_position"]{bb};
+      node["railway"="station"]{bb};
+      node["railway"="halt"]{bb};
+      node["highway"="bus_stop"]{bb};
+    );
+    out body;
+    """
+    data = overpass(query, "stationen", refresh)
+    stationen = {}
+    for el in data.get("elements", []):
+        if el["type"] != "node":
+            continue
+        t = el.get("tags", {})
+        stationen[el["id"]] = {
+            "id": el["id"],
+            "name": t.get("name") or f"Station {el['id']}",
+            "lat": el["lat"],
+            "lon": el["lon"],
+            "railway": t.get("railway"),
+            "public_transport": t.get("public_transport"),
+            "highway": t.get("highway"),
         }
-        umstiegs_score = 2.0 * (route.fussweg_gesamt_min + route.wartezeit_gesamt_min) + 1.0 * len(route.umstiege)
-        vm_score = sum(vm_prioritaet.get(v, 5) for v in route.verkehrsmittel)
-        return umstiegs_score + vm_score
+    return stationen
 
 
-# ============================================================================
-# Phase 4: Export mit Geometrie-Interpolation (SANFTe Linien)
-# ============================================================================
+def lade_linien(bbox, route, refresh=False):
+    """Linien-Relationen eines route-Typs (mit Stationen) in der BBox.
 
-def _consolidate_same_line_segments(route: Route) -> List[Tuple[str, str, str]]:
-    """Fasst aufeinanderfolgende Segmente auf der gleichen Linie zusammen."""
-    if not route.fahrten:
-        return []
-    consolidated = []
-    current_von = route.fahrten[0].von
-    current_linie = route.fahrten[0].linie
-    for fahrt in route.fahrten:
-        if fahrt.linie == current_linie:
+    'out body;' liefert die Member (Stationenfolge) – 'out members;' crasht
+    den Overpass-Backend (502).
+    """
+    bb = bbox_str(bbox)
+    query = f"""
+    [out:json][timeout:120];
+    relation["type"="route"]["route"="{route}"]{bb};
+    out body;
+    """
+    data = overpass(query, f"linien_{route}", refresh)
+    linien = []
+    for el in data.get("elements", []):
+        if el["type"] != "relation":
             continue
-        else:
-            consolidated.append((current_von, fahrt.von, current_linie))
-            current_von = fahrt.von
-            current_linie = fahrt.linie
-    if route.fahrten:
-        consolidated.append((current_von, route.fahrten[-1].nach, current_linie))
-    return consolidated
-
-
-def _get_segment_stations(linie: Linie, von_id: str, nach_id: str) -> List[str]:
-    """Gibt alle Stationen auf einer Linie zwischen von und nach (inkl. Start/Ende) in Reihenfolge."""
-    if von_id not in linie.stationen or nach_id not in linie.stationen:
-        return [von_id, nach_id]
-    von_idx = linie.stationen.index(von_id)
-    nach_idx = linie.stationen.index(nach_id)
-    if von_idx < nach_idx:
-        return linie.stationen[von_idx:nach_idx + 1]
-    else:
-        return linie.stationen[von_idx:nach_idx - 1:-1] if nach_idx > 0 else linie.stationen[von_idx::-1]
-
-
-def _get_route_coordinates(route: Route, stationen: Dict[str, Station], linien: Dict[str, Linie]) -> str:
-    """Sammelt alle Koordinates einer Route inkl. Geometrie-Zwischenpunkten (für KML)."""
-    coords = []
-    consolidated = _consolidate_same_line_segments(route)
-    for von_id, nach_id, linie_id in consolidated:
-        linie = linien.get(linie_id)
-        if not linie:
-            continue
-        segment_stations = _get_segment_stations(linie, von_id, nach_id)
-        for k in range(len(segment_stations) - 1):
-            seg_von = segment_stations[k]
-            seg_nach = segment_stations[k + 1]
-            if seg_von in stationen:
-                s = stationen[seg_von]
-                coords.append(f"{s.lon},{s.lat},0")
-            key = (seg_von, seg_nach)
-            if key in linie.geometrie:
-                for lon, lat, _ in linie.geometrie[key]:
-                    coords.append(f"{lon},{lat},0")
-        last_station = segment_stations[-1]
-        if last_station in stationen:
-            s = stationen[last_station]
-            coords.append(f"{s.lon},{s.lat},0")
-    return ' '.join(coords)
-
-
-def _get_route_gpx_points(route: Route, stationen: Dict[str, Station], linien: Dict[str, Linie]) -> List[Tuple[float, float]]:
-    """Sammelt alle GPS-Punkte einer Route inkl. Geometrie-Zwischenpunkten (für GPX)."""
-    points = []
-    consolidated = _consolidate_same_line_segments(route)
-    for von_id, nach_id, linie_id in consolidated:
-        linie = linien.get(linie_id)
-        if not linie:
-            continue
-        segment_stations = _get_segment_stations(linie, von_id, nach_id)
-        for k in range(len(segment_stations) - 1):
-            seg_von = segment_stations[k]
-            seg_nach = segment_stations[k + 1]
-            if seg_von in stationen:
-                points.append((stationen[seg_von].lat, stationen[seg_von].lon))
-            key = (seg_von, seg_nach)
-            if key in linie.geometrie:
-                for lon, lat, _ in linie.geometrie[key]:
-                    points.append((lat, lon))
-        last_station = segment_stations[-1]
-        if last_station in stationen:
-            points.append((stationen[last_station].lat, stationen[last_station].lon))
-    return points
-
-
-def _get_route_geojson_coords(route: Route, stationen: Dict[str, Station], linien: Dict[str, Linie]) -> List[List[float]]:
-    """Sammelt alle [lon, lat] Koordinaten einer Route inkl. Geometrie-Zwischenpunkten (für GeoJSON)."""
-    coords = []
-    consolidated = _consolidate_same_line_segments(route)
-    for von_id, nach_id, linie_id in consolidated:
-        linie = linien.get(linie_id)
-        if not linie:
-            continue
-        segment_stations = _get_segment_stations(linie, von_id, nach_id)
-        for k in range(len(segment_stations) - 1):
-            seg_von = segment_stations[k]
-            seg_nach = segment_stations[k + 1]
-            if seg_von in stationen:
-                coords.append([stationen[seg_von].lon, stationen[seg_von].lat])
-            key = (seg_von, seg_nach)
-            if key in linie.geometrie:
-                for lon, lat, _ in linie.geometrie[key]:
-                    coords.append([lon, lat])
-        last_station = segment_stations[-1]
-        if last_station in stationen:
-            coords.append([stationen[last_station].lon, stationen[last_station].lat])
-    return coords
-
-
-def export_geojson(routen: List[Route], stationen: Dict[str, Station], linien: Dict[str, Linie], output_dir: str):
-    """Exportiert routen.geojson – alle Routen als LineStrings mit Geometrie-Interpolation."""
-    features = []
-    for i, route in enumerate(routen, 1):
-        coords = _get_route_geojson_coords(route, stationen, linien)
-        features.append({
-            "type": "Feature",
-            "geometry": {"type": "LineString", "coordinates": coords},
-            "properties": {
-                "route_id": i,
-                "gesamt_dauer_min": route.gesamt_dauer_min,
-                "umstiege": len(route.umstiege),
-                "fussweg_gesamt_min": route.fussweg_gesamt_min,
-                "wartezeit_gesamt_min": route.wartezeit_gesamt_min,
-                "verkehrsmittel": [v.value for v in route.verkehrsmittel],
-                "score": route.score,
+        t = el.get("tags", {})
+        refs = [m["ref"] for m in el.get("members", []) if m.get("type") == "node"]
+        linien.append(
+            {
+                "id": str(el["id"]),
+                "name": t.get("name") or t.get("ref") or f"{route} {el['id']}",
+                "ref": t.get("ref") or "",
+                "route": route,
+                "refs": refs,
             }
-        })
-    geojson = {"type": "FeatureCollection", "features": features}
-    path = Path(output_dir) / "routen.geojson"
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(geojson, f, indent=2, ensure_ascii=False)
-    print(f"GeoJSON gespeichert: {path}")
+        )
+    return linien
 
 
-def export_kml(routen: List[Route], stationen: Dict[str, Station], linien: Dict[str, Linie], output_dir: str):
-    """Exportiert routen.kml – sanfte Linien mit Zwischenpunkten + Umsteige-Pins."""
-    kml = Element('kml')
-    kml.set('xmlns', 'http://www.opengis.net/kml/2.2')
-    document = SubElement(kml, 'Document')
-    name_el = SubElement(document, 'name')
-    name_el.text = "ÖPNV-Routen"
-
-    colors = ["ff0099ff", "ff00ff99", "ff9900ff", "ff00ffff", "ffff00ff"]
-
-    for i, route in enumerate(routen, 1):
-        style = SubElement(document, 'Style')
-        style.set('id', f'routeStyle{i}')
-        line_style = SubElement(style, 'LineStyle')
-        color_el = SubElement(line_style, 'color')
-        color_el.text = colors[(i - 1) % len(colors)]
-        width_el = SubElement(line_style, 'width')
-        width_el.text = '4'
-
-    for i, route in enumerate(routen, 1):
-        # Route als LineString mit Geometrie-Zwischenpunkten (sanfte Linie)
-        placemark = SubElement(document, 'Placemark')
-        pm_name = SubElement(placemark, 'name')
-        pm_name.text = f"Route {i} ({route.gesamt_dauer_min} Min, {len(route.umstiege)} Umstiege)"
-        desc = SubElement(placemark, 'description')
-        desc.text = f"Dauer: {route.gesamt_dauer_min} Min | Umstiege: {len(route.umstiege)} | Score: {route.score:.1f}"
-        style_url = SubElement(placemark, 'styleUrl')
-        style_url.text = f'#routeStyle{i}'
-        line_string = SubElement(placemark, 'LineString')
-        coords = SubElement(line_string, 'coordinates')
-        coords.text = _get_route_coordinates(route, stationen, linien)
-
-    xml_str = minidom.parseString(tostring(kml)).toprettyxml(indent="  ")
-    path = Path(output_dir) / "routen.kml"
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(xml_str)
-    print(f"KML gespeichert: {path}")
+def mode_fuer(route, ref):
+    if route == "subway":
+        return "u_bahn"
+    if route == "train":
+        return "s_bahn" if ref.upper().startswith("S") else "regionalzug"
+    if route in ("tram", "light_rail"):
+        return "strassenbahn"
+    if route == "bus":
+        return "bus"
+    if route == "ferry":
+        return "faehre"
+    return "bus"
 
 
-def export_gpx(routen: List[Route], stationen: Dict[str, Station], linien: Dict[str, Linie], output_dir: str):
-    """Exportiert routen.gpx – Tracks mit Geometrie-Zwischenpunkten für GPS-Geräte."""
-    gpx = Element('gpx')
-    gpx.set('version', '1.1')
-    gpx.set('creator', 'ÖPNV-Routen-Planner')
-    gpx.set('xmlns', 'http://www.topografix.com/GPX/1/1')
+# ---------------------------------------------------------------------------
+# Station-Clustering (Umstiegsmodell)
+# ---------------------------------------------------------------------------
+def cluster_stationen(stationen, radius_m=CLUSTER_RADIUS_M):
+    try:
+        import numpy as np
+        from scipy.spatial import cKDTree
+    except ImportError:
+        return {s["id"]: [s["id"]] for s in stationen.values()}
+    ids = list(stationen)
+    lat0 = sum(stationen[i]["lat"] for i in ids) / len(ids)
+    kx = 111320.0 * math.cos(math.radians(lat0))
+    ky = 110540.0
+    pts = np.array([[stationen[i]["lon"] * kx, stationen[i]["lat"] * ky] for i in ids])
+    pairs = cKDTree(pts).query_pairs(radius_m)
+    parent = {i: i for i in ids}
 
-    for i, route in enumerate(routen, 1):
-        trk = SubElement(gpx, 'trk')
-        trk_name = SubElement(trk, 'name')
-        trk_name.text = f"Route {i} ({route.gesamt_dauer_min} Min)"
-        trk_desc = SubElement(trk, 'desc')
-        trk_desc.text = f"Umstiege: {len(route.umstiege)} | Fußweg: {route.fussweg_gesamt_min} Min | Wartezeit: {route.wartezeit_gesamt_min} Min"
-        trkseg = SubElement(trk, 'trkseg')
-        for lat, lon in _get_route_gpx_points(route, stationen, linien):
-            trkpt = SubElement(trkseg, 'trkpt')
-            trkpt.set('lat', str(lat))
-            trkpt.set('lon', str(lon))
-            ele = SubElement(trkpt, 'ele')
-            ele.text = '0'
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
 
-    xml_str = minidom.parseString(tostring(gpx)).toprettyxml(indent="  ")
-    path = Path(output_dir) / "routen.gpx"
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(xml_str)
-    print(f"GPX gespeichert: {path}")
+    for a, b in pairs:
+        ra, rb = find(ids[a]), find(ids[b])
+        if ra != rb:
+            parent[ra] = rb
+    gruppen = {}
+    for i in ids:
+        gruppen.setdefault(find(i), []).append(i)
+    return gruppen
 
 
-def export_zusammenfassung(routen: List[Route], output_dir: str):
-    """Exportiert zusammenfassung.json mit Statistiken und Score-Vergleich."""
-    ergebnis = {
-        "anzahl_routen": len(routen),
-        "routen": [r.to_dict() for r in routen],
-        "beste_route": 1 if routen else None,
-        "score_vergleich": [
-            {"route": i + 1, "score": r.score, "dauer_min": r.gesamt_dauer_min, "umstiege": len(r.umstiege)}
-            for i, r in enumerate(routen)
-        ] if routen else [],
+def merge_gruppe(gruppe, stationen):
+    def wert(s):
+        w = 0 if s["name"].startswith("Station ") else 2
+        if s.get("railway") in ("station", "halt"):
+            w += 2
+        if s.get("public_transport") == "station":
+            w += 1
+        return w
+
+    beste = max(gruppe, key=lambda i: (wert(stationen[i]), i))
+    s = stationen[beste]
+    return {
+        "id": beste,
+        "name": s["name"],
+        "lat": sum(stationen[i]["lat"] for i in gruppe) / len(gruppe),
+        "lon": sum(stationen[i]["lon"] for i in gruppe) / len(gruppe),
     }
-    path = Path(output_dir) / "zusammenfassung.json"
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(ergebnis, f, indent=2, ensure_ascii=False)
-    print(f"Zusammenfassung gespeichert: {path}")
 
 
-# ============================================================================
-# CLI-Einstiegspunkt
-# ============================================================================
+# ---------------------------------------------------------------------------
+# Graph
+# ---------------------------------------------------------------------------
+def haversine(lat1, lon1, lat2, lon2):
+    r = 6371000.0
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp = math.radians(lat2 - lat1)
+    dl = math.radians(lon2 - lon1)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
-def main():
-    parser = argparse.ArgumentParser(description="ÖPNV-Routen finden – Kombinierter Ansatz")
-    parser.add_argument("--stadt", type=str, help="Stadt oder Stadtteil (z. B. 'Berlin, Deutschland')")
-    parser.add_argument("--bbox", type=float, nargs=4, metavar=("S", "W", "N", "E"), help="Bounding Box")
-    parser.add_argument("--datum", required=True, help="Startdatum (ISO, z. B. 2026-11-01)")
-    parser.add_argument("--uhrzeit", required=True, help="Startzeit (HH:MM, z. B. 18:30)")
-    parser.add_argument("--start", type=str, help="Startpunkt (Name oder Station-ID)")
-    parser.add_argument("--end", type=str, help="Endpunkt (Name oder Station-ID)")
-    parser.add_argument("--dauer-min", type=int, default=60, help="Mindestdauer in Minuten")
-    parser.add_argument("--dauer-max", type=int, default=120, help="Maximale Dauer in Minuten")
-    parser.add_argument("--umstiege-min", type=int, default=1, help="Mindestanzahl Umstiege")
-    parser.add_argument("--umstiege-max", type=int, default=5, help="Maximale Anzahl Umstiege")
-    parser.add_argument("--qid", type=str, help="Wikidata-QID des Ortes")
-    parser.add_argument("--output", default="ergebnis", help="Ausgabeverzeichnis")
 
-    args = parser.parse_args()
+class Graph:
+    def __init__(self):
+        self.stationen = {}
+        self.linien = {}
+        self.nachbarn = {}
 
-    # Phase 1: Daten-Scout
-    if args.stadt:
-        scout = DatenScout(args.stadt)
-        scout.finde_datenquellen()
+    def add_station(self, s):
+        self.stationen[s["id"]] = s
 
-    # Phase 2: Netzwerk aufbauen (Test-Graph als Vorlage)
-    graph = RoutingGraph()
-    # TODO: Aus OSM/GTGS-Daten aufbauen
+    def add_linie(self, linie, cluster_von):
+        refs = [cluster_von[r] for r in linie["refs"] if r in cluster_von]
+        seq = []
+        for r in refs:
+            if not seq or seq[-1] != r:
+                seq.append(r)
+        if len(seq) < 2:
+            return 0
+        mode = mode_fuer(linie["route"], linie["ref"])
+        self.linien[linie["id"]] = {**linie, "mode": mode, "stationen": seq}
+        n = 0
+        for a, b in zip(seq, seq[1:]):
+            self.nachbarn.setdefault(a, []).append((b, linie["id"], mode))
+            n += 1
+        for a in {a for a, _ in zip(seq, seq[1:])}:
+            self.nachbarn[a].sort(key=lambda e: MODE_PRIO.get(e[2], 9))
+        return n
 
-    # Phase 3: Routing
-    router = Router(graph)
-    routen = router.finde_routen(
-        start_id=args.start or "hbf",
-        ziel_id=args.end or "flughafen",
-        datum=args.datum,
-        uhrzeit=args.uhrzeit,
-        dauer_min=args.dauer_min,
-        dauer_max=args.dauer_max,
-        umstiege_min=args.umstiege_min,
-        umstiege_max=args.umstiege_max,
+
+# ---------------------------------------------------------------------------
+# Routing
+# ---------------------------------------------------------------------------
+def _score(route):
+    vm = sum(MODE_PRIO.get(f["mode"], 5) for f in route["fahrten"])
+    return 2.0 * (route["fuss"] + route["warte"]) + 1.0 * vm
+
+
+def _dfs(
+    graph,
+    start_id,
+    ziel_id,
+    dauer_min,
+    dauer_max,
+    umstiege_min,
+    umstiege_max,
+    verbotene_kanten,
+    max_iter=200000,
+):
+    stationen = graph.stationen
+    routen = []
+    stack = [([start_id], {start_id}, set(), 0, 0, 0, None, 0, [], [])]
+    iterationen = 0
+    while stack and iterationen < max_iter:
+        iterationen += 1
+        (pfad, bst, bkan, umst, fuss, warte, llin, zeit, fahrten, uliste) = stack.pop()
+        cur = pfad[-1]
+        if cur == ziel_id:
+            if (
+                dauer_min <= zeit <= dauer_max
+                and umstiege_min <= len(uliste) <= umstiege_max
+            ):
+                routen.append(
+                    {
+                        "stationen": list(pfad),
+                        "fahrten": list(fahrten),
+                        "umstiege": list(uliste),
+                        "dauer": zeit,
+                        "fuss": fuss,
+                        "warte": warte,
+                    }
+                )
+            continue
+        if zeit > dauer_max or len(uliste) > umstiege_max:
+            continue
+        for nb, lid, mode in reversed(graph.nachbarn.get(cur, [])):
+            if nb in bst:
+                continue
+            kante = (cur, nb)
+            if kante in bkan or kante in verbotene_kanten:
+                continue
+            s1, s2 = stationen[cur], stationen[nb]
+            dist = haversine(s1["lat"], s1["lon"], s2["lat"], s2["lon"])
+            fahrzeit = (
+                max(1, round(dist / GESCHWINDIGKEIT.get(mode, 250))) + AUFENTHALT_MIN
+            )
+            nfuss, nwarte, numst = fuss, warte, umst
+            nliste = list(uliste)
+            if llin is not None and llin != lid:
+                nfuss += UMSTIEG_FUSS_MIN
+                nwarte += UMSTIEG_WARTE_MIN
+                numst += 1
+                nliste.append(
+                    {
+                        "station": cur,
+                        "von": llin,
+                        "nach": lid,
+                        "fuss": UMSTIEG_FUSS_MIN,
+                        "warte": UMSTIEG_WARTE_MIN,
+                    }
+                )
+            stack.append(
+                (
+                    pfad + [nb],
+                    bst | {nb},
+                    bkan | {kante},
+                    numst,
+                    nfuss,
+                    nwarte,
+                    lid,
+                    zeit + fahrzeit,
+                    fahrten
+                    + [
+                        {
+                            "von": cur,
+                            "nach": nb,
+                            "linie": lid,
+                            "mode": mode,
+                            "dauer": fahrzeit,
+                            "dist_m": round(dist),
+                        }
+                    ],
+                    nliste,
+                )
+            )
+    return routen
+
+
+def finde_routen(
+    graph, start_id, ziel_id, dauer_min, dauer_max, umstiege_min, umstiege_max, anzahl=3
+):
+    """Bis zu `anzahl` unterschiedliche Routen (Kanten-Ausschluss pro Runde).
+
+    Ein deterministischer DFS liefert sonst 3× dieselbe Route – das Aussperren
+    der Kanten der vorherigen Route erzwingt Vielfalt.
+    """
+    if start_id not in graph.stationen or ziel_id not in graph.stationen:
+        return []
+    seen, queue = {start_id}, [start_id]
+    while queue:
+        cur = queue.pop(0)
+        for nb, _, _ in graph.nachbarn.get(cur, []):
+            if nb not in seen:
+                seen.add(nb)
+                queue.append(nb)
+    if ziel_id not in seen:
+        return []
+
+    auswahl, verboten = [], set()
+    for _ in range(anzahl):
+        routen = _dfs(
+            graph,
+            start_id,
+            ziel_id,
+            dauer_min,
+            dauer_max,
+            umstiege_min,
+            umstiege_max,
+            verboten,
+        )
+        if not routen:
+            routen = _dfs(
+                graph,
+                start_id,
+                ziel_id,
+                dauer_min,
+                dauer_max,
+                umstiege_min,
+                umstiege_max,
+                set(),
+            )
+            if not routen:
+                break
+        for r in routen:
+            r["score"] = _score(r)
+        routen.sort(key=lambda r: (r["score"], r["dauer"]))
+        beste = routen[0]
+        auswahl.append(beste)
+        verboten.update((f["von"], f["nach"]) for f in beste["fahrten"])
+    return auswahl
+
+
+# ---------------------------------------------------------------------------
+# Echte Fahrweg-Geometrie
+# ---------------------------------------------------------------------------
+def lade_linien_geometrie(linien_ids, refresh=False):
+    """Echte Strecken der Linien: relation(ID); way(r); out geom;"""
+    ergebnis = {}
+    for lid in linien_ids:
+        query = f"[out:json][timeout:90];relation({lid});way(r);out geom;"
+        try:
+            data = overpass(query, f"geometrie_{lid}", refresh)
+        except Exception as err:
+            log(f"  Geometrie Linie {lid} fehlgeschlagen: {err}")
+            continue
+        coords, adj = {}, {}
+        for el in data.get("elements", []):
+            if el["type"] != "way":
+                continue
+            nodes = el.get("nodes", [])
+            geom = el.get("geometry", [])
+            for i, nid in enumerate(nodes):
+                if i < len(geom):
+                    coords[nid] = (geom[i]["lat"], geom[i]["lon"])
+            for a, b in zip(nodes, nodes[1:]):
+                adj.setdefault(a, []).append(b)
+                adj.setdefault(b, []).append(a)
+        ergebnis[lid] = (coords, adj)
+        log(f"  Geometrie Linie {lid}: {len(coords)} Knoten")
+    return ergebnis
+
+
+def segment_pfad(linie_id, cluster_a, cluster_b, line_geom, mitglieder):
+    """Echter Fahrweg zwischen zwei Stationen auf einer Linie (BFS)."""
+    if linie_id not in line_geom:
+        return None
+    coords, adj = line_geom[linie_id]
+    starts = [m for m in mitglieder.get(cluster_a, []) if m in adj]
+    goals = {m for m in mitglieder.get(cluster_b, []) if m in adj}
+    if not starts or not goals:
+        return None
+    prev = {s: None for s in starts}
+    queue = deque(starts)
+    ziel = None
+    while queue:
+        cur = queue.popleft()
+        if cur in goals:
+            ziel = cur
+            break
+        for nb in adj.get(cur, []):
+            if nb not in prev:
+                prev[nb] = cur
+                queue.append(nb)
+    if ziel is None:
+        return None
+    pfad, cur = [], ziel
+    while cur is not None:
+        pfad.append(cur)
+        cur = prev[cur]
+    pfad.reverse()
+    return [coords[n] for n in pfad if n in coords]
+
+
+def route_punkte_real(route, line_geom, mitglieder, graph):
+    """Echte Streckenpunkte (lon, lat); Luftlinie nur als Fallback."""
+    punkte = []
+    for f in route["fahrten"]:
+        pfad = segment_pfad(f["linie"], f["von"], f["nach"], line_geom, mitglieder)
+        if pfad:
+            for la, lo in pfad:
+                if not punkte or punkte[-1] != (lo, la):
+                    punkte.append((lo, la))
+        else:
+            s1, s2 = graph.stationen[f["von"]], graph.stationen[f["nach"]]
+            for lo, la in ((s1["lon"], s1["lat"]), (s2["lon"], s2["lat"])):
+                if not punkte or punkte[-1] != (lo, la):
+                    punkte.append((lo, la))
+    return punkte
+
+
+# ---------------------------------------------------------------------------
+# Export
+# ---------------------------------------------------------------------------
+def export(routen, graph, output, punkte_pro_route):
+    out = Path(output)
+    out.mkdir(parents=True, exist_ok=True)
+
+    features = []
+    for i, r in enumerate(routen, 1):
+        koords = punkte_pro_route[i - 1]  # (lon, lat)
+        features.append(
+            {
+                "type": "Feature",
+                "properties": {
+                    "route_id": i,
+                    "dauer_min": r["dauer"],
+                    "umstiege": len(r["umstiege"]),
+                    "fussweg_min": r["fuss"],
+                    "wartezeit_min": r["warte"],
+                    "score": round(r["score"], 1),
+                    "stationen": [graph.stationen[s]["name"] for s in r["stationen"]],
+                    "linien": sorted({f["linie"] for f in r["fahrten"]}),
+                },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[lo, la] for lo, la in koords],
+                },
+            }
+        )
+    (out / "routen.geojson").write_text(
+        json.dumps(
+            {"type": "FeatureCollection", "features": features},
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
     )
 
-    # Phase 4: Export
+    kml = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<kml xmlns="http://www.opengis.net/kml/2.2"><Document>',
+        "<name>ÖPNV-Routen</name>",
+    ]
+    farben = ["ff0099ff", "ff00ff99", "ff9900ff"]
+    for i in range(len(routen)):
+        kml.append(
+            f'<Style id="s{i}"><LineStyle><color>{farben[i % 3]}</color>'
+            f"<width>4</width></LineStyle></Style>"
+        )
+    for i, r in enumerate(routen, 1):
+        txt = " ".join(f"{lo},{la},0" for lo, la in punkte_pro_route[i - 1])
+        kml.append(
+            f"<Placemark><name>Route {i}: {r['dauer']} Min, "
+            f"{len(r['umstiege'])} Umstiege</name>"
+            f"<description>Score {r['score']:.1f}</description>"
+            f"<styleUrl>#s{i - 1}</styleUrl><LineString><coordinates>{txt}"
+            f"</coordinates></LineString></Placemark>"
+        )
+    kml.append("</Document></kml>")
+    (out / "routen.kml").write_text("\n".join(kml), encoding="utf-8")
+
+    gpx = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<gpx version="1.1" creator="oepnvrouten" '
+        'xmlns="http://www.topografix.com/GPX/1/1">',
+    ]
+    for i, r in enumerate(routen, 1):
+        gpx.append(f"<trk><name>Route {i} ({r['dauer']} Min)</name><trkseg>")
+        for lo, la in punkte_pro_route[i - 1]:
+            gpx.append(f'<trkpt lat="{la}" lon="{lo}"><ele>0</ele></trkpt>')
+        gpx.append("</trkseg></trk>")
+    gpx.append("</gpx>")
+    (out / "routen.gpx").write_text("\n".join(gpx), encoding="utf-8")
+
+    (out / "zusammenfassung.json").write_text(
+        json.dumps(
+            {"routen": routen, "anzahl": len(routen)}, ensure_ascii=False, indent=2
+        ),
+        encoding="utf-8",
+    )
+    log(f"Export nach {out}")
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# GTFS-Fahrplan-Routing (echte Abfahrts-/Ankunftszeiten)
+# ---------------------------------------------------------------------------
+GTFS_URL = "https://download.gtfs.de/germany/nv_free/latest.zip"
+GTFS_ZIP = CACHE_DIR / "gtfs_nv.zip"
+
+
+def gtfs_feed_laden(refresh=False):
+    """Lädt den GTFS-Feed für Deutschland (gtfs.de, aus DELFI/NeTEx)."""
+    if GTFS_ZIP.exists() and not refresh:
+        log(f"  [Cache] GTFS-Feed ({GTFS_ZIP.stat().st_size / 1e6:.0f} MB)")
+        return
+    log("  Lade GTFS-Feed (kann >200 MB dauern)...")
+    with requests.get(GTFS_URL, headers=HEADERS, stream=True, timeout=600) as r:
+        r.raise_for_status()
+        with open(GTFS_ZIP, "wb") as f:
+            for chunk in r.iter_content(1 << 20):
+                f.write(chunk)
+    log(f"  GTFS-Feed: {GTFS_ZIP.stat().st_size / 1e6:.0f} MB")
+
+
+def gtfs_extraktion(bbox, datum, refresh=False):
+    """Extrahiert Stops/Routen/Trips/Stop-Times der Region aus dem GTFS-Feed."""
+    import csv
+    import io
+    import pickle
+    import zipfile
+    from datetime import date as _date
+
+    s, w, n, e = bbox
+    pkl = CACHE_DIR / f"gtfs_{datum}_{abs(hash(bbox)) % 100000}.pkl"
+    if pkl.exists() and not refresh:
+        log(f"  [Cache] GTFS-Extraktion {pkl.name}")
+        return pickle.loads(pkl.read_bytes())
+
+    gtfs_feed_laden(refresh)
+    z = zipfile.ZipFile(GTFS_ZIP)
+
+    def rows(name):
+        with z.open(name) as f:
+            yield from csv.DictReader(io.TextIOWrapper(f, encoding="utf-8"))
+
+    stops = {}
+    for r in rows("stops.txt"):
+        lat, lon = float(r["stop_lat"]), float(r["stop_lon"])
+        if s <= lat <= n and w <= lon <= e:
+            stops[r["stop_id"]] = (r["stop_name"], lat, lon)
+    log(f"  GTFS-Stops im Gebiet: {len(stops)}")
+
+    wd = _date(int(datum[:4]), int(datum[4:6]), int(datum[6:])).weekday()
+    tage = [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+    ]
+    cal, caldates = {}, {}
+    for c in rows("calendar.txt"):
+        cal[c["service_id"]] = c
+    for c in rows("calendar_dates.txt"):
+        caldates.setdefault(c["service_id"], []).append(c)
+
+    def läuft(sid):
+        c = cal.get(sid)
+        if c and c["start_date"] <= datum <= c["end_date"] and c[tage[wd]] == "1":
+            return True
+        for cd in caldates.get(sid, []):
+            if cd["date"] == datum:
+                if cd["exception_type"] == "1":
+                    return True
+                if cd["exception_type"] == "2":
+                    return False
+        return False
+
+    # Pass 1: Trip-IDs, die das Gebiet bedienen
+    gebiet = set(stops)
+    trip_ids = set()
+    for st in rows("stop_times.txt"):
+        if st["stop_id"] in gebiet:
+            trip_ids.add(st["trip_id"])
+
+    # route_id + shape_id + service am Datum
+    trip_route = {}
+    trip_shape = {}
+    for t in rows("trips.txt"):
+        if t["trip_id"] in trip_ids and läuft(t["service_id"]):
+            trip_route[t["trip_id"]] = t["route_id"]
+            trip_shape[t["trip_id"]] = t.get("shape_id") or ""
+
+    route_info = {}
+    for r in rows("routes.txt"):
+        if r["route_id"] in set(trip_route.values()):
+            route_info[r["route_id"]] = (
+                r.get("route_short_name") or "",
+                r.get("route_long_name") or "",
+                int(r.get("route_type") or 3),
+            )
+
+    # Pass 2: Haltestellenfolgen
+    trips = {tid: [trip_route[tid], []] for tid in trip_route}
+    for st in rows("stop_times.txt"):
+        tid = st["trip_id"]
+        if tid in trips:
+            hh, mm, _ = st["arrival_time"].split(":")
+            arr = int(hh) * 60 + int(mm)
+            hh, mm, _ = st["departure_time"].split(":")
+            dep = int(hh) * 60 + int(mm)
+            trips[tid][1].append((st["stop_id"], arr, dep))
+    for tid in trips:
+        trips[tid][1].sort(key=lambda s: s[2])
+
+    # Streckengeometrie (shapes.txt) – nur Punkte im Gebiet
+    shapes = {}
+    for r in rows("shapes.txt"):
+        lat, lon = float(r["shape_pt_lat"]), float(r["shape_pt_lon"])
+        if s <= lat <= n and w <= lon <= e:
+            shapes.setdefault(r["shape_id"], []).append(
+                (int(r["shape_pt_sequence"]), lat, lon)
+            )
+    for sid in shapes:
+        shapes[sid].sort()
+    log(f"  GTFS-Shapes im Gebiet: {len(shapes)}")
+
+    pkl.write_bytes(
+        pickle.dumps(
+            {
+                "datum": datum,
+                "stops": stops,
+                "routes": route_info,
+                "trips": trips,
+                "trip_shape": trip_shape,
+                "shapes": shapes,
+            },
+            protocol=4,
+        )
+    )
+    log(f"  GTFS: {len(trips)} Trips gespeichert ({pkl.name})")
+    return pickle.loads(pkl.read_bytes())
+
+
+def gtfs_index(daten):
+    """stop_id -> [(dep, trip_id, idx)] und Gehverbindungen zwischen nahen Stops."""
+    import math as _m
+
+    stops = daten["stops"]
+    trips = daten["trips"]
+    stop_trips = {}
+    for tid, (_, seq) in trips.items():
+        for i, (sid, _, dep) in enumerate(seq):
+            stop_trips.setdefault(sid, []).append((dep, tid, i))
+    for sid in stop_trips:
+        stop_trips[sid].sort()
+
+    ids = list(stops)
+    walk = {i: [] for i in ids}
+    try:
+        import numpy as np
+        from scipy.spatial import cKDTree
+
+        lat0 = sum(s[1] for s in stops.values()) / len(stops)
+        kx, ky = 111320.0 * _m.cos(_m.radians(lat0)), 110540.0
+        pts = np.array([[stops[i][2] * kx, stops[i][1] * ky] for i in ids])
+        for a, b in cKDTree(pts).query_pairs(400):
+            ia, ib = ids[a], ids[b]
+            d = haversine(stops[ia][1], stops[ia][2], stops[ib][1], stops[ib][2])
+            t = max(2, round(d / 80))
+            walk[ia].append((ib, t))
+            walk[ib].append((ia, t))
+    except ImportError:
+        pass
+    return stop_trips, walk
+
+
+def gtfs_suche(
+    daten, start_sid, ziel_sid, start_min, end_min, verbotene_trips=frozenset()
+):
+    """Früheste Ankunft (zeitabhängige Dijkstra-Variante)."""
+    import bisect
+    import heapq
+
+    stops, trips = daten["stops"], daten["trips"]
+    stop_trips, walk = gtfs_index(daten)
+    best = {start_sid: start_min}
+    prev = {}
+    pq = [(start_min, start_sid, None)]
+    ziel_zeit = None
+    while pq:
+        zeit, stop, quelle = heapq.heappop(pq)
+        if zeit > end_min or (ziel_zeit is not None and zeit >= ziel_zeit):
+            continue
+        if zeit > best.get(stop, 10**9):
+            continue
+        prev[stop] = quelle
+        if stop == ziel_sid:
+            ziel_zeit = zeit
+            continue
+        for nb, dauer in walk.get(stop, []):
+            nz = zeit + dauer
+            if nz < best.get(nb, 10**9) and nz <= end_min:
+                best[nb] = nz
+                heapq.heappush(pq, (nz, nb, (stop, "walk", dauer, None)))
+        kandidaten = stop_trips.get(stop, [])
+        geprueft = 0
+        for dep, tid, idx in kandidaten[
+            bisect.bisect_left(kandidaten, (zeit, "", -1)) :
+        ]:
+            if dep > zeit + 90:
+                break
+            if tid in verbotene_trips:
+                continue
+            for j in range(idx + 1, len(trips[tid][1])):
+                sid, arr, _ = trips[tid][1][j]
+                if arr < best.get(sid, 10**9) and arr <= end_min:
+                    best[sid] = arr
+                    heapq.heappush(pq, (arr, sid, (stop, "trip", tid, j)))
+            geprueft += 1
+            if geprueft >= 40:
+                break
+    return ziel_zeit, prev, trips, stops
+
+
+def gtfs_rekonstruiere(prev, ziel):
+    """Baut aus den Dijkstra-Vorgängern die Bein-Liste der Verbindung."""
+    legs, cur = [], ziel
+    while cur is not None and prev.get(cur):
+        q = prev[cur]
+        if q[1] == "trip":
+            legs.append(("trip", q[0], cur, q[2]))
+        else:
+            legs.append(("walk", q[0], cur, None))
+        cur = q[0]
+    legs.reverse()
+    return legs
+
+
+def clip_shape(daten, tid, von_xy, nach_xy):
+    """Echter Streckenverlauf (aus shapes.txt) zwischen zwei Stationen.
+
+    Die Haltestellen werden auf die Shape-Punkte projiziert und der
+    Abschnitt zwischen ihnen zurückgegeben (Liste von (lon, lat)).
+    """
+    pts = daten.get("shapes", {}).get(daten.get("trip_shape", {}).get(tid, ""))
+    if not pts:
+        return None
+
+    def naechster(xy):
+        return min(
+            range(len(pts)), key=lambda i: haversine(xy[1], xy[0], pts[i][1], pts[i][2])
+        )
+
+    i1, i2 = naechster(von_xy), naechster(nach_xy)
+    lo, hi = sorted((i1, i2))
+    return [(pts[i][2], pts[i][1]) for i in range(lo, hi + 1)]
+
+
+def gtfs_verbindungen(daten, start_sid, ziel_sid, start_min, end_min, anzahl=3):
+    """Bis zu `anzahl` unterschiedliche Verbindungen mit echten Zeiten."""
+    ergebnisse, verboten = [], set()
+    for _ in range(anzahl):
+        zeit, prev, trips, stops = gtfs_suche(
+            daten, start_sid, ziel_sid, start_min, end_min, frozenset(verboten)
+        )
+        if zeit is None:
+            break
+        abschnitte = []
+        for leg in gtfs_rekonstruiere(prev, ziel_sid):
+            if leg[0] == "walk":
+                _, von, nach, _ = leg
+                abschnitte.append(
+                    {
+                        "von": stops[von][0],
+                        "nach": stops[nach][0],
+                        "linie": "Fußweg",
+                        "walk": True,
+                        "von_xy": [stops[von][2], stops[von][1]],
+                        "nach_xy": [stops[nach][2], stops[nach][1]],
+                    }
+                )
+            else:
+                _, von, nach, tid = leg
+                route_id, seq = trips[tid]
+                info = daten["routes"].get(route_id, ("", "", 3))
+                kurz = info[0]
+                lang = info[1] if len(info) > 1 else ""
+                iv = next(k for k, s in enumerate(seq) if s[0] == von)
+                inx = next(k for k, s in enumerate(seq) if s[0] == nach)
+                von_xy = [stops[von][2], stops[von][1]]
+                nach_xy = [stops[nach][2], stops[nach][1]]
+                abschnitte.append(
+                    {
+                        "von": stops[von][0],
+                        "nach": stops[nach][0],
+                        "linie": kurz or lang,
+                        "abfahrt": f"{seq[iv][2] // 60:02d}:{seq[iv][2] % 60:02d}",
+                        "ankunft": f"{seq[inx][1] // 60:02d}:{seq[inx][1] % 60:02d}",
+                        "von_xy": von_xy,
+                        "nach_xy": nach_xy,
+                        "punkte": clip_shape(daten, tid, von_xy, nach_xy),
+                    }
+                )
+                verboten.add(tid)
+        ergebnisse.append({"zeit": zeit, "abschnitte": abschnitte})
+    return ergebnisse
+
+
+def gtfs_export(ergebnisse, output, start_min, datum):
+    """routen.geojson / .kml / .gpx / zusammenfassung.json mit echten Zeiten."""
+    out = Path(output)
+    out.mkdir(parents=True, exist_ok=True)
+
+    features = []
+    for i, e in enumerate(ergebnisse, 1):
+        koords = []
+        for a in e["abschnitte"]:
+            for xy in (a.get("von_xy"), a.get("nach_xy")):
+                if xy and (not koords or koords[-1] != xy):
+                    koords.append(xy)
+        features.append(
+            {
+                "type": "Feature",
+                "properties": {
+                    "route_id": i,
+                    "dauer_min": e["zeit"] - start_min,
+                    "ankunft": f"{e['zeit'] // 60:02d}:{e['zeit'] % 60:02d}",
+                    "abschnitte": e["abschnitte"],
+                },
+                "geometry": {"type": "LineString", "coordinates": koords},
+            }
+        )
+    (out / "routen.geojson").write_text(
+        json.dumps(
+            {"type": "FeatureCollection", "features": features},
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    kml = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<kml xmlns="http://www.opengis.net/kml/2.2"><Document>',
+        "<name>ÖPNV-Routen (GTFS)</name>",
+    ]
+    farben = ["ff0099ff", "ff00ff99", "ff9900ff"]
+    for i in range(len(ergebnisse)):
+        kml.append(
+            f'<Style id="s{i}"><LineStyle><color>{farben[i % 3]}</color>'
+            f"<width>4</width></LineStyle></Style>"
+        )
+    for i, e in enumerate(ergebnisse, 1):
+        txt = " ".join(
+            f"{lo},{la},0"
+            for f in features[i - 1]["geometry"]["coordinates"]
+            for lo, la in [f]
+        )
+        fahrten = [a for a in e["abschnitte"] if not a.get("walk")]
+        kml.append(
+            f"<Placemark><name>Route {i}: {fahrten[0]['abfahrt']} "
+            f"-> {fahrten[-1]['ankunft']}</name>"
+            f"<styleUrl>#s{i - 1}</styleUrl><LineString><coordinates>{txt}"
+            f"</coordinates></LineString></Placemark>"
+        )
+    kml.append("</Document></kml>")
+    (out / "routen.kml").write_text("\n".join(kml), encoding="utf-8")
+
+    gpx = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<gpx version="1.1" creator="oepnvrouten" '
+        'xmlns="http://www.topografix.com/GPX/1/1">',
+    ]
+    for i, e in enumerate(ergebnisse, 1):
+        gpx.append(f"<trk><name>Route {i}</name><trkseg>")
+        for lo, la in features[i - 1]["geometry"]["coordinates"]:
+            gpx.append(f'<trkpt lat="{la}" lon="{lo}"><ele>0</ele></trkpt>')
+        gpx.append("</trkseg></trk>")
+    gpx.append("</gpx>")
+    (out / "routen.gpx").write_text("\n".join(gpx), encoding="utf-8")
+
+    (out / "zusammenfassung.json").write_text(
+        json.dumps(
+            {
+                "quelle": "GTFS (gtfs.de nv_free)",
+                "datum": datum,
+                "verbindungen": ergebnisse,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    log(f"GTFS-Export nach {out}")
+
+
+def main():
+    ap = argparse.ArgumentParser(description="ÖPNV-Routen finden")
+    ap.add_argument(
+        "--stadt", help="Stadt oder Stadtteil (z. B. 'Berlin, Deutschland')"
+    )
+    ap.add_argument("--bbox", type=float, nargs=4, metavar=("S", "W", "N", "E"))
+    ap.add_argument("--datum", default="2026-10-16", help="Startdatum (ISO)")
+    ap.add_argument("--uhrzeit", default="15:00", help="Startzeit (HH:MM)")
+    ap.add_argument("--start", required=True, help="Startpunkt (Name)")
+    ap.add_argument("--end", required=True, help="Endpunkt (Name)")
+    ap.add_argument("--dauer-min", type=int, default=60)
+    ap.add_argument("--dauer-max", type=int, default=120)
+    ap.add_argument("--umstiege-min", type=int, default=1)
+    ap.add_argument("--umstiege-max", type=int, default=5)
+    ap.add_argument("--qid", help="Wikidata-QID des Ortes (nie raten)")
+    ap.add_argument("--output", default="ergebnis")
+    ap.add_argument("--refresh", action="store_true")
+    args = ap.parse_args()
+
+    if not args.stadt and not args.bbox:
+        ap.error("--stadt oder --bbox erforderlich")
+    bbox = bbox_fuer_stadt(args.stadt, args.refresh) if args.stadt else tuple(args.bbox)
+    log(f"BBox {bbox}")
+
+    hh, mm = args.uhrzeit.split(":")
+    start_min = int(hh) * 60 + int(mm)
+    datum = args.datum.replace("-", "")
+
+    # ---- Primär: GTFS-Fahrplan-Routing (echte Abfahrts-/Ankunftszeiten) ----
+    try:
+        daten = gtfs_extraktion(bbox, datum, args.refresh)
+        ts = sorted(
+            sid
+            for sid, s in daten["stops"].items()
+            if args.start.lower() in s[0].lower()
+        )
+        tz = sorted(
+            sid for sid, s in daten["stops"].items() if args.end.lower() in s[0].lower()
+        )
+        if ts and tz:
+            verbindungen = gtfs_verbindungen(
+                daten, ts[0], tz[0], start_min, start_min + 360
+            )
+            if verbindungen:
+                gtfs_export(verbindungen, args.output, start_min, datum)
+                for i, v in enumerate(verbindungen, 1):
+                    fahrten = [a for a in v["abschnitte"] if not a.get("walk")]
+                    log(
+                        f"  Verbindung {i}: {fahrten[0]['abfahrt']} -> "
+                        f"{fahrten[-1]['ankunft']} "
+                        f"({len(fahrten)} Fahrten)"
+                    )
+                return
+            log("GTFS: keine Verbindung gefunden – Fallback auf OSM-Routing")
+        else:
+            log("GTFS: Start/Ziel nicht im Fahrplan – Fallback auf OSM-Routing")
+    except Exception as err:
+        log(f"GTFS-Routing fehlgeschlagen ({type(err).__name__}: {err})")
+
+    # ---- Fallback: OSM-Routing (Spiel-Routen mit Schätzzeiten) ----
+    stationen = lade_stationen(bbox, args.refresh)
+    log(f"{len(stationen)} Stationen")
+    gruppen = cluster_stationen(stationen)
+    log(f"{len(gruppen)} Verkehrsknoten nach Clustering")
+
+    graph = Graph()
+    cluster_von = {}
+    for root, mitglieder in gruppen.items():
+        for m in mitglieder:
+            cluster_von[m] = root
+        repraesentant = merge_gruppe(mitglieder, stationen)
+        repraesentant["id"] = root
+        graph.add_station(repraesentant)
+
+    for route in ["subway", "train", "tram", "light_rail", "bus"]:
+        linien = lade_linien(bbox, route, args.refresh)
+        n = sum(graph.add_linie(l, cluster_von) for l in linien)
+        log(f"  {route}: {len(linien)} Linien, {n} Kanten")
+    log(
+        f"Graph: {len(graph.stationen)} Stationen, "
+        f"{sum(len(v) for v in graph.nachbarn.values())} Kanten"
+    )
+
+    def finde(name):
+        return sorted(
+            {
+                cluster_von[s["id"]]
+                for s in stationen.values()
+                if name.lower() in s["name"].lower()
+            }
+        )
+
+    start_id = finde(args.start)
+    ziel_id = finde(args.end)
+    for label, treffer, name in [
+        ("Start", start_id, args.start),
+        ("Ziel", ziel_id, args.end),
+    ]:
+        log(
+            f"{label} '{name}': "
+            + (
+                ", ".join(f"{graph.stationen[t]['name']} ({t})" for t in treffer[:3])
+                or "KEIN TREFFER"
+            )
+        )
+        if not treffer:
+            raise SystemExit(f"{label} '{name}' nicht gefunden")
+
+    routen = finde_routen(
+        graph,
+        start_id[0],
+        ziel_id[0],
+        args.dauer_min,
+        args.dauer_max,
+        args.umstiege_min,
+        args.umstiege_max,
+    )
+    log(f"{len(routen)} Routen gefunden")
+    for i, r in enumerate(routen, 1):
+        linien = sorted({graph.linien[f["linie"]]["name"] for f in r["fahrten"]})
+        log(
+            f"  Route {i}: {r['dauer']} Min, {len(r['umstiege'])} Umstiege, "
+            f"Score {r['score']:.1f} | {', '.join(linien)}"
+        )
+
     if routen:
-        output = Path(args.output)
-        output.mkdir(parents=True, exist_ok=True)
-        export_geojson(routen, graph.stationen, graph.linien, str(output))
-        export_kml(routen, graph.stationen, graph.linien, str(output))
-        export_gpx(routen, graph.stationen, graph.linien, str(output))
-        export_zusammenfassung(routen, str(output))
-    else:
-        print("Keine Routen gefunden. Constraints prüfen oder entschärfen.")
+        linien_ids = sorted({f["linie"] for r in routen for f in r["fahrten"]})
+        log(f"Echte Fahrwege für {len(linien_ids)} Linien laden...")
+        line_geom = lade_linien_geometrie(linien_ids, args.refresh)
+        punkte = [route_punkte_real(r, line_geom, gruppen, graph) for r in routen]
+        real = sum(1 for p in punkte if len(p) > 50)
+        log(f"Echte Strecken: {real}/{len(routen)} Routen mit Fahrweg-Geometrie")
+        export(routen, graph, args.output, punkte)
 
 
 if __name__ == "__main__":
