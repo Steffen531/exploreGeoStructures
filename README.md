@@ -3,9 +3,7 @@ Ein KI Assistent, der nach besonderen geographischen Strukturen und Bewegungsmus
 
 # Projekt
 
-* `tasks` - Hier untersuchen wir neue tasks, entwickeln und verbessern die Strategie. Wenn ein akzeptables Einstiegsniveau erreicht ist, wird ein skill erzeugt.
-* `tasks/MallsEtc` - sucht nach Einkaufszentren, Bahnhöfen und Passagen, die gewisse Anforderungen erfüllen
-* `tasks/ÖPNVRundfahrt` - stellt eine Reise als Abfolge von öffentlichen Verkehrsmitteln zusammen, die gewisse Anforderungen erfüllt. Das Ergebnis wird in einer Karte dargestellt.
+* `prototypes` - Hier untersuchen wir neue Aufgaben, entwickeln und verbessern die Strategie. Wenn ein akzeptables Niveau erreicht ist, wird daraus ein neuer skill erzeugt.
 * `AGENTS.md` - zentrale Anweisungen (Nutzung python venv, Visualisierung auf Karten mittels kml-files für openstreetmap, ...)
 * `.opencode/skills` - hier sind skills definiert, die einen gewissen Reifegrad haben. Mit "/skills" kann man sie in opencode auflisten
 und mit "@" einen einzelnen Skill benutzen
