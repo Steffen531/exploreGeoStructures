@@ -16,7 +16,7 @@ Das Verzeichnis `tasks/` ignorieren.
 - **Region** (Pflicht): Stadt, Stadtteil oder Bounding Box
 - **Zeitfenster** (Pflicht): Wochentag und Uhrzeit (z. B. „Dienstag 10:00")
 - Optional: `--qid` (Wikidata-QID des Ortes), `--output` (Ausgabeverzeichnis,
-  Standard `ergebnis`)
+  Standard `results`)
 
 **Dateien dieses Skills** (Pfade relativ zum Skill-Verzeichnis):
 

@@ -14,7 +14,7 @@ Das Verzeichnis `tasks/` ignorieren.
 
 - **Region** (Pflicht): Stadt, Stadtteil oder Bounding Box
 - Optional: `--qid` (Wikidata-QID des Ortes), `--register-city`,
-  `--output` (Ausgabeverzeichnis, Standard `ergebnis`)
+  `--output` (Ausgabeverzeichnis, Standard `results`)
 
 **Dateien dieses Skills** (Pfade relativ zum Skill-Verzeichnis):
 

@@ -21,7 +21,7 @@ Das Verzeichnis `tasks/` ignorieren.
   `--dauer-min`/`--dauer-max` (Minutenfenster, Standard 60–120),
   `--umstiege-min`/`--umstiege-max` (Standard 1–5),
   `--qid` (Wikidata-QID des Ortes),
-  `--output` (Ausgabeverzeichnis, Standard `ergebnis`)
+  `--output` (Ausgabeverzeichnis, Standard `results`)
 
 **Dateien dieses Skills** (Pfade relativ zum Skill-Verzeichnis):
 
@@ -133,5 +133,5 @@ Fehlern aufs OSM-Routing zurück:
 | `--umstiege-min` | 1 | (OSM-Fallback) Mindestanzahl Umstiege |
 | `--umstiege-max` | 5 | (OSM-Fallback) Maximale Anzahl Umstiege |
 | `--qid` | – | Wikidata-QID des Ortes (nie raten) |
-| `--output` | `ergebnis` | Ausgabeverzeichnis |
+| `--output` | `results` | Ausgabeverzeichnis |
 | `--refresh` | aus | Cache ignorieren (GTFS + OSM) |

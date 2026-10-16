@@ -19,7 +19,7 @@ Das Verzeichnis `tasks/` ignorieren.
 ## Eingaben
 
 - **Region** (Pflicht): Stadt, Stadtteil oder Bounding Box (S, W, N, E)
-- Optional: `--output` (Ausgabeverzeichnis, Standard `ergebnis`),
+- Optional: `--output` (Ausgabeverzeichnis, Standard `results`),
   `--refresh` (Cache ignorieren und neu abrufen)
 
 **Dateien dieses Skills** (Pfade relativ zum Skill-Verzeichnis):
@@ -106,5 +106,5 @@ Ebene" → Karte teilen.
 |---|---|---|
 | `--place` | – | Stadt oder Stadtteil (z. B. „Dresden, Deutschland") |
 | `--bbox` | – | Bounding Box (S, W, N, E) |
-| `--output` | `ergebnis` | Ausgabeverzeichnis |
+| `--output` | `results` | Ausgabeverzeichnis |
 | `--refresh` | aus | Cache ignorieren und neu abrufen |

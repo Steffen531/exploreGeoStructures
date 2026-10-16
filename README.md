@@ -51,4 +51,4 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 
 # Nächste Schritte
 1. Wäre es sinnvoll, spezielle opencode agents zu definieren und zu nutzen? ZB einen agent für datenquellen-scouting, einen agent für python skripts etc.
-2. Vorschläge im file improvements bewerten und ggf. umsetzen
+2. Vorschläge im file `improvements` bewerten und ggf. umsetzen
