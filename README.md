@@ -1,9 +1,3 @@
-# exploreGeoStructures
-Ein KI Assistent, der nach besonderen geographischen Strukturen und Bewegungsmustern sucht, die sich für Spiele wie Schnitzeljagd gut eignen.
-
-# Projekt
-
-* `prototypes` - Hier untersuchen wir neue Aufgaben, entwickeln und verbessern die Strategie. Wenn ein akzeptables Niveau erreicht ist, wird daraus ein neuer skill erzeugt.
 * `AGENTS.md` - zentrale Anweisungen (Nutzung python venv, Visualisierung auf Karten mittels kml-files für openstreetmap, ...)
 * `.opencode/skills` - hier sind skills definiert, die einen gewissen Reifegrad haben. Mit "/skills" kann man sie in opencode auflisten
 und mit "@" einen einzelnen Skill benutzen
@@ -35,7 +29,7 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 ## Erste Schritte
 1. `opencode` ausführen
 2. Mit `/skills` skills anzeigen: es sollten die oben beschriebenen skills zu sehen sein
-3. Eine erste Aufgabe stellen wie z.B. "Suche Behörden in Bochum"
+3. Eine erste Aufgabe stellen wie z.B. "Suche Behörden in Bochum". Dabei werden vermutlich diverse python packages ins venv installiert.
    
 # Beispiele
 
@@ -57,3 +51,4 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 
 # Nächste Schritte
 1. Wäre es sinnvoll, spezielle opencode agents zu definieren und zu nutzen? ZB einen agent für datenquellen-scouting, einen agent für python skripts etc.
+2. Vorschläge im file improvements bewerten und ggf. umsetzen
