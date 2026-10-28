@@ -16,31 +16,33 @@
   // Formatierung nach Datei-Änderungen aktivieren
   "formatter": true,
 
-  // Berechtigungsregeln
+  // Berechtigungsregeln. Reihenfolge zählt – die letzte passende Regel gewinnt.
+  // Nicht geregelte Aktionen (read, edit, glob, grep, question, skill,
+  // subagent) erlaubt die Grundpolicy ohnehin. Bewusst KEINE "read *"-Regel:
+  // sie würde die .env-Nachfrage der Grundpolicy aufheben.
   "permissions": [
-    // Datei-Operationen → im Projektverzeichnis erlauben
-    { "action": "read", "resource": "*", "effect": "allow" },
-    { "action": "edit", "resource": "*", "effect": "allow" },
-    { "action": "glob", "resource": "*", "effect": "allow" },
-    { "action": "grep", "resource": "*", "effect": "allow" },
-
-    // Pfade außerhalb des Projektverzeichnisses → weiterhin fragen
-    { "action": "external_directory", "resource": "*", "effect": "ask" },
-
-    // Ausführung & Automatisierung → immer fragen
-    { "action": "shell", "resource": "*", "effect": "allow" },
-    { "action": "execute", "resource": "*", "effect": "allow" },
-
-    // Web & Browser → immer fragen
+    // Web → nachfragen. Die Skill-Skripte holen OSM/GTFS-Daten selbst per
+    // Python (requests/urllib); webfetch/websearch wird nur zum Scouten
+    // neuer Datenquellen gebraucht → einmalig "Allow always" genügt.
     { "action": "webfetch", "resource": "*", "effect": "ask" },
     { "action": "websearch", "resource": "*", "effect": "ask" },
-    { "action": "browser", "resource": "*", "effect": "ask" },
 
-    // Andere Tools → automatisch erlauben
-    { "action": "subagent", "resource": "*", "effect": "allow" },
-    { "action": "question", "resource": "*", "effect": "allow" },
-    { "action": "skill", "resource": "*", "effect": "allow" },
-    { "action": "opencode", "resource": "*", "effect": "allow" }
+    // Pfade außerhalb des Projektverzeichnisses → nachfragen …
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
+    // … außer dem vorgefertigten OpenCode-Scratch-Verzeichnis
+    { "action": "external_directory", "resource": "/tmp/opencode/*", "effect": "allow" },
+
+    // Shell → Grundhaltung "nachfragen". Erlaubt ist genau das, was die
+    // Skills ausführen: cd sowie die Python-Skripte (.venv/bin/python … .py),
+    // relativ und absolut aufgerufen. pip, rm, git push & Co. bleiben unter
+    // "ask" → bei Bedarf einmalig mit "Allow always" merken.
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "cd *", "effect": "allow" },
+    { "action": "shell", "resource": ".venv/bin/python *.py *", "effect": "allow" },
+    { "action": "shell", "resource": "*/.venv/bin/python *.py *", "effect": "allow" },
+
+    // Code Mode (execute) → nachfragen; die Skills benötigen ihn nicht.
+    { "action": "execute", "resource": "*", "effect": "ask" }
   ],
 
   // Dateien ignorieren, die keine Dateisystem-Updates auslösen sollen
