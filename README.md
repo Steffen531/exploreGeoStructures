@@ -3,6 +3,43 @@
 OpenCode-Skills zum Suchen, Bewerten und Kombinieren räumlicher Strukturen,
 Orte und Wege.
 
+## Was ist das – für Einsteiger?
+
+### Was ist opencode?
+
+opencode ist ein KI-Assistent, der direkt auf deinem Rechner arbeitet. Du
+startest ihn im **Terminal** – dem Textfenster, in dem man sonst Befehle
+eintippt – und schreibst ihm Aufgaben in normaler Sprache, z. B. „Suche
+Behörden in Bochum". Der Assistent arbeitet die Aufgabe Schritt für Schritt
+ab: Er liest Dateien, ruft Kartendienste im Netz auf, rechnet und legt
+Ergebnisse in Ordner ab. Jeder Schritt wird im Fenster sichtbar, und bei
+heiklen Aktionen (Pakete installieren, Befehle ausführen) fragt er vorher nach.
+
+Unter der Haube „denkt" ein KI-Sprachmodell – dasselbe Prinzip wie bei einem
+Sprachchat im Browser. Der Unterschied: Dieser Assistent redet nicht nur,
+sondern tut etwas – Dateien lesen und schreiben, Skripte ausführen,
+Kartenexporte anlegen. In diesem Projekt ist ein kostenfreies Modell
+voreingestellt (siehe `opencode.jsonc`).
+
+### Was sind Skills und was passiert hier?
+
+**Skills** sind ausführliche Arbeitsanleitungen für Spezialaufgaben, die der
+Assistent beherrscht. Dieses Paket enthält Geo-Skills: ruhige Fußwege, belebte
+Orte, ÖPNV-Routen, Malls & Bahnhöfe, Behörden – sowie `geo-workflow`, das
+mehrere davon zu einer Kette kombiniert. Sagst du „suche Fussweg", übernimmt
+der passende Skill wie ein Fachspezialist.
+
+| Begriff | Bild |
+|---|---|
+| opencode | Der Assistent mit Werkzeugkasten auf deinem Rechner |
+| KI-Sprachmodell | Das Denkwerkzeug des Assistenten |
+| Skill | Eine geschriebene Arbeitsanleitung für ein Fachgebiet |
+| Terminal | Das Textfenster, in dem du mit dem Assistenten sprichst |
+| `results/` | Der Ausgangskorb mit den fertigen Karten-Dateien |
+
+Wie du das Paket installierst und die erste Aufgabe stellst, steht unter
+„Installation" und „Erste Schritte".
+
 ## Projektübersicht
 
 * `AGENTS.md` - zentrale Anweisungen (Python-Venv, Kartenexporte und kombinierte Anfragen)
@@ -57,6 +94,25 @@ nutzen – er prüft Installation und Pakete und führt die Tests aus.
    einem kurzen Feedback (Bewertung 1–5). Mit `@skillname …` lässt sich ein
    bestimmter Skill direkt ansprechen, z. B. `@fussweg …`.
 5. Ergebnisse visualisieren: siehe „Ergebnisse auf einer Karte ansehen"
+
+### Jederzeit unterbrechen und korrigierend eingreifen
+
+Während ein Skill arbeitet, kannst du jederzeit eingreifen: **Esc** unterbricht
+den laufenden Schritt sofort. Tippe danach deine Korrektur ein – der Agent
+setzt die Aufgabe mit dem bisherigen Stand fort, es muss nichts von vorn
+laufen.
+
+Beispiel: Der Skill `oepnvrouten` meldet, er entferne ICE-/RB-/RE-Verbindungen,
+weil die Routenprüfung sonst nicht praktikabel ist. Du unterbrichst mit Esc
+und antwortest: „Regionalverbindungen (RE u. ä.) sind ausdrücklich erwünscht –
+nur ICE weglassen." Der Agent übernimmt die Vorgabe, passt die Filter an und
+rechnet weiter. Solche Wünsche kann der Skill auch in seinen Erfahrungsspeicher
+(`learnings.md`) aufnehmen und bei künftigen Läufen berücksichtigen.
+
+Wichtig: Vorgaben wie „nur RE/RB, kein ICE" gehören früh in die Aufgabe oder
+als sofortige Korrektur. Die Skills entschärfen Regeln bei Engpässen sonst nur
+in einer fest definierten Reihenfolge und dürfen sie nicht stillschweigend
+aufweichen – eine klare Ansage des Nutzers hat dabei immer Vorrang.
 
 ### Berechtigungen: welche Nachfragen erscheinen?
 

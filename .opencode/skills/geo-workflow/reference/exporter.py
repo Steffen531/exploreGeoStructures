@@ -33,7 +33,12 @@ def solution_features(result: dict[str, Any], limit: int = 3) -> list[dict[str, 
 
 
 def _coordinates(geometry: dict[str, Any]) -> Iterable[list[float]]:
-    kind, coordinates = geometry["type"], geometry["coordinates"]
+    kind = geometry["type"]
+    if kind == "GeometryCollection":
+        for part in geometry.get("geometries", []):
+            yield from _coordinates(part)
+        return
+    coordinates = geometry["coordinates"]
     if kind == "Point":
         yield coordinates
     elif kind == "LineString":
@@ -48,10 +53,17 @@ def _coordinates(geometry: dict[str, Any]) -> Iterable[list[float]]:
         for polygon in coordinates:
             if polygon:
                 yield from polygon[0]
+    elif kind == "GeometryCollection":
+        for part in coordinates.get("geometries", []):
+            yield from _coordinates(part)
 
 
 def _kml_geometry(geometry: dict[str, Any]) -> str:
-    kind, coordinates = geometry["type"], geometry["coordinates"]
+    kind = geometry["type"]
+    if kind == "GeometryCollection":
+        parts = "".join(_kml_geometry(part) for part in geometry.get("geometries", []))
+        return f"<MultiGeometry>{parts}</MultiGeometry>" if parts else ""
+    coordinates = geometry["coordinates"]
 
     def coordinate_text(values):
         return " ".join(f"{point[0]},{point[1]},0" for point in values)
@@ -78,6 +90,11 @@ def _kml_geometry(geometry: dict[str, Any]) -> str:
             for polygon in coordinates
         )
         return f"<MultiGeometry>{parts}</MultiGeometry>"
+    if kind == "GeometryCollection":
+        parts = "".join(
+            _kml_geometry(part) for part in coordinates.get("geometries", [])
+        )
+        return f"<MultiGeometry>{parts}</MultiGeometry>" if parts else ""
     return ""
 
 

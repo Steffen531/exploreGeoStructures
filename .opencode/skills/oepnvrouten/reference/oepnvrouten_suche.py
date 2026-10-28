@@ -21,6 +21,7 @@ WICHTIG:
 """
 
 import argparse
+import hashlib
 import json
 import math
 import sys
@@ -85,7 +86,7 @@ def log(msg):
 # Overpass-Client mit Fallback und Cache
 # ---------------------------------------------------------------------------
 def overpass(query, name, refresh=False):
-    cache = CACHE_DIR / f"{name}.json"
+    cache = CACHE_DIR / f"{name}-{hashlib.sha1(query.encode()).hexdigest()[:12]}.json"
     if cache.exists() and not refresh:
         log(f"  [Cache] {name}")
         return json.loads(cache.read_text(encoding="utf-8"))
@@ -1170,7 +1171,9 @@ def export_normalized_gtfs(connections, output, iso_date, parameters):
     )
 
 
-def export_normalized_osm(routen, points, output, iso_date, start_min, parameters):
+def export_normalized_osm(
+    routen, points, output, iso_date, start_min, parameters, graph=None
+):
     from zoneinfo import ZoneInfo
 
     timezone_name = parameters.get("timezone", "UTC")
@@ -1209,7 +1212,21 @@ def export_normalized_osm(routen, points, output, iso_date, start_min, parameter
                 warnings=[
                     "Kein Fahrplan: Zeiten sind geschätzt; einzelne Geometriesegmente können Notfall-Fallbacks sein"
                 ],
-                extra={"transfers": len(route["umstiege"]), "estimated": True},
+                extra={
+                    "transfers": len(route["umstiege"]),
+                    "estimated": True,
+                    "segments": [
+                        {
+                            "linie": (
+                                graph.linien[fahrt["linie"]]["name"]
+                                if graph and fahrt["linie"] in graph.linien
+                                else fahrt.get("linie")
+                            ),
+                            "dauer_min": fahrt.get("dauer"),
+                        }
+                        for fahrt in route.get("fahrten", [])
+                    ],
+                },
             )
         )
     write_adapter_output(
@@ -1261,7 +1278,9 @@ def main():
             parameters.setdefault("timezone", parameters["region"]["timezone"])
         args.datum = parameters["date"]
         departure_window = parameters.get("departure_window") or {}
-        args.uhrzeit = departure_window.get("start", args.uhrzeit)
+        args.uhrzeit = departure_window.get(
+            "start", parameters.get("uhrzeit", args.uhrzeit)
+        )
         if "T" in args.uhrzeit:
             args.uhrzeit = args.uhrzeit.split("T", 1)[1][:5]
         start_value, end_value = parameters["start"], parameters["end"]
@@ -1341,8 +1360,21 @@ def main():
         repraesentant["id"] = root
         graph.add_station(repraesentant)
 
+    excludes = tuple(parameters.get("exclude_route_prefixes") or [])
     for route in ["subway", "train", "tram", "light_rail", "bus"]:
         linien = lade_linien(bbox, route, args.refresh)
+        if excludes:
+            behalten = [
+                linie
+                for linie in linien
+                if not str(linie.get("name", "")).upper().startswith(excludes)
+            ]
+            if len(behalten) != len(linien):
+                log(
+                    f"  {route}: {len(linien) - len(behalten)} Linien per "
+                    f"exclude_route_prefixes ausgeschlossen"
+                )
+            linien = behalten
         n = sum(graph.add_linie(l, cluster_von) for l in linien)
         log(f"  {route}: {len(linien)} Linien, {n} Kanten")
     log(
@@ -1405,6 +1437,19 @@ def main():
             f"Score {r['score']:.1f} | {', '.join(linien)}"
         )
 
+    if arrival_window:
+        arrival_start = _minutes((arrival_window or {}).get("start"))
+        arrival_end = _minutes((arrival_window or {}).get("end"))
+        before = len(routen)
+        routen = [
+            route
+            for route in routen
+            if (arrival_start is None or start_min + route["dauer"] >= arrival_start)
+            and (arrival_end is None or start_min + route["dauer"] <= arrival_end)
+        ]
+        if len(routen) != before:
+            log(f"Ankunftsfenster: {before - len(routen)} Routen abgewiesen")
+
     if routen:
         linien_ids = sorted({f["linie"] for r in routen for f in r["fahrten"]})
         log(f"Echte Fahrwege für {len(linien_ids)} Linien laden...")
@@ -1414,7 +1459,7 @@ def main():
         log(f"Echte Strecken: {real}/{len(routen)} Routen mit Fahrweg-Geometrie")
         export(routen, graph, args.output, punkte)
         export_normalized_osm(
-            routen, punkte, args.output, args.datum, start_min, parameters
+            routen, punkte, args.output, args.datum, start_min, parameters, graph
         )
     elif request:
         write_adapter_output(
