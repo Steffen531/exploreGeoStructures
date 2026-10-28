@@ -44,3 +44,15 @@ fasst dann sämtliche Kandidatengeometrien zu einer geprüften Menge zusammen.
 Nur eine Providerquelle darf einen konkreten Anbieter und Verfügbarkeit
 bestätigen. Straßenrouting ohne Providerquelle erhält den Typ
 `estimated_ride_hailing`; Luftlinien sind keine reale Route.
+
+## Export-Output (2026-10-28 ergänzt)
+
+Der Export (reference/exporter.py) erzeugt außer der Gesamtlösung zusätzlich:
+
+- `zeitplan.md` / `zeitplan.json`: menschenlesbarer Ablauf je Top-Lösung.
+  ÖPNV-Abschnitte zeigen Linie, von → nach, Dauer/Abfahrt, Umstiegsstationen,
+  so weit der Adapter sie liefert (GTFS: echte Zeiten; OSM-Fallback: Schätzwerte).
+- `karten/route-N/ergebnis.geojson|.kml|.gpx`: Karten pro Top-Route.
+  Ausschlussmengen (selection: all, GeometryCollection) werden weggelassen.
+
+Damit Rezension reproduziert: `exporter.py --result plan.json --output <workflow-id>`.

@@ -19,7 +19,8 @@ Unter der Haube „denkt" ein KI-Sprachmodell – dasselbe Prinzip wie bei einem
 Sprachchat im Browser. Der Unterschied: Dieser Assistent redet nicht nur,
 sondern tut etwas – Dateien lesen und schreiben, Skripte ausführen,
 Kartenexporte anlegen. In diesem Projekt ist ein kostenfreies Modell
-voreingestellt (siehe `opencode.jsonc`).
+voreingestellt (siehe `opencode.jsonc`) – wie du ein anderes Modell wählst,
+steht unter „Welches KI-Modell wählen?".
 
 ### Was sind Skills und was passiert hier?
 
@@ -95,6 +96,36 @@ nutzen – er prüft Installation und Pakete und führt die Tests aus.
    bestimmter Skill direkt ansprechen, z. B. `@fussweg …`.
 5. Ergebnisse visualisieren: siehe „Ergebnisse auf einer Karte ansehen"
 
+### Welches KI-Modell wählen? (kostenlos, ChatGPT, Claude …)
+
+Der Assistent braucht ein KI-Modell als Denkwerkzeug. Drei Dinge sind zu wissen:
+
+- **In diesem Projekt ist ein kostenfreies Modell voreingestellt**
+  (`opencode/longcat-2.5-preview-free` in `opencode.jsonc`) – du kannst
+  sofort loslegen.
+- **opencode bringt eigene kostenlose Modelle mit.** Sie erscheinen in der
+  Modellliste automatisch; tauchen sie nicht auf, verbinde einmalig einen
+  OpenCode-Account über `/connect`.
+- **Kostenpflichtige Anbieter** (ChatGPT/OpenAI, Claude/Anthropic, Gemini und
+  viele mehr) bindest du ebenfalls über `/connect` an.
+
+**So wählst du ein Modell:**
+
+1. Im Terminal `/models` eingeben. Die Liste zeigt alle verfügbaren Modelle;
+   die Auswahl gilt für die laufende Sitzung.
+2. Für kostenpflichtige Modelle zuerst `/connect`: Anbieter auswählen und
+   anmelden. Bei ChatGPT genügt „Sign in with ChatGPT" mit einem bestehenden
+   Plus-/Pro-Abo – die Nutzung zählt gegen das Abo. Bei Claude verbindest du
+   deinen Anthropic-Zugang; die Abrechnung erfolgt nach Tokennutzung. Danach
+   erscheinen die neuen Modelle in `/models`.
+3. Soll ein Modell dauerhaft gelten, trage es in `opencode.jsonc` unter
+   `"model": "anbieter/modell"` ein – so wie die Voreinstellung dort. Ein
+   einmal gewähltes Modell pro Sitzung ändert die Datei nicht.
+
+Hinweis: Die Skills funktionieren mit jedem Modell; größere Modelle reagieren
+bei kniffligen Regionen und kombinierten Workflows erfahrungsgemäß
+zielstrebig.
+
 ### Jederzeit unterbrechen und korrigierend eingreifen
 
 Während ein Skill arbeitet, kannst du jederzeit eingreifen: **Esc** unterbricht
@@ -142,13 +173,16 @@ Jeder Lauf schreibt nach `results/<region>` bzw. `results/<workflow-id>/`:
 - `ergebnis.gpx` – für GPS-Geräte
 - `zusammenfassung.json` – Statistik und Gründe verworfener Kandidaten
 
-Import auf [umap.openstreetmap.de](https://umap.openstreetmap.de):
+Import auf [umap.openstreetmap.de](https://umap.openstreetmap.de)
+(Oberfläche: uMap 3.x):
 
-1. umap öffnen und eine neue Karte anlegen
-2. ☰-Menü → „Daten importieren"
-3. GeoJSON-Datei wählen oder per Drag & Drop hereinziehen
-4. Import als „neue Ebene" bestätigen
-5. Karte speichern und über „Karte teilen" den Link versenden
+1. „Erstelle eine Karte" anklicken – der Karten-Editor öffnet sich.
+2. In der Symbolleiste am rechten Rand das Symbol „Daten importieren"
+   anklicken – der dunkle Pfeil nach oben: ![Import-Symbol](docs/umap-icon-import.svg)
+3. Die GeoJSON-Datei in das Import-Feld ziehen oder auswählen (das Format wird
+   automatisch erkannt; alternativ eine Datei-URL eintragen).
+4. Importmodus „In eine neue Ebene importieren" belassen und „Importieren"
+   anklicken – „Daten erfolgreich importiert!" bestätigt den Erfolg.
 
 Alternativen: `.kml` per Drag & Drop in
 [Google Earth](https://earth.google.com) ziehen, `.gpx` aufs GPS-Gerät
@@ -225,8 +259,5 @@ Offline-Tests ausführen:
    - offizielle Behördenregister und belastbarere Öffnungszeiten,
    - bessere GTFS-Feed-Erkennung sowie optionale Echtzeitdaten,
    - reproduzierbare Live-Tests vollständiger Workflow-Ketten.
-3. Bedienung für Nutzer ohne IT- oder OpenCode-Erfahrung – weitgehend
-   umgesetzt mit `setup.sh`, dem `/setup`-Befehl, dem Quickstart und den
-   README-Abschnitten „Berechtigungen" und „Ergebnisse auf einer Karte
-   ansehen". Offen: weitergehende Automatisierung, z. B. ein direkter
-   Karten-Upload. Möglichst wenige Nachfragen nach Berechtigungen.
+3. results/workflow-20261214-hamburg-altona/: Die Kartenvisualisierungen sollen bei oepnvrouten die Linien angeben (zB U5, RE7, ..) und die Umstiegspunkte beschriften. ÖPNV-Fahrten, Fußwege, Malls sollen in unterschiedlichen Farben angezeigt werden. Fußwege sollen als "Fußweg" benannt sein.
+4. results/workflow-20261214-hamburg-altona/: Die erste Fahrt führt von Altona nach Elmshorn. Danach geht es aber wieder auf der selben Zugstrecke zurück, wenngleich mit einer anderen Zuglinie. Das ist nicht erwünscht. 

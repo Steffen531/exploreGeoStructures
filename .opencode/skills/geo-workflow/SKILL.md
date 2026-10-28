@@ -32,8 +32,12 @@ Kandidaten kommen weiterhin aus `fussweg`, `oepnvrouten`, `belebteOrte`,
 9. Kennzeichne Ride-Hailing ohne Providerdaten als
    `estimated_ride_hailing`; behaupte weder Anbieter noch Preis oder reale
    Verfügbarkeit.
-10. Exportiere die Gesamtlösung mit `reference/exporter.py` als GeoJSON, KML,
-    GPX und `zusammenfassung.json`.
+10. Exportiere die Gesamtlösung mit `reference/exporter.py`. Das erzeugt:
+    Gesamtlösung als `ergebnis.geojson`, `ergebnis.kml`, `ergebnis.gpx`,
+    `zusammenfassung.json`, dazu einen menschenlesbaren `zeitplan.md`
+    (plus `zeitplan.json`) mit Linien, Abfahrts-/Ankunftszeiten und
+    Umstiegsstationen je Lösung (so weit der Datenstand das hergibt) und
+    Karten je Route unter `karten/route-N/` (GeoJSON, KML, GPX).
 11. Frage genau einmal nach Feedback zum Gesamtworkflow und ergänze danach
     `reference/learnings.md`.
 
@@ -52,7 +56,11 @@ Schreibe nach `results/<workflow-id>/`:
 - `candidates/<node-id>/kandidaten.geojson` und `status.json`
 - `ergebnis.geojson`, `ergebnis.kml`, `ergebnis.gpx`
 - `zusammenfassung.json`
+- `zeitplan.md` und `zeitplan.json` (menschenlesbar: Linien, Zeiten,
+  Umstiegsstationen je Top-Route, soweit verfügbar)
+- `karten/route-N/ergebnis.geojson|.kml|.gpx` (Karte je Top-Route)
 
 Erkläre anschließend den Import auf
-[umap.openstreetmap.de](https://umap.openstreetmap.de): ☰ → „Daten
-importieren“ → GeoJSON wählen → „als neue Ebene“.
+[umap.openstreetmap.de](https://umap.openstreetmap.de): „Erstelle eine Karte“
+→ Symbol „Daten importieren“ (dunkler Pfeil nach oben, rechte Symbolleiste) →
+GeoJSON-Datei wählen → „In eine neue Ebene importieren“ → „Importieren“.

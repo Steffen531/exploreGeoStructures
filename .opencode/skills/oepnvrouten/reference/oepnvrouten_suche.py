@@ -147,6 +147,26 @@ def bbox_fuer_stadt(stadt, refresh=False):
 # ---------------------------------------------------------------------------
 # Daten laden
 # ---------------------------------------------------------------------------
+def geocode_punkt(name, refresh=False):
+    """Punkt-Koordinatensuche über Nominatim (deterministische Zielauswahl)."""
+    cache = CACHE_DIR / (f"punkt-{hashlib.sha1(name.encode()).hexdigest()[:12]}.json")
+    if cache.exists() and not refresh:
+        return tuple(json.loads(cache.read_text(encoding="utf-8")))
+    r = requests.get(
+        "https://nominatim.openstreetmap.org/search",
+        params={"q": name, "format": "json", "limit": 1, "accept-language": "de"},
+        headers=HEADERS,
+        timeout=30,
+    )
+    treffer = r.json()
+    if not treffer:
+        cache.write_text("null", encoding="utf-8")
+        return None
+    punkt = (float(treffer[0]["lat"]), float(treffer[0]["lon"]))
+    cache.write_text(json.dumps(list(punkt)), encoding="utf-8")
+    return punkt
+
+
 def lade_stationen(bbox, refresh=False):
     bb = bbox_str(bbox)
     query = f"""
@@ -364,7 +384,7 @@ def _dfs(
             if nb in bst:
                 continue
             kante = (cur, nb)
-            if kante in bkan or kante in verbotene_kanten:
+            if kante in bkan or (lid, cur, nb) in verbotene_kanten:
                 continue
             s1, s2 = stationen[cur], stationen[nb]
             dist = haversine(s1["lat"], s1["lon"], s2["lat"], s2["lon"])
@@ -433,8 +453,8 @@ def finde_routen(
     if ziel_id not in seen:
         return []
 
-    auswahl, verboten = [], set()
-    for _ in range(anzahl):
+    auswahl, verboten, signaturen = [], set(), set()
+    for _runde in range(anzahl * 4):
         routen = _dfs(
             graph,
             start_id,
@@ -461,9 +481,23 @@ def finde_routen(
         for r in routen:
             r["score"] = _score(r)
         routen.sort(key=lambda r: (r["score"], r["dauer"]))
-        beste = routen[0]
-        auswahl.append(beste)
-        verboten.update((f["von"], f["nach"]) for f in beste["fahrten"])
+        for beste in routen:
+            # Nur routen mit wirklich anderen Linien aufnehmen (Node-Paare
+            # innerhalb desselben Clusters erzeugen sonst Dublikate).
+            signature = (
+                tuple(f["linie"] for f in beste["fahrten"]),
+                beste["dauer"],
+            )
+            if signature in signaturen:
+                continue
+            auswahl.append(beste)
+            signaturen.add(signature)
+            verboten.update((f["linie"], f["von"], f["nach"]) for f in beste["fahrten"])
+            break
+        else:
+            break
+        if len(auswahl) >= anzahl:
+            break
     return auswahl
 
 
@@ -1172,7 +1206,7 @@ def export_normalized_gtfs(connections, output, iso_date, parameters):
 
 
 def export_normalized_osm(
-    routen, points, output, iso_date, start_min, parameters, graph=None
+    routen, points, output, iso_date, start_min, parameters, graph=None, stationen=None
 ):
     from zoneinfo import ZoneInfo
 
@@ -1187,6 +1221,39 @@ def export_normalized_osm(
     for index, (route, coordinates) in enumerate(zip(routen, points), 1):
         if len(coordinates) < 2:
             continue
+        station_name = (
+            (lambda node_id: stationen[node_id]["name"]) if stationen else None
+        )
+        abschnitte = []
+        for fahrt in route.get("fahrten", []):
+            linie = (
+                graph.linien[fahrt["linie"]]["name"]
+                if graph and fahrt["linie"] in graph.linien
+                else fahrt.get("linie")
+            )
+            abschnitte.append(
+                {
+                    "linie": linie,
+                    "dauer_min": fahrt.get("dauer"),
+                    "mode": fahrt.get("mode"),
+                    "von": (
+                        station_name(fahrt["von"])
+                        if station_name and fahrt.get("von") in stationen
+                        else None
+                    ),
+                    "nach": (
+                        station_name(fahrt["nach"])
+                        if station_name and fahrt.get("nach") in stationen
+                        else None
+                    ),
+                }
+            )
+        umstiege = []
+        previous = None
+        for abschnitt in abschnitte:
+            if previous and abschnitt.get("von") and abschnitt["von"] != previous:
+                umstiege.append(abschnitt["von"])
+            previous = abschnitt.get("nach") or previous
         end_time = start_time + timedelta(minutes=route["dauer"])
         features.append(
             candidate_feature(
@@ -1215,17 +1282,8 @@ def export_normalized_osm(
                 extra={
                     "transfers": len(route["umstiege"]),
                     "estimated": True,
-                    "segments": [
-                        {
-                            "linie": (
-                                graph.linien[fahrt["linie"]]["name"]
-                                if graph and fahrt["linie"] in graph.linien
-                                else fahrt.get("linie")
-                            ),
-                            "dauer_min": fahrt.get("dauer"),
-                        }
-                        for fahrt in route.get("fahrten", [])
-                    ],
+                    "segments": abschnitte,
+                    "umstiegsstationen": umstiege,
                 },
             )
         )
@@ -1383,13 +1441,21 @@ def main():
     )
 
     def finde(name):
-        return sorted(
+        clusters = sorted(
             {
                 cluster_von[s["id"]]
                 for s in stationen.values()
                 if name.lower() in s["name"].lower()
             }
         )
+        # Deterministisch: größter Verbundknoten gewinnt (Bahnhofs-/Umstiegs-
+        # gelände sind die größten Cluster mit dem Namen; reine Bushaltestellen
+        # sind klein).
+        cluster_groessen = {
+            root: len(mitglieder) for root, mitglieder in gruppen.items()
+        }
+        clusters.sort(key=lambda tid: (-cluster_groessen.get(tid, 0), tid))
+        return clusters
 
     if not isinstance(start_value, str) or not isinstance(end_value, str):
         error = RuntimeError(
@@ -1459,7 +1525,14 @@ def main():
         log(f"Echte Strecken: {real}/{len(routen)} Routen mit Fahrweg-Geometrie")
         export(routen, graph, args.output, punkte)
         export_normalized_osm(
-            routen, punkte, args.output, args.datum, start_min, parameters, graph
+            routen,
+            punkte,
+            args.output,
+            args.datum,
+            start_min,
+            parameters,
+            graph,
+            stationen,
         )
     elif request:
         write_adapter_output(

@@ -88,15 +88,17 @@ Im Ausgabeverzeichnis (`--output`):
 
 - `routen.geojson` – alle Routen als LineStrings mit Eigenschaften (Stationenfolge,
   Linien, Abfahrts-/Ankunftszeiten, Umstiege, Dauer, Score, Verkehrsmittel).
-  Importierbar auf umap.openstreetmap.de (AGENTS.md: ☰ → „Daten importieren")
+  Importierbar auf umap.openstreetmap.de
 - `routen.kml` – Linien je Route als `<Placemark>`/`<LineString>` mit Style-Block je
   Verkehrsmitteltyp, Start/Ziel/Umstiege als Pins, für Google Earth
 - `routen.gpx` – Tracks je Route als `<trk>`/`<trkseg>` für GPS-Geräte
 - `zusammenfassung.json` – Statistik, Score-Vergleich der 3 Routen, Optionen-Übersicht
 
 Danach dem Nutzer die Kartenanleitung geben: [umap.openstreetmap.de](https://umap.openstreetmap.de)
-→ ☰ → „Daten importieren" → GeoJSON wählen (oder Drag & Drop) → „als neue
-Ebene" → Karte teilen.
+→ „Erstelle eine Karte" → in der Symbolleiste am rechten Rand das Symbol
+„Daten importieren" (dunkler Pfeil nach oben) → GeoJSON-Datei ins Import-Feld
+ziehen oder wählen → Importmodus „In eine neue Ebene importieren" →
+„Importieren".
 
 ## Skript
 

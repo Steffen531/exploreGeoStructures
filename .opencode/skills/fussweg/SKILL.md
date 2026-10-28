@@ -76,8 +76,10 @@ Im Ausgabeverzeichnis (`--output`):
 - `zusammenfassung.json` – Statistik, verworfene Kandidaten mit Grund
 
 Danach dem Nutzer die Kartenanleitung geben: [umap.openstreetmap.de](https://umap.openstreetmap.de)
-→ ☰ → „Daten importieren" → GeoJSON wählen (oder Drag & Drop) → „als neue
-Ebene" → Karte teilen.
+→ „Erstelle eine Karte" → in der Symbolleiste am rechten Rand das Symbol
+„Daten importieren" (dunkler Pfeil nach oben) → GeoJSON-Datei ins Import-Feld
+ziehen oder wählen → Importmodus „In eine neue Ebene importieren" →
+„Importieren".
 
 ## Verwendung durch `geo-workflow`
 

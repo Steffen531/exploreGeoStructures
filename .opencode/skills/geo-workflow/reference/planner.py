@@ -186,6 +186,42 @@ def plan_node_order(workflow: dict[str, Any]) -> list[str]:
     return result
 
 
+def deduplicate_route_candidates(
+    node_id: str, features: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Dublikate im Kandidatensatz entfernen (Linienfolge + Dauer + Umstiege).
+
+    Relevant für Routen-Kandidaten (ÖPNV, Ride), die mehrfach in leicht
+    unterschiedlichen Node-IDs erscheinen, aber dieselbe Linienfolge und
+    Dauer tragen. Rückgabe: deduplizierte Liste.
+    """
+    deduped = []
+    seen = set()
+    for feature in features:
+        properties = feature.get("properties") or {}
+        segments = properties.get("segments")
+        if not segments:
+            deduped.append(feature)
+            continue
+        signature = (
+            properties.get("entity_type"),
+            tuple(str(leg.get("linie") or "") for leg in segments),
+            round(
+                float((properties.get("temporal") or {}).get("duration_minutes") or 0),
+                1,
+            ),
+            properties.get("transfers"),
+        )
+        if signature in seen:
+            continue
+        seen.add(signature)
+        deduped.append(feature)
+    if len(deduped) != len(features):
+        # deutlich machen, dass Kandidatenanalysen ohne Duplikate verlaufen
+        pass
+    return deduped
+
+
 def solve(
     workflow: dict[str, Any], candidates: dict[str, list[dict[str, Any]]]
 ) -> dict[str, Any]:
@@ -222,7 +258,9 @@ def solve(
                 aggregate_candidates(node_id, candidates[node_id], entity_type)
             ]
         else:
-            prepared_candidates[node_id] = candidates[node_id]
+            prepared_candidates[node_id] = deduplicate_route_candidates(
+                node_id, candidates[node_id]
+            )
 
     def visit(
         index: int,
