@@ -26,19 +26,80 @@ Die Skills sind als [self-improving skills](https://www.mindstudio.ai/blog/self-
 
 ## Wie nutzt man das Paket?
 ### Voraussetzungen
-1. Linux Rechner am Internet
+1. Linux Rechner am Internet (unter Windows: WSL)
 2. opencode V2 installiert
-3. python3 installiert
+3. python3 installiert (inkl. venv-Modul)
 4. git installiert
 
 ### Installation
-1. Download mittels `git clone git@github.com:Steffen531/exploreGeoStructures.git`
-2. Im obersten Verzeichnis `exploreGeoStructures` ein Python Virtual Environment unter `.venv` anlegen: `python3 -m venv .venv`
+
+```bash
+git clone git@github.com:Steffen531/exploreGeoStructures.git
+cd exploreGeoStructures
+./setup.sh
+```
+
+`setup.sh` prüft die Voraussetzungen, legt das Virtual Environment `.venv` an
+und installiert alle benötigten Pakete laut `requirements.txt`. Mit
+`./setup.sh --tests` werden zusätzlich die Offline-Tests ausgeführt. Wer es
+manuell bevorzugt: `python3 -m venv .venv` und danach
+`.venv/bin/pip install -r requirements.txt`.
+
+Alternativ oder nachträglich lässt sich in opencode der Befehl `/setup`
+nutzen – er prüft Installation und Pakete und führt die Tests aus.
 
 ### Erste Schritte
 1. `opencode` ausführen
 2. Mit `/skills` skills anzeigen: es sollten die oben beschriebenen skills zu sehen sein
-3. Eine erste Aufgabe stellen wie z.B. "Suche Behörden in Bochum". Dabei werden vermutlich diverse python packages ins venv installiert.
+3. Eine erste Aufgabe stellen wie z.B. "Suche Behörden in Bochum"
+4. Was dann passiert: Der passende Skill startet, lädt OSM- und Fachdaten,
+   schreibt die Ergebnisse nach `results/<region>/` und fragt am Ende nach
+   einem kurzen Feedback (Bewertung 1–5). Mit `@skillname …` lässt sich ein
+   bestimmter Skill direkt ansprechen, z. B. `@fussweg …`.
+5. Ergebnisse visualisieren: siehe „Ergebnisse auf einer Karte ansehen"
+
+### Berechtigungen: welche Nachfragen erscheinen?
+
+Die Regeln stehen in [`opencode.jsonc`](opencode.jsonc). Skill-Läufe selbst –
+Lesen im Projektverzeichnis und Ausführen der Python-Suchskripte – laufen ohne
+Nachfrage. Nachgefragt wird nur in diesen Fällen; **Allow always** merkt die
+Freigabe dauerhaft für das Projekt, **Allow once** nur für den Einzelfall:
+
+| Nachfrage | Wann? | Empfehlung |
+|---|---|---|
+| `shell: .venv/bin/pip install …` | fehlende Python-Pakete | Allow always |
+| `websearch` / `webfetch` | Scouten neuer Datenquellen (v. a. GTFS in neuen Regionen) | Allow always |
+| `shell: <anderer Befehl>` | ungewöhnliche Befehle wie `rm`, `git push` | kurz prüfen → Allow once |
+| `execute` (Code Mode) | selten; die Skills benötigen ihn nicht | Allow once |
+| `external_directory` | Dateien außerhalb des Projektverzeichnisses | kurz prüfen → Allow once |
+
+„Reject" lehnt nur die anstehende Anfrage ab; die konfigurierten Regeln bleiben
+unverändert. Paketinstallationen und ungewöhnliche Befehle bleiben bewusst
+hinter einer Nachfrage.
+
+### Ergebnisse auf einer Karte ansehen
+
+Jeder Lauf schreibt nach `results/<region>` bzw. `results/<workflow-id>/`:
+
+- `ergebnis.geojson` (bzw. `routen.geojson`, `kandidaten.geojson`) – empfohlene Datei für den Kartenimport
+- `ergebnis.kml` / `routen.kml` – für Google Earth
+- `ergebnis.gpx` – für GPS-Geräte
+- `zusammenfassung.json` – Statistik und Gründe verworfener Kandidaten
+
+Import auf [umap.openstreetmap.de](https://umap.openstreetmap.de):
+
+1. umap öffnen und eine neue Karte anlegen
+2. ☰-Menü → „Daten importieren"
+3. GeoJSON-Datei wählen oder per Drag & Drop hereinziehen
+4. Import als „neue Ebene" bestätigen
+5. Karte speichern und über „Karte teilen" den Link versenden
+
+Alternativen: `.kml` per Drag & Drop in
+[Google Earth](https://earth.google.com) ziehen, `.gpx` aufs GPS-Gerät
+kopieren oder in einer GPX-App öffnen, `.geojson` direkt in QGIS öffnen.
+
+Bleibt die Karte leer oder unvollständig, liefert `zusammenfassung.json` die
+Details (z. B. verworfene Kandidaten mit Grund).
 
 ### Kombinierte Workflows
 
@@ -50,6 +111,10 @@ Zeitfenster, Dauerbedingungen und geordnete Abfolgen. Die Reihenfolge der
 Fach-Skills ist nicht fest codiert.
 
 Beispiel:
+
+```text
+@geo-workflow Am 14.12.2026 bin ich ab mittags 12 Uhr in Hamburg. Ich starte meinen Weg am Bahnhof Altona und möchte von dort folgenden workflow: Eine Fahrt mit ÖPNV bis mindestens 13 Uhr. Sie soll an oder in unmittelbarer Nähe einer Mall o.ä. enden. Dort werde ich mich etwa 5 bis 10 Minuten umschauen und danach mit Uber o.ä. weiterfahren. Diese Fahrt soll mindestens 10 Minuten dauern und am Beginn eines Fusswegs enden. Dieser soll etwa 20 Minuten dauern und darf nicht an Behörden und ähnlichen Einrichtungen vorbeiführen.
+```
 
 ```text
 Verwende @geo-workflow. Finde einen 20-minütigen Fußweg, der nahe einer
@@ -104,6 +169,8 @@ Offline-Tests ausführen:
    - offizielle Behördenregister und belastbarere Öffnungszeiten,
    - bessere GTFS-Feed-Erkennung sowie optionale Echtzeitdaten,
    - reproduzierbare Live-Tests vollständiger Workflow-Ketten.
-3. Die Bedienung für Nutzer ohne IT- oder OpenCode-Erfahrung vereinfachen:
-   Installation, Beispielanfragen, Berechtigungen und Kartenimport verständlicher
-   und möglichst automatisiert gestalten.
+3. Bedienung für Nutzer ohne IT- oder OpenCode-Erfahrung – weitgehend
+   umgesetzt mit `setup.sh`, dem `/setup`-Befehl, dem Quickstart und den
+   README-Abschnitten „Berechtigungen" und „Ergebnisse auf einer Karte
+   ansehen". Offen: weitergehende Automatisierung, z. B. ein direkter
+   Karten-Upload. Möglichst wenige Nachfragen nach Berechtigungen.

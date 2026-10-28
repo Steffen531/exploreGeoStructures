@@ -1,0 +1,8 @@
+# Python-Pakete für die Skill-Skripte (Installation via setup.sh)
+geopandas>=1.0
+numpy>=1.26
+osmnx>=2.0
+pandas>=2.2
+pyproj>=3.6
+requests>=2.31
+shapely>=2.0
