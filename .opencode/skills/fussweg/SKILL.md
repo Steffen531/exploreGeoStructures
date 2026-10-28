@@ -78,3 +78,11 @@ Im Ausgabeverzeichnis (`--output`):
 Danach dem Nutzer die Kartenanleitung geben: [umap.openstreetmap.de](https://umap.openstreetmap.de)
 → ☰ → „Daten importieren" → GeoJSON wählen (oder Drag & Drop) → „als neue
 Ebene" → Karte teilen.
+
+## Verwendung durch `geo-workflow`
+
+Im orchestrierten Modus `--request <knoten.json> --orchestrated` verwenden.
+Der Skill akzeptiert dann zusätzlich Dauerfenster, Start-/Endnähe und
+Ausschlussgeometrien. Er schreibt `kandidaten.geojson` und `status.json` nach
+dem gemeinsamen Vertrag des Orchestrators. Schritt 8 wird übersprungen; das
+Feedback fragt ausschließlich `geo-workflow` am Ende des Gesamtablaufs ab.

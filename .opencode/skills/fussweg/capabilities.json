@@ -1,0 +1,16 @@
+{
+  "skill_id": "fussweg",
+  "version": 1,
+  "capabilities": [
+    {
+      "id": "find_foot_paths",
+      "produces": ["path"],
+      "required_parameters": ["region"],
+      "optional_parameters": ["duration_min", "duration_max", "start_near", "end_near", "avoid_geometries", "avoid_distance_m"],
+      "spatial_filters": ["within", "starts_near", "ends_near", "avoids"],
+      "temporal_filters": ["duration_between"],
+      "adapter": "reference/fussweg_suche.py",
+      "limitations": ["Gehzeit ist aus Weglänge und konfigurierter Geschwindigkeit geschätzt"]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "skill_id": "geo-workflow",
+  "version": 1,
+  "capabilities": [
+    {
+      "id": "compose_geo_workflow",
+      "produces": ["workflow_result"],
+      "required_parameters": ["nodes", "constraints"],
+      "optional_parameters": ["region", "limits"],
+      "spatial_filters": ["near", "within", "intersects", "starts_near", "ends_near", "starts_at", "ends_at", "passes_through", "avoids", "sequence_continuity"],
+      "temporal_filters": ["starts_between", "ends_between", "duration_between", "before", "after", "overlaps", "gap_between", "active_at", "sequence_time"],
+      "adapter": "reference/planner.py"
+    },
+    {
+      "id": "estimate_ride_hailing",
+      "produces": ["ride_hailing_route"],
+      "required_parameters": ["start", "end"],
+      "optional_parameters": ["departure_time"],
+      "spatial_filters": ["starts_near", "ends_near"],
+      "temporal_filters": ["starts_between", "ends_between", "duration_between"],
+      "adapter": "reference/ride_hailing.py"
+    }
+  ]
+}

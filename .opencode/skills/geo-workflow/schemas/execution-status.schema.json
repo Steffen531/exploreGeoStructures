@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "execution-status.schema.json",
+  "type": "object",
+  "required": ["status", "timestamp", "candidate_count", "warnings", "sources"],
+  "properties": {
+    "status": {"enum": ["success", "empty", "degraded", "error"]},
+    "timestamp": {"type": "string"},
+    "candidate_count": {"type": "integer", "minimum": 0},
+    "warnings": {"type": "array"},
+    "sources": {"type": "array"},
+    "error_class": {"type": ["string", "null"]},
+    "parameters": {"type": "object"}
+  }
+}

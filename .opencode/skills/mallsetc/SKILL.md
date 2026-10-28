@@ -88,6 +88,13 @@ Danach dem Nutzer die Kartenanleitung geben: [umap.openstreetmap.de](https://uma
 → ☰ → „Daten importieren" → GeoJSON wählen (oder Drag & Drop) → „als neue
 Ebene" → Karte teilen.
 
+## Verwendung durch `geo-workflow`
+
+Im orchestrierten Modus `--request <knoten.json> --orchestrated` verwenden.
+Zusätzlich zu den Standalone-Dateien entstehen normalisierte
+`urban_structure`-Kandidaten und `status.json`. Die eigene Feedbackrunde wird
+übersprungen; Feedback erfolgt nur für den Gesamtworkflow.
+
 ## Skript
 
 `reference/malls_suche.py` ist die Vorlage für Schritte 3–6:

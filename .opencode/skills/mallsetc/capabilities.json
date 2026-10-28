@@ -1,0 +1,16 @@
+{
+  "skill_id": "mallsetc",
+  "version": 1,
+  "capabilities": [
+    {
+      "id": "find_urban_structures",
+      "produces": ["urban_structure"],
+      "required_parameters": ["region"],
+      "optional_parameters": ["structure_types", "minimum_entrances", "minimum_levels", "require_transit"],
+      "spatial_filters": ["within", "near"],
+      "temporal_filters": [],
+      "adapter": "reference/malls_suche.py",
+      "limitations": ["Indoor- und Ebenendaten können in OSM unvollständig sein"]
+    }
+  ]
+}

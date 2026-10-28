@@ -23,11 +23,22 @@ WICHTIG:
 import argparse
 import json
 import math
+import sys
 import time
 from collections import deque
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import requests
+
+OPENCODE_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(OPENCODE_DIR / "lib"))
+from workflow_adapter import (  # noqa: E402
+    candidate_feature,
+    load_node_request,
+    resolve_region,
+    write_adapter_output,
+)
 
 CACHE_DIR = Path("results/cache")
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -934,7 +945,8 @@ def gtfs_export(ergebnisse, output, start_min, datum):
     for i, e in enumerate(ergebnisse, 1):
         koords = []
         for a in e["abschnitte"]:
-            for xy in (a.get("von_xy"), a.get("nach_xy")):
+            segment_points = a.get("punkte") or [a.get("von_xy"), a.get("nach_xy")]
+            for xy in segment_points:
                 if xy and (not koords or koords[-1] != xy):
                     koords.append(xy)
         features.append(
@@ -1013,6 +1025,203 @@ def gtfs_export(ergebnisse, output, start_min, datum):
     log(f"GTFS-Export nach {out}")
 
 
+def _minutes(value):
+    """HH:MM or ISO timestamp to service-day minutes."""
+    if value is None:
+        return None
+    if "T" in value:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return parsed.hour * 60 + parsed.minute
+    hour, minute = value.split(":")[:2]
+    return int(hour) * 60 + int(minute)
+
+
+def _point_from_value(value, endpoint="start"):
+    if isinstance(value, str):
+        return None
+    if isinstance(value, dict) and "lat" in value and "lon" in value:
+        return float(value["lat"]), float(value["lon"])
+    if isinstance(value, dict) and value.get("type") == "Feature":
+        declared = (value.get("properties") or {}).get(endpoint)
+        if declared:
+            return float(declared["lat"]), float(declared["lon"])
+        geometry = value.get("geometry") or {}
+        coordinates = geometry.get("coordinates")
+        if geometry.get("type") == "Point":
+            return float(coordinates[1]), float(coordinates[0])
+        if geometry.get("type") == "LineString" and coordinates:
+            point = coordinates[0 if endpoint == "start" else -1]
+            return float(point[1]), float(point[0])
+    return None
+
+
+def _stop_candidates(value, stops, endpoint="start", limit=3):
+    point = _point_from_value(value, endpoint)
+    if point:
+        lat, lon = point
+        return [
+            sid
+            for _, sid in sorted(
+                (haversine(lat, lon, stop[1], stop[2]), sid)
+                for sid, stop in stops.items()
+            )[:limit]
+        ]
+    if isinstance(value, str):
+        return sorted(
+            sid for sid, stop in stops.items() if value.lower() in stop[0].lower()
+        )[:limit]
+    return []
+
+
+def _actual_departure(connection, fallback):
+    rides = [part for part in connection["abschnitte"] if not part.get("walk")]
+    return _minutes(rides[0]["abfahrt"]) if rides else fallback
+
+
+def _filter_gtfs_connections(
+    connections,
+    duration_min,
+    duration_max,
+    arrival_window,
+    departure_window=None,
+):
+    filtered = []
+    arrival_start = _minutes((arrival_window or {}).get("start"))
+    arrival_end = _minutes((arrival_window or {}).get("end"))
+    departure_start = _minutes((departure_window or {}).get("start"))
+    departure_end = _minutes((departure_window or {}).get("end"))
+    for connection in connections:
+        departure = _actual_departure(connection, 0)
+        duration = connection["zeit"] - departure
+        if departure_start is not None and departure < departure_start:
+            continue
+        if departure_end is not None and departure > departure_end:
+            continue
+        if not duration_min <= duration <= duration_max:
+            continue
+        if arrival_start is not None and connection["zeit"] < arrival_start:
+            continue
+        if arrival_end is not None and connection["zeit"] > arrival_end:
+            continue
+        connection["actual_departure"] = departure
+        connection["duration"] = duration
+        filtered.append(connection)
+    return filtered
+
+
+def export_normalized_gtfs(connections, output, iso_date, parameters):
+    base_date = datetime.fromisoformat(iso_date).date()
+    features = []
+    for index, connection in enumerate(connections, 1):
+        coordinates = []
+        for part in connection["abschnitte"]:
+            for point in part.get("punkte") or [
+                part.get("von_xy"),
+                part.get("nach_xy"),
+            ]:
+                if point and (not coordinates or coordinates[-1] != point):
+                    coordinates.append(point)
+        if len(coordinates) < 2:
+            continue
+        departure = connection.get("actual_departure", _actual_departure(connection, 0))
+        start_time = datetime.combine(
+            base_date, datetime.min.time()
+        ).astimezone() + timedelta(minutes=departure)
+        # Die lokale Systemzeitzone ist nur Fallback; der Orchestrator sollte
+        # timezone explizit liefern.
+        timezone_name = parameters.get("timezone")
+        if timezone_name:
+            from zoneinfo import ZoneInfo
+
+            start_time = datetime.combine(
+                base_date, datetime.min.time(), ZoneInfo(timezone_name)
+            ) + timedelta(minutes=departure)
+        end_time = start_time + timedelta(minutes=connection["zeit"] - departure)
+        rides = [part for part in connection["abschnitte"] if not part.get("walk")]
+        features.append(
+            candidate_feature(
+                candidate_id=f"gtfs-route:{index}",
+                producer_skill="oepnvrouten",
+                entity_type="transit_route",
+                geometry={"type": "LineString", "coordinates": coordinates},
+                start={"lat": coordinates[0][1], "lon": coordinates[0][0]},
+                end={"lat": coordinates[-1][1], "lon": coordinates[-1][0]},
+                temporal={
+                    "start": start_time.isoformat(),
+                    "end": end_time.isoformat(),
+                    "duration_minutes": (end_time - start_time).total_seconds() / 60,
+                    "timezone": str(start_time.tzinfo),
+                    "precision": "scheduled",
+                },
+                score=max(0.0, 1 - 0.05 * max(0, len(rides) - 1)),
+                confidence=0.85,
+                sources=[{"name": "GTFS", "schedule": "static"}],
+                extra={
+                    "segments": connection["abschnitte"],
+                    "transfers": max(0, len(rides) - 1),
+                },
+            )
+        )
+    write_adapter_output(
+        output,
+        features,
+        sources=[{"name": "GTFS", "schedule": "static"}],
+        parameters=parameters,
+    )
+
+
+def export_normalized_osm(routen, points, output, iso_date, start_min, parameters):
+    from zoneinfo import ZoneInfo
+
+    timezone_name = parameters.get("timezone", "UTC")
+    base = datetime.combine(
+        datetime.fromisoformat(iso_date).date(),
+        datetime.min.time(),
+        ZoneInfo(timezone_name),
+    )
+    start_time = base + timedelta(minutes=start_min)
+    features = []
+    for index, (route, coordinates) in enumerate(zip(routen, points), 1):
+        if len(coordinates) < 2:
+            continue
+        end_time = start_time + timedelta(minutes=route["dauer"])
+        features.append(
+            candidate_feature(
+                candidate_id=f"osm-transit-route:{index}",
+                producer_skill="oepnvrouten",
+                entity_type="transit_route",
+                geometry={
+                    "type": "LineString",
+                    "coordinates": [[lon, lat] for lon, lat in coordinates],
+                },
+                start={"lat": coordinates[0][1], "lon": coordinates[0][0]},
+                end={"lat": coordinates[-1][1], "lon": coordinates[-1][0]},
+                temporal={
+                    "start": start_time.isoformat(),
+                    "end": end_time.isoformat(),
+                    "duration_minutes": route["dauer"],
+                    "timezone": timezone_name,
+                    "precision": "estimated",
+                },
+                score=max(0.0, 1 - float(route["score"]) / 1000),
+                confidence=0.35,
+                sources=[{"name": "OpenStreetMap", "routing": "estimated"}],
+                warnings=[
+                    "Kein Fahrplan: Zeiten sind geschätzt; einzelne Geometriesegmente können Notfall-Fallbacks sein"
+                ],
+                extra={"transfers": len(route["umstiege"]), "estimated": True},
+            )
+        )
+    write_adapter_output(
+        output,
+        features,
+        status="degraded",
+        warnings=["GTFS-Routing nicht verfügbar; OSM-Zeiten sind Schätzwerte"],
+        sources=[{"name": "OpenStreetMap"}],
+        parameters=parameters,
+    )
+
+
 def main():
     ap = argparse.ArgumentParser(description="ÖPNV-Routen finden")
     ap.add_argument(
@@ -1021,8 +1230,8 @@ def main():
     ap.add_argument("--bbox", type=float, nargs=4, metavar=("S", "W", "N", "E"))
     ap.add_argument("--datum", default="2026-10-16", help="Startdatum (ISO)")
     ap.add_argument("--uhrzeit", default="15:00", help="Startzeit (HH:MM)")
-    ap.add_argument("--start", required=True, help="Startpunkt (Name)")
-    ap.add_argument("--end", required=True, help="Endpunkt (Name)")
+    ap.add_argument("--start", help="Startpunkt (Name)")
+    ap.add_argument("--end", help="Endpunkt (Name)")
     ap.add_argument("--dauer-min", type=int, default=60)
     ap.add_argument("--dauer-max", type=int, default=120)
     ap.add_argument("--umstiege-min", type=int, default=1)
@@ -1030,10 +1239,42 @@ def main():
     ap.add_argument("--qid", help="Wikidata-QID des Ortes (nie raten)")
     ap.add_argument("--output", default="ergebnis")
     ap.add_argument("--refresh", action="store_true")
+    ap.add_argument("--request", help="Workflow-Knoten als JSON")
+    ap.add_argument(
+        "--orchestrated",
+        action="store_true",
+        help="Normalisierten Adaptermodus verwenden",
+    )
     args = ap.parse_args()
+
+    request = load_node_request(args.request)
+    parameters = request["parameters"] if request else {}
+    start_value, end_value = args.start, args.end
+    arrival_window = None
+    departure_window = None
+    if request:
+        bbox, place = resolve_region(parameters["region"])
+        args.bbox, args.stadt = bbox, place
+        if isinstance(parameters["region"], dict) and parameters["region"].get(
+            "timezone"
+        ):
+            parameters.setdefault("timezone", parameters["region"]["timezone"])
+        args.datum = parameters["date"]
+        departure_window = parameters.get("departure_window") or {}
+        args.uhrzeit = departure_window.get("start", args.uhrzeit)
+        if "T" in args.uhrzeit:
+            args.uhrzeit = args.uhrzeit.split("T", 1)[1][:5]
+        start_value, end_value = parameters["start"], parameters["end"]
+        args.dauer_min = int(parameters.get("duration_min", args.dauer_min))
+        args.dauer_max = int(parameters.get("duration_max", args.dauer_max))
+        args.umstiege_min = int(parameters.get("transfers_min", args.umstiege_min))
+        args.umstiege_max = int(parameters.get("transfers_max", args.umstiege_max))
+        arrival_window = parameters.get("arrival_window")
 
     if not args.stadt and not args.bbox:
         ap.error("--stadt oder --bbox erforderlich")
+    if start_value is None or end_value is None:
+        ap.error("--start/--end oder parameters.start/parameters.end erforderlich")
     bbox = bbox_fuer_stadt(args.stadt, args.refresh) if args.stadt else tuple(args.bbox)
     log(f"BBox {bbox}")
 
@@ -1044,20 +1285,33 @@ def main():
     # ---- Primär: GTFS-Fahrplan-Routing (echte Abfahrts-/Ankunftszeiten) ----
     try:
         daten = gtfs_extraktion(bbox, datum, args.refresh)
-        ts = sorted(
-            sid
-            for sid, s in daten["stops"].items()
-            if args.start.lower() in s[0].lower()
-        )
-        tz = sorted(
-            sid for sid, s in daten["stops"].items() if args.end.lower() in s[0].lower()
-        )
+        ts = _stop_candidates(start_value, daten["stops"], "end")
+        tz = _stop_candidates(end_value, daten["stops"], "start")
         if ts and tz:
-            verbindungen = gtfs_verbindungen(
-                daten, ts[0], tz[0], start_min, start_min + 360
+            verbindungen = []
+            for start_sid in ts:
+                for target_sid in tz:
+                    verbindungen.extend(
+                        gtfs_verbindungen(
+                            daten, start_sid, target_sid, start_min, start_min + 360
+                        )
+                    )
+            verbindungen = _filter_gtfs_connections(
+                verbindungen,
+                args.dauer_min,
+                args.dauer_max,
+                arrival_window,
+                departure_window,
             )
+            verbindungen.sort(
+                key=lambda connection: (connection["zeit"], connection["duration"])
+            )
+            verbindungen = verbindungen[:3]
             if verbindungen:
                 gtfs_export(verbindungen, args.output, start_min, datum)
+                export_normalized_gtfs(
+                    verbindungen, args.output, args.datum, parameters
+                )
                 for i, v in enumerate(verbindungen, 1):
                     fahrten = [a for a in v["abschnitte"] if not a.get("walk")]
                     log(
@@ -1105,11 +1359,24 @@ def main():
             }
         )
 
-    start_id = finde(args.start)
-    ziel_id = finde(args.end)
+    if not isinstance(start_value, str) or not isinstance(end_value, str):
+        error = RuntimeError(
+            "GTFS lieferte keine Route; der OSM-Fallback unterstützt derzeit "
+            "nur namentliche Start-/Zielpunkte"
+        )
+        write_adapter_output(
+            args.output,
+            [],
+            sources=[{"name": "GTFS"}, {"name": "OpenStreetMap"}],
+            parameters=parameters,
+            error=error,
+        )
+        raise SystemExit(str(error))
+    start_id = finde(start_value)
+    ziel_id = finde(end_value)
     for label, treffer, name in [
-        ("Start", start_id, args.start),
-        ("Ziel", ziel_id, args.end),
+        ("Start", start_id, start_value),
+        ("Ziel", ziel_id, end_value),
     ]:
         log(
             f"{label} '{name}': "
@@ -1146,6 +1413,18 @@ def main():
         real = sum(1 for p in punkte if len(p) > 50)
         log(f"Echte Strecken: {real}/{len(routen)} Routen mit Fahrweg-Geometrie")
         export(routen, graph, args.output, punkte)
+        export_normalized_osm(
+            routen, punkte, args.output, args.datum, start_min, parameters
+        )
+    elif request:
+        write_adapter_output(
+            args.output,
+            [],
+            status="empty",
+            warnings=["Weder GTFS noch OSM-Fallback lieferte eine passende Route"],
+            sources=[{"name": "GTFS"}, {"name": "OpenStreetMap"}],
+            parameters=parameters,
+        )
 
 
 if __name__ == "__main__":

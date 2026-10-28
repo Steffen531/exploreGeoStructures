@@ -40,3 +40,13 @@ exploreGeoStructures/
 1. **Python-Skripte** immer mit `.venv/bin/python` ausführen
 2. **Neue Pakete** mit `.venv/bin/pip install` hinzufügen
 3. **Ergebnisse** in den jeweiligen Task-Verzeichnissen speichern
+
+## Kombinierte Geo-Anfragen
+
+- Enthält eine Anfrage mindestens zwei räumlich oder zeitlich voneinander
+  abhängige Fachaufgaben, zuerst den Skill `geo-workflow` verwenden.
+- Die benötigten Fach-Skills werden durch `geo-workflow` geladen und liefern im
+  orchestrierten Modus normalisierte Kandidaten.
+- Harte räumliche oder zeitliche Bedingungen niemals stillschweigend lockern.
+- Kombinierte Ergebnisse unter `results/<workflow-id>/` speichern und nur eine
+  gemeinsame Feedbackrunde durchführen.

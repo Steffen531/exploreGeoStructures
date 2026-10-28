@@ -135,3 +135,11 @@ Fehlern aufs OSM-Routing zurück:
 | `--qid` | – | Wikidata-QID des Ortes (nie raten) |
 | `--output` | `results` | Ausgabeverzeichnis |
 | `--refresh` | aus | Cache ignorieren (GTFS + OSM) |
+
+## Verwendung durch `geo-workflow`
+
+Im orchestrierten Modus `--request <knoten.json> --orchestrated` verwenden.
+Start und Ziel dürfen Namen, Koordinaten oder normalisierte Kandidaten sein.
+Abfahrts-, Ankunfts- und Dauerfenster werden auch im GTFS-Zweig geprüft. Der
+Adapter schreibt `kandidaten.geojson` und `status.json`. Schritt 8 wird
+übersprungen; Nutzerfeedback erfolgt nur für den Gesamtworkflow.

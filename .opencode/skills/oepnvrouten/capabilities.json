@@ -1,0 +1,16 @@
+{
+  "skill_id": "oepnvrouten",
+  "version": 1,
+  "capabilities": [
+    {
+      "id": "find_transit_routes",
+      "produces": ["transit_route"],
+      "required_parameters": ["region", "date", "start", "end"],
+      "optional_parameters": ["departure_window", "arrival_window", "duration_min", "duration_max", "transfers_min", "transfers_max"],
+      "spatial_filters": ["starts_near", "ends_near", "sequence_continuity"],
+      "temporal_filters": ["starts_between", "ends_between", "duration_between", "sequence_time"],
+      "adapter": "reference/oepnvrouten_suche.py",
+      "limitations": ["Echte Zeiten erfordern einen für das Datum gültigen GTFS-Feed", "OSM-Fallback-Zeiten sind Schätzwerte"]
+    }
+  ]
+}

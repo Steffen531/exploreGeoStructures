@@ -1,0 +1,16 @@
+{
+  "skill_id": "belebteOrte",
+  "version": 1,
+  "capabilities": [
+    {
+      "id": "find_busy_places",
+      "produces": ["busy_place", "busy_area"],
+      "required_parameters": ["region", "at"],
+      "optional_parameters": ["categories", "minimum_score"],
+      "spatial_filters": ["within", "near"],
+      "temporal_filters": ["active_at"],
+      "adapter": "reference/belebte_orte_suche.py",
+      "limitations": ["POI- und ÖPNV-Dichte sind Proxys und keine Besucherzählung", "Event- und Popular-Times-Daten können fehlen"]
+    }
+  ]
+}

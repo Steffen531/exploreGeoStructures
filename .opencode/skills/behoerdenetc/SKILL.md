@@ -78,6 +78,14 @@ Danach dem Nutzer die Kartenanleitung geben: [umap.openstreetmap.de](https://uma
 → ☰ → „Daten importieren" → GeoJSON wählen (oder Drag & Drop) → „als neue
 Ebene" → Karte teilen.
 
+## Verwendung durch `geo-workflow`
+
+Im orchestrierten Modus `--request <knoten.json> --orchestrated` verwenden.
+Der Adapter schreibt normalisierte `authority_place`-Kandidaten und
+`status.json`. Diese Kandidaten können Ziele oder Ausschlussobjekte eines
+`avoids`-Constraints sein. Die eigene Feedbackrunde wird übersprungen;
+Feedback erfolgt nur für den Gesamtworkflow.
+
 ## Skript
 
 `reference/behoerden_suche.py` ist die Vorlage für Schritt 4, 6 und 7:

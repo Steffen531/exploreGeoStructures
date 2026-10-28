@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "capabilities.schema.json",
+  "type": "object",
+  "required": ["skill_id", "version", "capabilities"],
+  "properties": {
+    "skill_id": {"type": "string", "minLength": 1},
+    "version": {"type": "integer", "minimum": 1},
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "produces", "required_parameters", "optional_parameters", "spatial_filters", "temporal_filters", "adapter"],
+        "properties": {
+          "id": {"type": "string"},
+          "produces": {"type": "array", "items": {"type": "string"}},
+          "required_parameters": {"type": "array", "items": {"type": "string"}},
+          "optional_parameters": {"type": "array", "items": {"type": "string"}},
+          "spatial_filters": {"type": "array", "items": {"type": "string"}},
+          "temporal_filters": {"type": "array", "items": {"type": "string"}},
+          "adapter": {"type": "string"},
+          "limitations": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

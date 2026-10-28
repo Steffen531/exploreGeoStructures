@@ -14,8 +14,10 @@ import functools
 import logging
 import os
 import signal
+import sys
 import time
 import warnings
+from pathlib import Path
 
 import geopandas as gpd
 import numpy as np
@@ -23,21 +25,31 @@ import osmnx as ox
 import osmnx._http as ox_http
 import pandas as pd
 from osmnx._errors import InsufficientResponseError
+from shapely.geometry import mapping
+
+OPENCODE_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(OPENCODE_DIR / "lib"))
+from workflow_adapter import (  # noqa: E402
+    candidate_feature,
+    load_node_request,
+    resolve_region,
+    write_adapter_output,
+)
 
 warnings.filterwarnings("ignore")
 
 # ---------------------------------------------------------------------------
 # Konfiguration
 # ---------------------------------------------------------------------------
-BUFFER_ENTRANCE = 10    # m Toleranz Gebäudekante -> Eingang (Polygone)
-BUFFER_POINT = 60       # m Radius für Punkt-Kandidaten Bahnhöfe (railway=station)
-BUFFER_POINT_SMALL = 20 # m Radius für andere Punkt-Kandidaten (z.B. shop-Nodes)
-BUFFER_TRANSIT = 200    # m Maximalabstand zur ÖPNV-Infrastruktur
-MIN_ENTRANCES = 2       # min. Eingänge
-MIN_TRANSIT = 1         # min. ÖPNV-Objekte im Puffer
-MIN_LEVELS = 2          # min. unterschiedliche Ebenen der Eingänge
-QUERY_TIMEOUT = 120     # harte Obergrenze pro Overpass-Abfrage
-RETRY_DELAYS = [3, 8]   # Sekunden zwischen den Versuchen (Rate-Limits)
+BUFFER_ENTRANCE = 10  # m Toleranz Gebäudekante -> Eingang (Polygone)
+BUFFER_POINT = 60  # m Radius für Punkt-Kandidaten Bahnhöfe (railway=station)
+BUFFER_POINT_SMALL = 20  # m Radius für andere Punkt-Kandidaten (z.B. shop-Nodes)
+BUFFER_TRANSIT = 200  # m Maximalabstand zur ÖPNV-Infrastruktur
+MIN_ENTRANCES = 2  # min. Eingänge
+MIN_TRANSIT = 1  # min. ÖPNV-Objekte im Puffer
+MIN_LEVELS = 2  # min. unterschiedliche Ebenen der Eingänge
+QUERY_TIMEOUT = 120  # harte Obergrenze pro Overpass-Abfrage
+RETRY_DELAYS = [3, 8]  # Sekunden zwischen den Versuchen (Rate-Limits)
 
 # (Basis-URL, autoritativ): osmnx haengt selbst "/interpreter" an.
 # "autoritativ" = ein leeres Ergebnis dort wird als wahr akzeptiert;
@@ -63,7 +75,15 @@ TRANSIT_TAGS = {
     "amenity": ["bus_station"],
 }
 ENTRANCE_TAGS = {
-    "entrance": ["yes", "main", "exit", "secondary", "service", "staircase", "elevator"],
+    "entrance": [
+        "yes",
+        "main",
+        "exit",
+        "secondary",
+        "service",
+        "staircase",
+        "elevator",
+    ],
 }
 
 
@@ -78,6 +98,7 @@ class _QueryTimeout(Exception):
 
 def _with_timeout(seconds, func, *args, **kwargs):
     """func mit SIGALRM-Zeitlimit – verhindert endlose osmnx-504-Warteschleifen."""
+
     def handler(_signum, _frame):
         raise _QueryTimeout(f"Zeitlimit von {seconds}s überschritten")
 
@@ -132,11 +153,11 @@ def fetch_with_fallback(label, tags, bbox):
                 return gdf
             except InsufficientResponseError:
                 if authoritative:
-                    return _empty_gdf()          # Server sagt: wirklich nichts da
+                    return _empty_gdf()  # Server sagt: wirklich nichts da
                 log(f"      {host}: 0 Treffer (wahrscheinlich nur regionale Abdeckung)")
                 regional_empty = True
-                break                            # nächster Mirror
-            except Exception as err:             # Netzwerk-/Server-/Limit-Probleme
+                break  # nächster Mirror
+            except Exception as err:  # Netzwerk-/Server-/Limit-Probleme
                 last_error = err
                 detail = str(err).replace("\n", " ")[:160]
                 log(f"      {host}: {type(err).__name__}: {detail}")
@@ -150,7 +171,9 @@ def fetch_with_fallback(label, tags, bbox):
             f"Hauptserver waren nicht erreichbar – Ergebnis wäre falsch. "
             f"Später erneut versuchen (letzter Fehler: {last_error})"
         )
-    raise RuntimeError(f"Alle Overpass-Mirrors fehlgeschlagen für '{label}'") from last_error
+    raise RuntimeError(
+        f"Alle Overpass-Mirrors fehlgeschlagen für '{label}'"
+    ) from last_error
 
 
 def _empty_gdf():
@@ -167,14 +190,17 @@ def _bbox(place):
     """
     gdf = ox.geocode_to_gdf(place)
     left, bottom, right, top = (float(v) for v in gdf.total_bounds)
-    log(f"      Untersuchungsraum {place}: bbox({left:.4f}, {bottom:.4f}, "
-        f"{right:.4f}, {top:.4f})")
+    log(
+        f"      Untersuchungsraum {place}: bbox({left:.4f}, {bottom:.4f}, "
+        f"{right:.4f}, {top:.4f})"
+    )
     return (left, bottom, right, top)
 
 
 def _cache_key(bbox):
     """Kurzer Hash der BBox – der Cache ist sonst regionsübergreifend falsch."""
     import hashlib
+
     text = ",".join(f"{v:.4f}" for v in bbox)
     return hashlib.md5(text.encode()).hexdigest()[:8]
 
@@ -217,7 +243,7 @@ def parse_levels(value):
             except ValueError:
                 out.add(part)
                 continue
-            if 0 <= lo <= hi <= lo + 20:       # "0-2" sind Ebenen, "51.1-51.3" nicht
+            if 0 <= lo <= hi <= lo + 20:  # "0-2" sind Ebenen, "51.1-51.3" nicht
                 out.update(range(lo, hi + 1))
             else:
                 out.add(part)
@@ -264,8 +290,10 @@ def analyze(cache_dir, place, refresh, output_dir, bbox):
     buildings = load_features(cache_dir, "gebaeude", BUILDING_TAGS, refresh, bbox)
     print(f"      {len(buildings)} Gebäude gefunden")
     if not len(buildings):
-        raise SystemExit("FEHLER: Keine Gebäude erhalten – Overpass-Abfrage war leer. "
-                         "Später mit --refresh erneut versuchen.")
+        raise SystemExit(
+            "FEHLER: Keine Gebäude erhalten – Overpass-Abfrage war leer. "
+            "Später mit --refresh erneut versuchen."
+        )
 
     print("\n[2/5] Lade ÖPNV-Haltestellen...")
     transit = load_features(cache_dir, "oepnv", TRANSIT_TAGS, refresh, bbox)
@@ -292,8 +320,16 @@ def analyze(cache_dir, place, refresh, output_dir, bbox):
     # Punkten (z.B. shop=department_store als Node) fängt 60 m Eingänge
     # benachbarter Gebäude -> falsche Treffer (siehe learnings.md).
     is_point = buildings_p.geometry.geom_type.isin(["Point", "MultiPoint"])
-    railway = buildings_p.get("railway", pd.Series("", index=buildings_p.index)).fillna("").astype(str)
-    pt = buildings_p.get("public_transport", pd.Series("", index=buildings_p.index)).fillna("").astype(str)
+    railway = (
+        buildings_p.get("railway", pd.Series("", index=buildings_p.index))
+        .fillna("")
+        .astype(str)
+    )
+    pt = (
+        buildings_p.get("public_transport", pd.Series("", index=buildings_p.index))
+        .fillna("")
+        .astype(str)
+    )
     is_station = railway.eq("station") | pt.isin(["station", "stop_position"])
     buildings_p["entry_radius"] = np.where(
         is_point,
@@ -308,13 +344,15 @@ def analyze(cache_dir, place, refresh, output_dir, bbox):
 
     ent_cols = entrances_p[["geometry"]].copy()
     ent_cols["entrance_level"] = entrances_p.get(
-        "level", pd.Series(index=entrances_p.index, dtype=object))
+        "level", pd.Series(index=entrances_p.index, dtype=object)
+    )
 
     if len(ent_cols):
         ent_join = gpd.sjoin(ent_cols, entry_buffers, how="inner", predicate="within")
     else:
-        ent_join = gpd.GeoDataFrame({"entrance_level": pd.Series(dtype=object),
-                                     "bidx": pd.Series(dtype=int)})
+        ent_join = gpd.GeoDataFrame(
+            {"entrance_level": pd.Series(dtype=object), "bidx": pd.Series(dtype=int)}
+        )
 
     entrance_count = ent_join.groupby("bidx").size()
 
@@ -333,7 +371,9 @@ def analyze(cache_dir, place, refresh, output_dir, bbox):
     transit_points = transit_p[["geometry"]].copy()
     transit_points["geometry"] = transit_p.geometry.centroid
 
-    transit_join = gpd.sjoin(transit_points, transit_buffers, how="inner", predicate="within")
+    transit_join = gpd.sjoin(
+        transit_points, transit_buffers, how="inner", predicate="within"
+    )
     transit_count = transit_join.groupby("bidx").size()
 
     # -- Ergebnis-Tabelle zusammenbauen ---------------------------------------
@@ -343,23 +383,45 @@ def analyze(cache_dir, place, refresh, output_dir, bbox):
         {
             "osm_type": osm_type.values,
             "osm_id": osm_id.values,
-            "name": buildings_p.get("name", pd.Series("", index=buildings_p.index)).fillna("").values,
-            "building": buildings_p.get("building", pd.Series("", index=buildings_p.index)).fillna("").values,
-            "railway": buildings_p.get("railway", pd.Series("", index=buildings_p.index)).fillna("").values,
-            "building_levels": buildings_p.get("building:levels", pd.Series("", index=buildings_p.index))
-            .fillna("").values,
-            "entrance_count": entrance_count.reindex(positions).fillna(0).astype(int).values,
+            "name": buildings_p.get("name", pd.Series("", index=buildings_p.index))
+            .fillna("")
+            .values,
+            "building": buildings_p.get(
+                "building", pd.Series("", index=buildings_p.index)
+            )
+            .fillna("")
+            .values,
+            "railway": buildings_p.get(
+                "railway", pd.Series("", index=buildings_p.index)
+            )
+            .fillna("")
+            .values,
+            "building_levels": buildings_p.get(
+                "building:levels", pd.Series("", index=buildings_p.index)
+            )
+            .fillna("")
+            .values,
+            "entrance_count": entrance_count.reindex(positions)
+            .fillna(0)
+            .astype(int)
+            .values,
             "entrance_levels": [
                 ";".join(map(str, distinct_levels.get(p, []))) for p in positions
             ],
             "distinct_levels": [len(distinct_levels.get(p, [])) for p in positions],
-            "transit_count": transit_count.reindex(positions).fillna(0).astype(int).values,
+            "transit_count": transit_count.reindex(positions)
+            .fillna(0)
+            .astype(int)
+            .values,
             "geometry": buildings_p.geometry.values,
         },
         crs=buildings_p.crs,
     )
     results["url"] = (
-        "https://www.openstreetmap.org/" + results["osm_type"] + "/" + results["osm_id"].astype(str)
+        "https://www.openstreetmap.org/"
+        + results["osm_type"]
+        + "/"
+        + results["osm_id"].astype(str)
     )
     return results, transit
 
@@ -372,20 +434,27 @@ def filter_candidates(results):
     for idx, row in results.iterrows():
         reasons = []
         if row["entrance_count"] < MIN_ENTRANCES:
-            reasons.append(f"nur {row['entrance_count']} Eingänge (mind. {MIN_ENTRANCES})")
+            reasons.append(
+                f"nur {row['entrance_count']} Eingänge (mind. {MIN_ENTRANCES})"
+            )
         if row["transit_count"] < MIN_TRANSIT:
             reasons.append(f"kein ÖPNV in {BUFFER_TRANSIT} m")
         if level_data_available and row["distinct_levels"] < MIN_LEVELS:
             reasons.append(
-                f"nur {row['distinct_levels']} Eingangsebene(n) (mind. {MIN_LEVELS})")
+                f"nur {row['distinct_levels']} Eingangsebene(n) (mind. {MIN_LEVELS})"
+            )
         if reasons:
-            dropped.append({
-                "name": row["name"] or "(unbenannt)",
-                "osm_url": row["url"],
-                "grund": "; ".join(reasons),
-            })
+            dropped.append(
+                {
+                    "name": row["name"] or "(unbenannt)",
+                    "osm_url": row["url"],
+                    "grund": "; ".join(reasons),
+                }
+            )
 
-    base = (results["entrance_count"] >= MIN_ENTRANCES) & (results["transit_count"] >= MIN_TRANSIT)
+    base = (results["entrance_count"] >= MIN_ENTRANCES) & (
+        results["transit_count"] >= MIN_TRANSIT
+    )
     if level_data_available:
         filtered = results[base & (results["distinct_levels"] >= MIN_LEVELS)].copy()
     else:
@@ -413,9 +482,12 @@ def export(filtered_wgs, output_dir, stats):
         {
             "name": filtered_wgs["name"].fillna("").astype(str).values,
             "desc": (
-                "Eingänge: " + filtered_wgs["entrance_count"].astype(str)
-                + " | Ebenen: " + filtered_wgs["distinct_levels"].astype(str)
-                + " | ÖPNV: " + filtered_wgs["transit_count"].astype(str)
+                "Eingänge: "
+                + filtered_wgs["entrance_count"].astype(str)
+                + " | Ebenen: "
+                + filtered_wgs["distinct_levels"].astype(str)
+                + " | ÖPNV: "
+                + filtered_wgs["transit_count"].astype(str)
             ).values,
         },
         geometry=filtered_wgs.geometry.representative_point().values,
@@ -429,15 +501,75 @@ def export(filtered_wgs, output_dir, stats):
     print(f"      Zusammenfassung exportiert: {json_path}")
 
 
+def export_normalized(filtered_wgs, output_dir, parameters):
+    """Zusätzlicher stabiler Vertrag für den Geo-Workflow."""
+    maximum = max(
+        1,
+        int(filtered_wgs["entrance_count"].max()) if len(filtered_wgs) else 1,
+    )
+    features = []
+    for _, row in filtered_wgs.iterrows():
+        entrance_score = min(1.0, float(row["entrance_count"]) / maximum)
+        confidence = min(0.95, 0.55 + 0.05 * float(row["entrance_count"]))
+        features.append(
+            candidate_feature(
+                candidate_id=f"osm:{row['osm_type']}:{row['osm_id']}",
+                producer_skill="mallsetc",
+                entity_type="urban_structure",
+                geometry=mapping(row.geometry),
+                score=entrance_score,
+                confidence=confidence,
+                sources=[{"name": "OpenStreetMap", "url": row["url"]}],
+                extra={
+                    "name": row["name"],
+                    "structure_type": row["building"],
+                    "entrance_count": int(row["entrance_count"]),
+                    "entrance_levels": row["entrance_levels"],
+                    "distinct_levels": int(row["distinct_levels"]),
+                    "transit_count": int(row["transit_count"]),
+                },
+            )
+        )
+    write_adapter_output(
+        output_dir,
+        features,
+        sources=[{"name": "OpenStreetMap"}],
+        parameters=parameters,
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(
-        description="Besondere städtische Strukturen (Malls, Bahnhöfe, Passagen) finden")
-    parser.add_argument("--place", type=str, help="Stadt oder Stadtteil (z.B. 'Dresden, Deutschland')")
-    parser.add_argument("--bbox", type=float, nargs=4, metavar=("S", "W", "N", "E"),
-                        help="Bounding Box (S, W, N, E) – ersetzt --place")
-    parser.add_argument("--output", type=str, default="ergebnis", help="Ausgabeverzeichnis")
-    parser.add_argument("--refresh", action="store_true", help="Cache ignorieren und neu abrufen")
+        description="Besondere städtische Strukturen (Malls, Bahnhöfe, Passagen) finden"
+    )
+    parser.add_argument(
+        "--place", type=str, help="Stadt oder Stadtteil (z.B. 'Dresden, Deutschland')"
+    )
+    parser.add_argument(
+        "--bbox",
+        type=float,
+        nargs=4,
+        metavar=("S", "W", "N", "E"),
+        help="Bounding Box (S, W, N, E) – ersetzt --place",
+    )
+    parser.add_argument(
+        "--output", type=str, default="ergebnis", help="Ausgabeverzeichnis"
+    )
+    parser.add_argument(
+        "--refresh", action="store_true", help="Cache ignorieren und neu abrufen"
+    )
+    parser.add_argument("--request", help="Workflow-Knoten als JSON")
+    parser.add_argument(
+        "--orchestrated",
+        action="store_true",
+        help="Normalisierten Adaptermodus verwenden",
+    )
     args = parser.parse_args()
+
+    request = load_node_request(args.request)
+    parameters = request["parameters"] if request else {}
+    if request:
+        args.bbox, args.place = resolve_region(parameters["region"])
 
     if not args.place and not args.bbox:
         parser.error("--place oder --bbox erforderlich")
@@ -465,12 +597,18 @@ def main():
     filtered, dropped, level_data_available = filter_candidates(results)
 
     if level_data_available:
-        print(f"      Kriterien: >={MIN_ENTRANCES} Eingänge UND >={MIN_TRANSIT} ÖPNV in {BUFFER_TRANSIT} m "
-              f"UND >={MIN_LEVELS} verschiedene Eingangsebenen")
+        print(
+            f"      Kriterien: >={MIN_ENTRANCES} Eingänge UND >={MIN_TRANSIT} ÖPNV in {BUFFER_TRANSIT} m "
+            f"UND >={MIN_LEVELS} verschiedene Eingangsebenen"
+        )
     else:
-        print(f"      WARNUNG: Keine level-Tags an Eingängen gefunden – Ebenen-Kriterium "
-              f"(>={MIN_LEVELS} verschiedene Ebenen) entfaellt!")
-        print(f"      Kriterien: >={MIN_ENTRANCES} Eingänge UND >={MIN_TRANSIT} ÖPNV in {BUFFER_TRANSIT} m")
+        print(
+            f"      WARNUNG: Keine level-Tags an Eingängen gefunden – Ebenen-Kriterium "
+            f"(>={MIN_LEVELS} verschiedene Ebenen) entfaellt!"
+        )
+        print(
+            f"      Kriterien: >={MIN_ENTRANCES} Eingänge UND >={MIN_TRANSIT} ÖPNV in {BUFFER_TRANSIT} m"
+        )
 
     print(f"      {len(filtered)} von {len(results)} Gebäuden erfüllen die Kriterien")
 
@@ -486,6 +624,7 @@ def main():
         "level_daten_vorhanden": level_data_available,
     }
     export(filtered_wgs, output_dir, stats)
+    export_normalized(filtered_wgs, output_dir, parameters)
 
     print("\n" + "=" * 60)
     print("ZUSAMMENFASSUNG")
@@ -493,18 +632,32 @@ def main():
     print(f"Gefundene Gebäude gesamt:        {len(results)}")
     print(f"ÖPNV-Objekte gesamt:             {len(transit)}")
     print(f"Eingänge gesamt:                 {int(results['entrance_count'].sum())}")
-    print(f"Davon Gebäude mit Eingang:       {int((results['entrance_count'] > 0).sum())}")
+    print(
+        f"Davon Gebäude mit Eingang:       {int((results['entrance_count'] > 0).sum())}"
+    )
     print(f"Kandidaten:                      {len(filtered)}")
     if not level_data_available:
-        print("HINWEIS: Ebenen-Kriterium nicht anwendbar (keine level-Tags an Eingängen).")
+        print(
+            "HINWEIS: Ebenen-Kriterium nicht anwendbar (keine level-Tags an Eingängen)."
+        )
 
     if len(filtered):
-        cols = ["name", "building", "entrance_count", "entrance_levels", "transit_count"]
+        cols = [
+            "name",
+            "building",
+            "entrance_count",
+            "entrance_levels",
+            "transit_count",
+        ]
         print("\nTop-Kandidaten:")
         print(filtered[cols].head(15).to_string(index=False))
 
-    print("\nVisualisierung: GeoJSON/KML/GPX auf https://umap.openstreetmap.de importieren")
-    print("  -> Karte bearbeiten -> Daten importieren -> GeoJSON wählen -> als neue Ebene")
+    print(
+        "\nVisualisierung: GeoJSON/KML/GPX auf https://umap.openstreetmap.de importieren"
+    )
+    print(
+        "  -> Karte bearbeiten -> Daten importieren -> GeoJSON wählen -> als neue Ebene"
+    )
 
 
 if __name__ == "__main__":

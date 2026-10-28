@@ -115,3 +115,11 @@ Ebene" → Karte teilen.
 | `--time` | – | Zeitfenster (z. B. „tuesday 10:00", „samstag 14:00") |
 | `--qid` | – | Wikidata-QID des Ortes (nie raten, siehe `reference/datenquellen.md`) |
 | `--output` | `ergebnis` | Ausgabeverzeichnis |
+
+## Verwendung durch `geo-workflow`
+
+Im orchestrierten Modus `--request <knoten.json> --orchestrated` verwenden.
+`parameters.at` muss ein vollständiger ISO-8601-Zeitpunkt mit Zeitzone sein.
+Der Adapter schreibt normalisierte `busy_place`-Kandidaten und `status.json`.
+Proxywerte und fehlende Datenquellen werden als Unsicherheit ausgewiesen.
+Schritt 10 wird übersprungen; Feedback erfolgt nur für den Gesamtworkflow.

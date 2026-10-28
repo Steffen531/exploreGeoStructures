@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "result.schema.json",
+  "type": "object",
+  "required": ["workflow_id", "complete_solutions", "partial_solutions", "rejections", "warnings"],
+  "properties": {
+    "workflow_id": {"type": "string"},
+    "complete_solutions": {"type": "array"},
+    "partial_solutions": {"type": "array"},
+    "rejections": {"type": "object"},
+    "warnings": {"type": "array"}
+  }
+}
